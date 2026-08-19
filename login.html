@@ -471,6 +471,12 @@
                         localStorage.setItem('userCreatedAt', profile ? profile.created_at : new Date().toISOString());
                         window.location.href = 'dashboard.html';
                         return;
+                    } else if (authError) {
+                        console.error("Supabase login error:", authError);
+                        alert("Erro do banco de dados: " + authError.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'ENTRAR';
+                        return;
                     }
                 }
 
