@@ -408,6 +408,12 @@
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
                         return;
+                    } else {
+                        console.error('Supabase SignUp Error:', signUpError);
+                        alert('Erro do Supabase: ' + signUpError.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
+                        return;
                     }
                 }
 
