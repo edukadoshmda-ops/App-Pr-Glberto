@@ -217,15 +217,37 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
     <script src="script.js"></script>
     <script>
         // Load videos and populate recent list
         async function loadVideos() {
             try {
-                const res = await fetch('/api/videos');
-                if (!res.ok) return;
-                const videos = await res.json();
-                displayVideos(videos);
+                const client = getSupabaseClient();
+                if (client) {
+                    const { data: videos, error } = await client.from('videos').select('*').order('created_at', { ascending: false });
+                    if (error) throw error;
+                    // Format response to match existing frontend expectations
+                    const formatted = videos.map(v => ({
+                        id: v.id,
+                        title: v.title,
+                        category: v.category,
+                        author: v.author,
+                        createdAt: v.created_at,
+                        coverPath: v.cover_url || 'assets/playbooks/capas/gilberto.jpg',
+                        videoPath: v.video_url,
+                        youtubeUrl: v.youtube_url,
+                        description: v.description,
+                        views: v.views_count
+                    }));
+                    displayVideos(formatted);
+                } else {
+                    const res = await fetch('/api/videos');
+                    if (!res.ok) return;
+                    const videos = await res.json();
+                    displayVideos(videos);
+                }
             } catch (err) {
                 console.error('Erro ao carregar vídeos:', err);
             }

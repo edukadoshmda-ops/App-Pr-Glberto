@@ -424,8 +424,23 @@
         // Carregar usuários
         async function loadUsers() {
             try {
-                const response = await fetch('/api/users?apiKey=eliteflow-secret-key-2024');
-                const users = await response.json();
+                let users = [];
+                if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                    const client = getSupabaseClient();
+                    const { data, error } = await client.from('profiles').select('*').order('created_at', { ascending: false });
+                    if (error) throw error;
+                    users = data.map(p => ({
+                        id: p.id,
+                        fullName: p.full_name,
+                        email: p.email,
+                        phone: p.phone,
+                        status: p.status,
+                        createdAt: p.created_at
+                    }));
+                } else {
+                    const response = await fetch('/api/users?apiKey=eliteflow-secret-key-2024');
+                    users = await response.json();
+                }
                 
                 const tbody = document.getElementById('usersTableBody');
                 
@@ -507,6 +522,22 @@
             };
 
             try {
+                if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                    const client = getSupabaseClient();
+                    const { error } = await client.from('profiles').update({
+                        full_name: userData.fullName,
+                        phone: userData.phone,
+                        status: userData.status,
+                        is_admin: userData.isAdmin
+                    }).eq('id', userId);
+                    if (error) throw error;
+                    
+                    closeEditModal();
+                    loadUsers();
+                    alert('Usuário atualizado com sucesso no Supabase!');
+                    return;
+                }
+
                 const response = await fetch(`/api/users/${userId}?apiKey=eliteflow-secret-key-2024`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -543,6 +574,17 @@
             if (!deleteUserId) return;
 
             try {
+                if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                    const client = getSupabaseClient();
+                    const { error } = await client.from('profiles').delete().eq('id', deleteUserId);
+                    if (error) throw error;
+                    
+                    closeDeleteModal();
+                    loadUsers();
+                    alert('Usuário excluído com sucesso do Supabase!');
+                    return;
+                }
+
                 const response = await fetch(`/api/users/${deleteUserId}?apiKey=eliteflow-secret-key-2024`, {
                     method: 'DELETE'
                 });
@@ -569,6 +611,8 @@
         // Inicializar
         checkAdminAccess();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

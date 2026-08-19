@@ -113,6 +113,8 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
     <script src="script.js"></script>
     <script>
         // ── Estado global de artigos ──────────────────────────────
@@ -121,9 +123,27 @@
         // ── Carrega artigos da API ────────────────────────────────
         async function loadArticles() {
             try {
-                const res = await fetch('/api/articles');
-                if (!res.ok) return;
-                allArticles = await res.json();
+                const client = getSupabaseClient();
+                if (client) {
+                    const { data: articles, error } = await client.from('articles').select('*').order('created_at', { ascending: false });
+                    if (error) throw error;
+                    allArticles = articles.map(a => ({
+                        id: a.id,
+                        title: a.title,
+                        category: a.category,
+                        author: a.author,
+                        createdAt: a.created_at,
+                        imagePath: a.image_url || 'https://via.placeholder.com/800x400',
+                        pdfPath: a.pdf_url,
+                        description: a.description,
+                        content: a.content,
+                        views: a.views_count
+                    }));
+                } else {
+                    const res = await fetch('/api/articles');
+                    if (!res.ok) return;
+                    allArticles = await res.json();
+                }
                 displayArticles(allArticles);
             } catch (err) {
                 console.error('Erro ao carregar artigos:', err);
