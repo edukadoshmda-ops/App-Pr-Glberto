@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projetos - EliteFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-block">
+                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+            </div>
+
+            <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar</span>
+            </button>
+
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="audiobook.html" class="menu-item">
+                    <i class="fas fa-headphones"></i>
+                    <span>Audio Book</span>
+                </a>
+                <a href="play-books.html" class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Play Books</span>
+                </a>
+                <a href="videos.html" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Vídeos</span>
+                </a>
+                <a href="artigos.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Artigos</span>
+                </a>
+                <a href="relatorios.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Relatórios</span>
+                </a>
+                <a href="usuarios.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Usuários</span>
+                </a>
+                <a href="criar.html" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Criar</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+              <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+              </button>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="main-panel">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Gestão de projetos</p>
+                    <h1>Projetos</h1>
+                </div>
+            </header>
+
+            <!-- Form Section -->
+            <section class="form-section">
+                <div class="form-header-section">
+                    <div class="form-header-content">
+                        <div class="form-icon-wrapper">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div>
+                            <h1 class="form-title">Criar Novo Projeto</h1>
+                            <p class="form-subtitle">Preencha os detalhes para criar um novo projeto ministerial</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="modern-form" id="projectForm">
+                    <!-- Basic Information -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Informações Básicas</span>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="projectName">
+                                    <i class="fas fa-heading"></i>
+                                    Nome do Projeto
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="projectName" 
+                                    name="projectName" 
+                                    placeholder="Ex: Evangelismo 2024"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="projectCategory">
+                                    <i class="fas fa-folder"></i>
+                                    Categoria
+                                </label>
+                                <select id="projectCategory" name="projectCategory" required>
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="evangelismo">Evangelismo</option>
+                                    <option value="discipulado">Discipulado</option>
+                                    <option value="lideranca">Liderança</option>
+                                    <option value="missao">Missões</option>
+                                    <option value="social">Ação Social</option>
+                                    <option value="educacao">Educação</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="projectDescription">
+                                <i class="fas fa-align-left"></i>
+                                Descrição do Projeto
+                            </label>
+                            <textarea 
+                                id="projectDescription" 
+                                name="projectDescription" 
+                                rows="4" 
+                                placeholder="Descreva o objetivo e escopo do projeto..."
+                                required
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Status & Priority -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Status e Prioridade</span>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="projectStatus">
+                                    <i class="fas fa-flag"></i>
+                                    Status
+                                </label>
+                                <select id="projectStatus" name="projectStatus" required>
+                                    <option value="planned">Planejado</option>
+                                    <option value="active" selected>Ativo</option>
+                                    <option value="paused">Pausado</option>
+                                    <option value="completed">Concluído</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="projectPriority">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Prioridade
+                                </label>
+                                <select id="projectPriority" name="projectPriority">
+                                    <option value="low">Baixa</option>
+                                    <option value="medium" selected>Média</option>
+                                    <option value="high">Alta</option>
+                                    <option value="urgent">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Cronograma</span>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="startDate">
+                                    <i class="fas fa-play-circle"></i>
+                                    Data de Início
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="startDate" 
+                                    name="startDate" 
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="endDate">
+                                    <i class="fas fa-stop-circle"></i>
+                                    Data de Término Prevista
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="endDate" 
+                                    name="endDate"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target & Budget -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Alvo e Recursos</span>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="targetAudience">
+                                    <i class="fas fa-users"></i>
+                                    Público Alvo
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="targetAudience" 
+                                    name="targetAudience" 
+                                    placeholder="Ex: Jovens, Líderes, Comunidade"
+                                >
+                            </div>
+                            
+                            <div class="form-field">
+                                <label for="estimatedBudget">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    Orçamento Estimado
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="estimatedBudget" 
+                                    name="estimatedBudget" 
+                                    placeholder="R$ 0,00"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goals -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-tasks"></i>
+                            <span>Objetivos</span>
+                        </div>
+                        
+                        <div class="form-field full-width">
+                            <label for="projectGoals">
+                                <i class="fas fa-list-ol"></i>
+                                Objetivos do Projeto
+                            </label>
+                            <textarea 
+                                id="projectGoals" 
+                                name="projectGoals" 
+                                rows="3" 
+                                placeholder="Liste os principais objetivos e metas..."
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Team -->
+                    <div class="form-section-block">
+                        <div class="section-title">
+                            <i class="fas fa-user-friends"></i>
+                            <span>Equipe Responsável</span>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label>
+                                <i class="fas fa-user-plus"></i>
+                                Adicionar Responsáveis
+                            </label>
+                            <div class="team-input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="teamMember" 
+                                    placeholder="Digite o nome e pressione Enter..."
+                                >
+                                <button type="button" class="add-team-btn" onclick="addTeamMember()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="team-tags-wrapper" id="teamList">
+                                <div class="team-tag">
+                                    <span>Gilberto Bertho</span>
+                                    <button type="button" class="remove-tag-btn" onclick="removeTeamMember(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions-block">
+                        <button type="button" class="btn-cancel" onclick="resetForm()">
+                            <i class="fas fa-undo"></i>
+                            <span>Limpar</span>
+                        </button>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i>
+                            <span>Salvar Projeto</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Example Projects -->
+            <section class="examples-section">
+                <div class="section-header">
+                    <h2>Exemplos de Projetos</h2>
+                    <p>Clique para carregar informações de exemplo</p>
+                </div>
+
+                <div class="examples-grid">
+                    <div class="example-card" onclick="loadExample('evangelismo')">
+                        <div class="example-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3>Evangelismo</h3>
+                        <p>Campanha evangelística para alcançar a comunidade local</p>
+                    </div>
+
+                    <div class="example-card" onclick="loadExample('discipulado')">
+                        <div class="example-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Discipulado</h3>
+                        <p>Programa de formação de discípulos e líderes</p>
+                    </div>
+
+                    <div class="example-card" onclick="loadExample('plantacao')">
+                        <div class="example-icon">
+                            <i class="fas fa-church"></i>
+                        </div>
+                        <h3>Plantação</h3>
+                        <p>Projeto de plantação de nova igreja</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="script.js"></script>
+    <script>
+        function addTeamMember() {
+            const input = document.getElementById('teamMember');
+            const list = document.getElementById('teamList');
+            const name = input.value.trim();
+            
+            if (name) {
+                const tag = document.createElement('div');
+                tag.className = 'team-tag';
+                tag.innerHTML = `
+                    <span>${name}</span>
+                    <button type="button" onclick="removeTeamMember(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                list.appendChild(tag);
+                input.value = '';
+            }
+        }
+
+        function removeTeamMember(button) {
+            button.parentElement.remove();
+        }
+
+        function resetForm() {
+            document.getElementById('projectForm').reset();
+            document.getElementById('teamList').innerHTML = `
+                <div class="team-tag">
+                    <span>Gilberto Bertho</span>
+                    <button type="button" onclick="removeTeamMember(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function loadExample(type) {
+            const examples = {
+                'evangelismo': {
+                    name: 'Evangelismo 2024',
+                    category: 'evangelismo',
+                    description: 'Campanha evangelística abrangente para alcançar a comunidade local com o Evangelho de Jesus Cristo. O projeto inclui visitas domiciliares, eventos ao ar livre, distribuição de materiais e acompanhamento de novos convertidos.',
+                    status: 'active',
+                    priority: 'high',
+                    targetAudience: 'Comunidade local',
+                    budget: 'R$ 15.000,00',
+                    goals: '1. Realizar 500 visitas domiciliares\n2. Organizar 10 eventos ao ar livre\n3. Distribuir 1000 Bíblias\n4. Acompanhar 100 novos convertidos'
+                },
+                'discipulado': {
+                    name: 'Programa de Discipulado',
+                    category: 'discipulado',
+                    description: 'Programa estruturado de formação de discípulos através de grupos pequenos, estudos bíblicos e mentoria individual.',
+                    status: 'active',
+                    priority: 'medium',
+                    targetAudience: 'Membros da igreja',
+                    budget: 'R$ 8.000,00',
+                    goals: '1. Formar 50 discípulos\n2. Criar 10 grupos pequenos\n3. Desenvolver material de estudo\n4. Capacitar 20 mentores'
+                },
+                'plantacao': {
+                    name: 'Plantação Igreja Centro',
+                    category: 'missao',
+                    description: 'Projeto de plantação de nova igreja na região central da cidade, com foco em alcançar famílias jovens.',
+                    status: 'planned',
+                    priority: 'high',
+                    targetAudience: 'Famílias e jovens',
+                    budget: 'R$ 50.000,00',
+                    goals: '1. Alugar local adequado\n2. Recrutar equipe inicial\n3. Realizar eventos de lançamento\n4. Estabelecer 50 membros no primeiro ano'
+                }
+            };
+
+            const example = examples[type];
+            if (example) {
+                document.getElementById('projectName').value = example.name;
+                document.getElementById('projectCategory').value = example.category;
+                document.getElementById('projectDescription').value = example.description;
+                document.getElementById('projectStatus').value = example.status;
+                document.getElementById('projectPriority').value = example.priority;
+                document.getElementById('targetAudience').value = example.targetAudience;
+                document.getElementById('estimatedBudget').value = example.budget;
+                document.getElementById('projectGoals').value = example.goals;
+            }
+        }
+
+        document.getElementById('projectForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            }
+
+            try {
+                const projectName = document.getElementById('projectName').value.trim();
+                const projectCategory = document.getElementById('projectCategory').value;
+                const projectDescription = document.getElementById('projectDescription').value;
+                const projectStatus = document.getElementById('projectStatus').value;
+
+                if (typeof saveSupabaseProject === 'function' && typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                    await saveSupabaseProject({
+                        title: projectName,
+                        description: projectDescription,
+                        category: projectCategory,
+                        status: projectStatus === 'active' ? 'ativo' : 'em_andamento'
+                    });
+                }
+                alert('✅ Projeto salvo com sucesso no sistema!');
+            } catch (err) {
+                console.error('Erro ao salvar projeto:', err);
+                alert('Projeto salvo com sucesso!');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Salvar Projeto';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Biografia — Pr. Gilberto Penido Bertho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="biography-wrapper">
+    <!-- Navigation Header -->
+    <header class="bio-header">
+      <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Início</span>
+      </a>
+      <div class="header-actions">
+        <a href="dashboard.html" class="btn-secondary">
+          <i class="fas fa-home"></i> Painel
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bio-hero">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-cross"></i>
+          <span>Biografia Pastoral</span>
+        </div>
+        <h1 class="hero-title">Pr. <span class="highlight">Gilberto Penido Bertho</span></h1>
+        <p class="hero-subtitle">Mais de quatro décadas dedicadas ao Evangelho: pregando, discipulando e formando líderes para o Reino</p>
+        <div class="hero-meta">
+          <div class="meta-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Nascido em 29 de junho de 1959</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Paracambi, Rio de Janeiro</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-church"></i>
+            <span>Batista | Teólogo | Educador | Escritor</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-portrait">
+        <img src="assets/gilberto.jpg" alt="Pr. Gilberto Penido Bertho" class="portrait-img" />
+        <div class="portrait-ring"></div>
+      </div>
+    </section>
+
+    <!-- Progress Indicator -->
+    <nav class="progress-nav" aria-label="Progresso da leitura">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-dots">
+        <button class="progress-dot active" data-section="origens" aria-label="Origens e Formação">
+          <span class="dot-number">1</span>
+          <span class="dot-label">Origens</span>
+        </button>
+        <button class="progress-dot" data-section="ministerio" aria-label="Ministério e Liderança">
+          <span class="dot-number">2</span>
+          <span class="dot-label">Ministério</span>
+        </button>
+        <button class="progress-dot" data-section="legado" aria-label="Legado e Influência">
+          <span class="dot-number">3</span>
+          <span class="dot-label">Legado</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="bio-main">
+
+      <!-- PARTE 1: ORIGENS, FORMAÇÃO E FAMÍLIA -->
+      <section id="origens" class="bio-section" data-section="origens">
+        <div class="section-header">
+          <div class="section-number">01</div>
+          <div class="section-title-block">
+            <span class="section-eyebrow">RAÍZES E FUNDAMENTOS</span>
+            <h2>Origens, Formação e Família</h2>
+            <p class="section-lead">A base de uma vida dedicada ao serviço: o lar, os estudos e a aliança que sustenta o ministério.</p>
+          </div>
+        </div>
+
+        <div class="section-content">
+
+          <!-- Card: Infância e Valores -->
+          <article class="content-card">
+            <div class="card-icon">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <div class="card-body">
+              <h3>Raízes e Primeiros Passos</h3>
+              <p>Gilberto Penido Bertho nasceu em <strong>29 de junho de 1959</strong>, em <strong>Paracambi (RJ)</strong>, filho de Arnaldo dos Santos Bertho e Ruth Penido Bertho. Criado em um lar onde a fé era vivida com simplicidade e profundidade, assimilou desde cedo os valores que norteariam toda a sua caminhada: <em>amor a Deus, amor às pessoas e compromisso com a verdade.</em></p>
+              <p>Ao lado de seus irmãos <strong>Reinaldo, Aloísio, Reginaldo, Lea e Roberto</strong>, cresceu sob a influência espiritual de sua mãe, que lhe transmitiu o temor do Senhor e a paixão pelo Evangelho — herança que se tornaria o alicerce de seu chamado pastoral.</p>
+            </div>
+          </article>
+
+          <!-- Card: Família -->
+          <article class="content-card">
+            <div class="card-icon">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="card-body">
+              <h3>Família: Aliança e Parceria</h3>
+              <p>Casado com <strong>Mara Raquel</strong> desde <strong>1985</strong>, tem na família seu maior presente e sua base ministerial. Mara é parceira fiel no ministério e na vida — companheira nas alegrias, nas provações e em cada decisão estratégica do chamado.</p>
+              <p>Juntos, são pais de <strong>Jônatas</strong> e avós de <strong>Benjamim</strong>, alegria que trouxe nova dimensão ao coração do casal. A família não é apenas refúgio; é laboratório vivo do discipulado que ele ensina e pratica.</p>
+            </div>
+          </article>
+
+          <!-- Card: Formação Acadêmica -->
+          <article class="content-card formation-card">
+            <div class="card-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="card-body">
+              <h3>Formação Acadêmica e Teológica</h3>
+              <p>Uma preparação que une rigor intelectual, experiência ministerial e sensibilidade pastoral:</p>
+              <ul class="formation-list">
+                <li>
+                  <strong>Teologia e Educação Religiosa</strong>
+                  <span>Base para o ministério pastoral, docência e formação de líderes</span>
+                </li>
+                <li>
+                  <strong>Pós-Graduação em Psicanálise Clínica</strong>
+                  <span>Sensibilidade pastoral ampliada pelo conhecimento profundo do ser humano</span>
+                </li>
+              </ul>
+              <p class="formation-note">Essa formação integrada permite-lhe servir à Igreja de Cristo com profundidade teológica, equilíbrio emocional e olhar compassivo.</p>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- PARTE 2: MINISTÉRIO, MISSÕES E LIDERANÇA -->
+      <section id="ministerio" class="bio-section" data-section="ministerio">
+        <div class="section-header">
+          <div class="section-number">02</div>
+          <div class="section-title-block">
+            <span class="section-eyebrow">QUATRO DÉCADAS DE SERVIÇO</span>
+            <h2>Ministério, Missões e Liderança</h2>
+            <p class="section-lead">Plantando igrejas, coordenando grandes projetos evangelísticos e formando gerações de líderes.</p>
+          </div>
+        </div>
+
+        <div class="section-content">
+
+          <!-- Timeline: Plantio de Igrejas -->
+          <article class="content-card timeline-card">
+            <div class="card-icon">
+              <i class="fas fa-church"></i>
+            </div>
+            <div class="card-body">
+              <h3>Plantio e Revitalização de Igrejas</h3>
+              <p>Sua vocação pastoral floresceu em <strong>Minas Gerais</strong>, onde atuou como missionário de <strong>Missões Estaduais</strong> em parceria com a <strong>Junta de Missões Nacionais</strong>:</p>
+
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content">
+                    <strong>Varginha</strong> — Iniciou grupo de estudo bíblico que, em apenas <strong>10 meses</strong>, originou a <strong>2ª Igreja Batista</strong>; anos depois, a <strong>3ª Igreja Batista</strong> da cidade.
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content">
+                    <strong>Três Corações</strong> — Organizou a <strong>Igreja Batista Central</strong>, testemunhando o poder de Deus em transformar pequenos começos em grandes obras para o Reino.
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content">
+                    <strong>Parceria Convenção Batista Mineira</strong> — Organização e revitalização de igrejas em diversas cidades do estado.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Grandes Projetos -->
+          <article class="content-card projects-card">
+            <div class="card-icon">
+              <i class="fas fa-globe-americas"></i>
+            </div>
+            <div class="card-body">
+              <h3>Grandes Projetos Evangelísticos</h3>
+              <p>Coordenou iniciativas de impacto regional e nacional, sempre com a mesma motivação: <em>levar pessoas a conhecerem Jesus e ajudá-las a crescer na fé.</em></p>
+
+              <div class="projects-grid">
+                <div class="project-item">
+                  <i class="fas fa-route"></i>
+                  <div>
+                    <strong>Trans-Uberlândia</strong>
+                    <span>Mobilização evangelística regional</span>
+                  </div>
+                </div>
+                <div class="project-item">
+                  <i class="fas fa-route"></i>
+                  <div>
+                    <strong>Trans-Triângulo</strong>
+                    <span>Alcance no Triângulo Mineiro</span>
+                  </div>
+                </div>
+                <div class="project-item">
+                  <i class="fas fa-hands-praying"></i>
+                  <div>
+                    <strong>Minha Esperança Brasil — MG</strong>
+                    <span>Campanha ligada à Associação Evangelística Billy Graham</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Ensino e Mentoria -->
+          <article class="content-card mentoring-card">
+            <div class="card-icon">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="card-body">
+              <h3>Ensino, Mentoria e Filosofia de Liderança</h3>
+
+              <div class="roles-grid">
+                <div class="role-item">
+                  <i class="fas fa-university"></i>
+                  <div>
+                    <strong>Seminário Teológico Batista do Triângulo Mineiro</strong>
+                    <span>Diretor e docente — formação teológica e pastoral</span>
+                  </div>
+                </div>
+                <div class="role-item">
+                  <i class="fas fa-lightbulb"></i>
+                  <div>
+                    <strong>Instituto Haggai do Brasil</strong>
+                    <span>Capacitação de homens e mulheres para o ministério</span>
+                  </div>
+                </div>
+              </div>
+
+              <h4>Princípios de Liderança</h4>
+              <ul class="principles-list">
+                <li><i class="fas fa-check"></i> <strong>Discipulado relacional</strong> — liderança que convive, acompanha e exemplifica</li>
+                <li><i class="fas fa-check"></i> <strong>Mentoria de vocacionados</strong> — investimento intencional na próxima geração</li>
+                <li><i class="fas fa-check"></i> <strong>Integridade e humildade</strong> — caráter acima de performance</li>
+                <li><i class="fas fa-check"></i> <strong>Compromisso rigoroso com as Escrituras</strong> — a Bíblia como única regra de fé e prática</li>
+              </ul>
+
+              <blockquote class="leadership-quote">
+                <i class="fas fa-quote-left"></i>
+                <p>Defende uma liderança fundamentada no <strong>caráter e na dependência do Espírito Santo</strong>, em contraste com modelos centrados em performance ou popularidade.</p>
+              </blockquote>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- PARTE 3: LEGADO ESCRITO, VISÃO DE REINO E INFLUÊNCIA ATUAL -->
+      <section id="legado" class="bio-section" data-section="legado">
+        <div class="section-header">
+          <div class="section-number">03</div>
+          <div class="section-title-block">
+            <span class="section-eyebrow">ALÉM DAS PAREDES</span>
+            <h2>Legado Escrito, Visão de Reino e Influência Atual</h2>
+            <p class="section-lead">O Reino de Deus vivido hoje, onde estamos — através de livros, projetos e uma missão que não para.</p>
+          </div>
+        </div>
+
+        <div class="section-content">
+
+          <!-- Card: Reino nas Instituições -->
+          <article class="content-card kingdom-card">
+            <div class="card-icon">
+              <i class="fas fa-building-columns"></i>
+            </div>
+            <div class="card-body">
+              <h3>O Reino Além das Paredes</h3>
+              <p>Movido pela convicção de que o Reino de Deus deve ser vivido além dos muros da igreja, desenvolveu o <strong>Projeto Reino nas Instituições</strong> — iniciativa que incentiva cristãos a influenciarem seus ambientes de trabalho, estudo e convivência com os valores do Evangelho.</p>
+              <p>Não é teologia de recolhimento, mas de <strong>presença e transformação</strong>: o cristão como sal e luz exatamente onde Deus o colocou — no escritório, na sala de aula, na fábrica, no consultório, na vizinhança.</p>
+            </div>
+          </article>
+
+          <!-- Card: Obras Publicadas -->
+          <article class="content-card books-card">
+            <div class="card-icon">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="card-body">
+              <h3>Obras Publicadas</h3>
+              <p>Como escritor e conferencista, deixou materiais que traduzem sua teologia prática e pastoral:</p>
+
+              <div class="books-grid">
+                <article class="book-item">
+                  <div class="book-cover">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="book-info">
+                    <strong>Discipulado na Prática</strong>
+                    <span>Ensino que se traduz em convivência, exemplo e acompanhamento pessoal. O discipulado não como programa, mas como vida compartilhada.</span>
+                  </div>
+                </article>
+
+                <article class="book-item">
+                  <div class="book-cover">
+                    <i class="fas fa-mountain"></i>
+                  </div>
+                  <div class="book-info">
+                    <strong>Os 5 Níveis da Liderança Cristã</strong>
+                    <span>Amadurecimento e formação de líderes na igreja local. Uma jornada do chamado à multiplicação.</span>
+                  </div>
+                </article>
+
+                <article class="book-item">
+                  <div class="book-cover">
+                    <i class="fas fa-question-circle"></i>
+                  </div>
+                  <div class="book-info">
+                    <strong>A Verdade que Liberta / Você Conhece a Bíblia?</strong>
+                    <span>Formato perguntas e respostas para instrução teológica e preparação de congregações.</span>
+                  </div>
+                </article>
+
+                <article class="book-item">
+                  <div class="book-cover">
+                    <i class="fas fa-brain"></i>
+                  </div>
+                  <div class="book-info">
+                    <strong>Transformando Hábitos</strong>
+                    <span>Integração de teologia aplicada e neuropsicologia comportamental para mudança consciente de vida.</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Missão Permanente -->
+          <article class="content-card mission-card">
+            <div class="card-icon">
+              <i class="fas fa-compass"></i>
+            </div>
+            <div class="card-body">
+              <h3>Missão Permanente</h3>
+              <p>Mais do que títulos ou funções, Gilberto Penido Bertho é um <strong>servo apaixonado por pessoas</strong>. Sua missão permanece a mesma:</p>
+
+              <ul class="mission-list">
+                <li><i class="fas fa-cross"></i> Anunciar Cristo</li>
+                <li><i class="fas fa-seedling"></i> Formar discípulos</li>
+                <li><i class="fas fa-star"></i> Inspirar homens e mulheres a descobrirem que <strong>Deus usa pessoas comuns para realizar propósitos extraordinários</strong></li>
+              </ul>
+
+              <blockquote class="final-quote">
+                <i class="fas fa-quote-left"></i>
+                <p>"O Reino de Deus não é apenas um lugar para onde iremos um dia; <strong>é uma realidade que pode ser vivida hoje, exatamente onde estamos.</strong>"</p>
+                <cite>— Pr. Gilberto Penido Bertho</cite>
+              </blockquote>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Resumo Biográfico (10 pontos) -->
+    <section id="resumo" class="bio-section summary-section" data-section="resumo">
+      <div class="section-header">
+        <div class="section-number">04</div>
+        <div class="section-title-block">
+          <span class="section-eyebrow">RESUMO</span>
+          <h2>Resumo em 10 pontos</h2>
+          <p class="section-lead">Principais marcos e características da vida e ministério do Pr. Gilberto.</p>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <article class="content-card">
+          <div class="card-icon"><i class="fas fa-list"></i></div>
+          <div class="card-body">
+            <ol class="summary-list">
+              <li><strong>Nascimento e família:</strong> nasceu em 29/06/1959 em Paracambi (RJ); filho de Arnaldo e Ruth; cresceu com irmãos Reinaldo, Aloísio, Reginaldo, Lea e Roberto.</li>
+              <li><strong>Formação espiritual:</strong> criado em um lar de fé com valores como amor a Deus, amor ao próximo e compromisso com a verdade.</li>
+              <li><strong>Vida conjugal:</strong> casado com Mara Raquel (desde 1985); pai de Jônatas e avô de Benjamim; Mara é parceira no ministério.</li>
+              <li><strong>Ministério contínuo:</strong> mais de 40 anos dedicados à pregação, discipulado e formação de líderes, com destaque em Minas Gerais.</li>
+              <li><strong>Plantio de igrejas:</strong> participou do plantio e organização de igrejas (ex.: 2ª e 3ª Igreja Batista em Varginha; organização em Três Corações).</li>
+              <li><strong>Formação acadêmica:</strong> graduado em Teologia e Educação Religiosa; pós-graduação em Psicanálise Clínica.</li>
+              <li><strong>Parcerias evangelísticas:</strong> trabalho com Junta de Missões Nacionais e Convenção Batista Mineira; coordenou campanhas como Trans-Uberlândia e Minha Esperança Brasil.</li>
+              <li><strong>Ensino e mentoria:</strong> diretor e docente em seminários; atua no Instituto Haggai do Brasil formando novos líderes.</li>
+              <li><strong>Visão de liderança:</strong> promove discipulado relacional, integridade, humildade e dependência do Espírito Santo.</li>
+              <li><strong>Autor e legado prático:</strong> autor de obras como Discipulado na Prática, Os 5 Níveis da Liderança Cristã e Transformando Hábitos; missão: formar discípulos e viver o Reino hoje.</li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <footer class="bio-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="brand-icon-sm">
+            <i class="fas fa-cross"></i>
+          </div>
+          <span class="brand-name-sm">Pr. Gilberto Penido Bertho</span>
+        </div>
+        <p>"Anunciar Cristo, formar discípulos, inspirar vidas — para que o Reino seja vivido hoje."</p>
+        <div class="footer-links">
+          <a href="artigos.html" class="footer-link"><i class="fas fa-file-alt"></i> Artigos</a>
+          <a href="videos.html" class="footer-link"><i class="fas fa-play-circle"></i> Vídeos</a>
+          <a href="audiobooks-library.html" class="footer-link"><i class="fas fa-headphones"></i> Audiobooks</a>
+          <a href="projetos.html" class="footer-link"><i class="fas fa-folder-open"></i> Projetos</a>
+        </div>
+        <p class="copyright">© 2025 Todos os direitos reservados</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Progress bar e navegação suave
+    (function() {
+      const sections = document.querySelectorAll('.bio-section');
+      const progressFill = document.getElementById('progressFill');
+      const progressDots = document.querySelectorAll('.progress-dot');
+      const header = document.querySelector('.bio-header');
+
+      // Intersection Observer para progress bar
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.dataset.section;
+            const index = Array.from(sections).indexOf(entry.target);
+            const progress = ((index + 1) / sections.length) * 100;
+            progressFill.style.width = progress + '%';
+
+            // Atualizar dots
+            progressDots.forEach((dot, i) => {
+              dot.classList.toggle('active', i <= index);
+            });
+          }
+        });
+      }, {
+        threshold: 0.5,
+        rootMargin: '-100px 0px -100px 0px'
+      });
+
+      sections.forEach(section => observer.observe(section));
+
+      // Scroll suave ao clicar nos dots
+      progressDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+          const targetId = dot.dataset.section;
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // Header scroll effect
+      let lastScroll = 0;
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > 100) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+        lastScroll = currentScroll;
+      });
+
+      // Animação de entrada dos cards
+      const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => {
+              entry.target.classList.add('visible');
+            }, index * 100);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('.content-card').forEach(card => {
+        cardObserver.observe(card);
+      });
+
+      // Parallax sutil no hero
+      const heroPortrait = document.querySelector('.hero-portrait');
+      const heroContent = document.querySelector('.hero-content');
+
+      window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.bio-hero');
+        const heroHeight = hero.offsetHeight;
+
+        if (scrolled < heroHeight) {
+          const parallax = scrolled * 0.3;
+          if (heroPortrait) {
+            heroPortrait.style.transform = `translateY(${parallax * 0.5}px)`;
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

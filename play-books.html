@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Play Books</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+        </div>
+
+        <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <nav class="menu">
+          <a class="menu-item" href="dashboard.html">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a class="menu-item" href="audiobook.html">
+            <i class="fas fa-headphones"></i>
+            <span>Audio Book</span>
+          </a>
+          <a class="menu-item active" href="play-books.html">
+            <i class="fas fa-book-open"></i>
+            <span>Play Books</span>
+          </a>
+          <a class="menu-item" href="videos.html">
+            <i class="fas fa-video"></i>
+            <span>Vídeos</span>
+          </a>
+          <a class="menu-item" href="artigos.html">
+            <i class="fas fa-file-alt"></i>
+            <span>Artigos</span>
+          </a>
+          <a class="menu-item" href="relatorios.html">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+          </a>
+          <a href="usuarios.html" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+          <a href="criar.html" class="menu-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Criar</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-panel page-main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Biblioteca premium</p>
+            <h1>Play Books</h1>
+          </div>
+        </header>
+
+        <section class="feature-player">
+          <div class="feature-cover" style="background-image: url('assets/playbooks/capas/lideranca-crista.jpg');">
+            <div class="play-button">📄</div>
+          </div>
+          <div class="feature-info">
+            <span class="mini-label dark">PDF em destaque</span>
+            <h2>Os 5 Níveis da Liderança Cristã</h2>
+            <p>Guia completo para desenvolvimento de liderança cristã e crescimento espiritual. Princípios transformadores para líderes.</p>
+            <div class="meta-row">
+              <span>PDF</span>
+              <span>Liderança Cristã</span>
+              <span>4.9/5</span>
+            </div>
+            <button type="button" class="primary-btn" style="width:100%; text-decoration:none; text-align:center;" onclick="openBookViewer('lideranca')">Abrir PDF</button>
+          </div>
+        </section>
+
+        <section class="cards-grid">
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/transformando-habitos.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>Transformando Hábitos</h3>
+                <span class="tag tag-gold">PDF</span>
+              </div>
+              <p>Transforme sua vida através de hábitos estratégicos e disciplina contínua.</p>
+              <button class="secondary-btn" onclick="openBookViewer('habitos'); return false;">Ler PDF</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/inconformado.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>Jonas 3 Inconformado</h3>
+                <span class="tag tag-green">PDF</span>
+              </div>
+              <p>Princípios de liderança efetiva e gestão de pessoas no mundo moderno.</p>
+              <button class="secondary-btn" onclick="openBookViewer('jonas'); return false;">Ler PDF</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/lideranca-crista.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>Os 5 Níveis da Liderança</h3>
+                <span class="tag tag-blue">PDF</span>
+              </div>
+              <p>Guia completo para desenvolvimento profissional e sucesso empresarial.</p>
+              <button class="secondary-btn" onclick="openBookViewer('lideranca'); return false;">Ler PDF</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/eu-sou.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>Eu Sou</h3>
+                <span class="tag tag-dark">PDF</span>
+              </div>
+              <p>Série completa sobre identidade, propósito e transformação pessoal.</p>
+              <button class="secondary-btn" onclick="openBookViewer('eusou'); return false;">Ler PDF</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/discipulado-pratico.png');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>O Discipulado na Prática</h3>
+                <span class="tag tag-gold">PDF</span>
+              </div>
+              <p>Guia prático para discipulado cristão e formação de discípulos.</p>
+              <button class="secondary-btn" onclick="openBookViewer('discipulado'); return false;">Ler PDF</button>
+            </div>
+          </article>
+        </section>
+
+        <!-- Book Viewer Modal -->
+        <div class="book-viewer-modal" id="bookViewerModal" aria-hidden="true">
+          <div class="book-viewer-content">
+            <button class="close-book-btn" type="button" onclick="closeBookViewer()" aria-label="Fechar leitor">
+              <i class="fas fa-times"></i>
+            </button>
+            <div class="book-viewer">
+              <div class="book-container" id="bookContainer">
+                <div class="book-page book-page-left" id="leftPage">
+                  <canvas id="leftCanvas"></canvas>
+                </div>
+                <div class="book-page book-page-right" id="rightPage">
+                  <canvas id="rightCanvas"></canvas>
+                </div>
+              </div>
+              <div class="book-navigation">
+                <button class="book-nav-btn" id="prevBtn" type="button" onclick="prevPage()">
+                  <i class="fas fa-chevron-left"></i>
+                  Anterior
+                </button>
+                <div class="book-page-indicator">
+                  <span id="currentPage">1</span>
+                  <span>/</span>
+                  <span id="totalPages">1</span>
+                </div>
+                <button class="book-nav-btn" id="nextBtn" type="button" onclick="nextPage()">
+                  Próxima
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="book-zoom-controls" id="zoomControls">
+                <button type="button" id="zoomOutBtn" aria-label="Diminuir zoom">−</button>
+                <span id="zoomValue">100%</span>
+                <button type="button" id="zoomInBtn" aria-label="Aumentar zoom">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="script.js"></script>
+    <script>
+      async function loadSupabasePlaybooks() {
+        if (typeof getSupabaseClient !== 'function') return;
+        const supabase = getSupabaseClient();
+        if (!supabase) return;
+
+        try {
+          const { data: playbooks, error } = await supabase.from('playbooks').select('*').order('created_at', { ascending: false });
+          if (error) {
+            console.warn('Erro ao buscar playbooks do Supabase:', error);
+            return;
+          }
+
+          if (playbooks && playbooks.length > 0 && typeof books !== 'undefined') {
+            playbooks.forEach(pb => {
+              const bookKey = pb.id;
+              if (!books[bookKey]) {
+                books[bookKey] = {
+                  title: pb.title,
+                  files: [pb.pdf_url]
+                };
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Erro ao conectar playbooks ao Supabase:', err);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadSupabasePlaybooks);
+      } else {
+        loadSupabasePlaybooks();
+      }
+    </script>
+  </body>
+</html>

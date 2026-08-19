@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conteúdo - EliteFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .create-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .create-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .create-header h1 {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .create-header p {
+            color: #b8c5d6;
+            font-size: 16px;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .type-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .type-option:hover {
+            border-color: rgba(199, 164, 81, 0.5);
+            background: rgba(199, 164, 81, 0.05);
+        }
+
+        .type-option.selected {
+            border-color: #cda451;
+            background: rgba(199, 164, 81, 0.1);
+        }
+
+        .type-option i {
+            font-size: 32px;
+            color: #cda451;
+            margin-bottom: 10px;
+        }
+
+        .type-option h3 {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #b8c5d6;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cda451' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group select option {
+            background: #0a1428;
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #cda451;
+            background: rgba(199, 164, 81, 0.05);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .upload-area:hover {
+            border-color: #cda451;
+            background: rgba(199, 164, 81, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: #cda451;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #b8c5d6;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .upload-area small {
+            color: #858f9a;
+            font-size: 12px;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .preview-area {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .preview-area.active {
+            display: block;
+        }
+
+        .preview-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .preview-item i {
+            font-size: 24px;
+            color: #f093fb;
+        }
+
+        .preview-item .file-info {
+            flex: 1;
+        }
+
+        .preview-item .file-info span {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .preview-item .file-info small {
+            color: #b8c5d6;
+            font-size: 12px;
+        }
+
+        .preview-item .remove-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-item .remove-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #cda451, #a97a29);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(199, 164, 81, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .type-selector {
+                flex-direction: column;
+            }
+
+            .create-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+            </div>
+
+            <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar</span>
+            </button>
+
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="audiobook.html" class="menu-item">
+                    <i class="fas fa-headphones"></i>
+                    <span>Audio Book</span>
+                </a>
+                <a href="play-books.html" class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Play Books</span>
+                </a>
+                <a href="videos.html" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Vídeos</span>
+                </a>
+                <a href="artigos.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Artigos</span>
+                </a>
+                <a href="relatorios.html" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Relatórios</span>
+                </a>
+                <a href="usuarios.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Usuários</span>
+                </a>
+                <a href="criar.html" class="menu-item active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Criar</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+              <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+              </button>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Criar conteúdo</p>
+                    <h1>Criar</h1>
+                </div>
+            </header>
+
+                <div class="create-container">
+                    <div class="create-header">
+                        <h1>Adicionar Conteúdo</h1>
+                        <p>Selecione o tipo de conteúdo e faça o upload dos arquivos</p>
+                    </div>
+
+                    <!-- Type Selector -->
+                    <div class="type-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                        <div class="type-option selected" onclick="selectType('video')" id="videoOption">
+                            <i class="fas fa-video"></i>
+                            <h3>Vídeo</h3>
+                        </div>
+                        <div class="type-option" onclick="selectType('article')" id="articleOption">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>Artigo</h3>
+                        </div>
+                        <div class="type-option" onclick="selectType('audiobook')" id="audiobookOption">
+                            <i class="fas fa-headphones"></i>
+                            <h3>Audio Book</h3>
+                        </div>
+                        <div class="type-option" onclick="selectType('playbook')" id="playbookOption">
+                            <i class="fas fa-book-open"></i>
+                            <h3>Play Book</h3>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="createForm">
+                        <input type="hidden" id="contentType" name="contentType" value="video">
+
+                        <div class="form-group">
+                            <label for="title">Título *</label>
+                            <input type="text" id="title" name="title" placeholder="Digite o título do conteúdo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Categoria *</label>
+                            <select id="category" name="category" required>
+                                <option value="">Selecione...</option>
+                                <option value="Liderança">Liderança</option>
+                                <option value="Discipulado">Discipulado</option>
+                                <option value="Teologia">Teologia</option>
+                                <option value="Vida Cristã">Vida Cristã</option>
+                                <option value="Evangelismo">Evangelismo</option>
+                                <option value="Missões">Missões</option>
+                            </select>
+                        </div>
+
+                        <!-- Video Upload (shown when video is selected) -->
+                        <div id="videoFields">
+                            <div class="form-group">
+                                <label>Arquivo de Vídeo (MP4) *</label>
+                                <div class="upload-area" onclick="document.getElementById('videoFile').click()">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Clique para selecionar o arquivo de vídeo</p>
+                                    <small>MP4, WebM, MOV — até 500MB</small>
+                                    <input type="file" id="videoFile" name="videoFile" accept="video/*" onchange="handleFileSelect(this, 'videoPreview')">
+                                </div>
+                                <div id="videoPreview" class="preview-area"></div>
+                            </div>
+                        </div>
+
+                        <!-- Article Upload (shown when article is selected) -->
+                        <div id="articleFields" class="hidden">
+                            <div class="form-group">
+                                <label>Arquivo do Artigo (PDF) *</label>
+                                <div class="upload-area" onclick="document.getElementById('articleFile').click()">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Clique para selecionar o artigo</p>
+                                    <small>PDF — até 50MB</small>
+                                    <input type="file" id="articleFile" name="articleFile" accept=".pdf" onchange="handleFileSelect(this, 'articlePreview')">
+                                </div>
+                                <div id="articlePreview" class="preview-area"></div>
+                            </div>
+                        </div>
+
+                        <!-- Audiobook Upload (shown when audiobook is selected) -->
+                        <div id="audiobookFields" class="hidden">
+                            <div class="form-group">
+                                <label>Arquivo de Áudio (MP3) *</label>
+                                <div class="upload-area" onclick="document.getElementById('audioFile').click()">
+                                    <i class="fas fa-file-audio"></i>
+                                    <p>Clique para selecionar o áudio MP3</p>
+                                    <small>MP3, WAV, M4A — até 200MB</small>
+                                    <input type="file" id="audioFile" name="audioFile" accept="audio/*" onchange="handleFileSelect(this, 'audioPreview')">
+                                </div>
+                                <div id="audioPreview" class="preview-area"></div>
+                            </div>
+                        </div>
+
+                        <!-- Playbook Upload (shown when playbook is selected) -->
+                        <div id="playbookFields" class="hidden">
+                            <div class="form-group">
+                                <label>Arquivo do Livro / Playbook (PDF) *</label>
+                                <div class="upload-area" onclick="document.getElementById('playbookFile').click()">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>Clique para selecionar o E-book PDF</p>
+                                    <small>PDF — até 100MB</small>
+                                    <input type="file" id="playbookFile" name="playbookFile" accept=".pdf" onchange="handleFileSelect(this, 'playbookPreview')">
+                                </div>
+                                <div id="playbookPreview" class="preview-area"></div>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload (common for all) -->
+                        <div class="form-group">
+                            <label>Imagem de Capa *</label>
+                            <div class="upload-area" onclick="document.getElementById('imageFile').click()">
+                                <i class="fas fa-image"></i>
+                                <p>Clique para selecionar a imagem de capa</p>
+                                <small>JPG, PNG, WebP — até 5MB</small>
+                                <input type="file" id="imageFile" name="imageFile" accept="image/*" onchange="handleFileSelect(this, 'imagePreview')">
+                            </div>
+                            <div id="imagePreview" class="preview-area"></div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-upload"></i> Publicar Conteúdo
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="supabaseClient.js"></script>
+        <script src="script.js"></script>
+        <script>
+            let selectedType = 'video';
+
+            function selectType(type) {
+                selectedType = type;
+                
+                // Update UI options
+                ['videoOption', 'articleOption', 'audiobookOption', 'playbookOption'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('selected');
+                });
+
+                ['videoFields', 'articleFields', 'audiobookFields', 'playbookFields'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                
+                if (type === 'video') {
+                    document.getElementById('videoOption').classList.add('selected');
+                    document.getElementById('videoFields').classList.remove('hidden');
+                } else if (type === 'article') {
+                    document.getElementById('articleOption').classList.add('selected');
+                    document.getElementById('articleFields').classList.remove('hidden');
+                } else if (type === 'audiobook') {
+                    document.getElementById('audiobookOption').classList.add('selected');
+                    document.getElementById('audiobookFields').classList.remove('hidden');
+                } else if (type === 'playbook') {
+                    document.getElementById('playbookOption').classList.add('selected');
+                    document.getElementById('playbookFields').classList.remove('hidden');
+                }
+
+                document.getElementById('contentType').value = type;
+            }
+
+            function handleFileSelect(input, previewId) {
+                const file = input.files[0];
+                const preview = document.getElementById(previewId);
+                
+                if (file) {
+                    preview.innerHTML = `
+                        <div class="preview-item">
+                            <i class="fas fa-file"></i>
+                            <div class="file-info">
+                                <span>${file.name}</span>
+                                <small>${formatFileSize(file.size)}</small>
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeFile('${input.id}', '${previewId}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    preview.classList.add('active');
+                } else {
+                    preview.innerHTML = '';
+                    preview.classList.remove('active');
+                }
+            }
+
+            function removeFile(inputId, previewId) {
+                document.getElementById(inputId).value = '';
+                document.getElementById(previewId).innerHTML = '';
+                document.getElementById(previewId).classList.remove('active');
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            document.getElementById('createForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const title = document.getElementById('title').value.trim();
+                const category = document.getElementById('category').value;
+                const coverFile = document.getElementById('imageFile').files[0];
+
+                if (!title || !category) {
+                    alert('Por favor, preencha o título e a categoria.');
+                    return;
+                }
+
+                if (!coverFile) {
+                    alert('Por favor, selecione uma imagem de capa.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+                try {
+                    // 1. Enviar para o Supabase se disponível
+                    if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                        if (selectedType === 'video') {
+                            const videoFile = document.getElementById('videoFile').files[0];
+                            if (!videoFile) { alert('Selecione o arquivo de vídeo MP4'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
+                            await saveSupabaseVideo({ title, category, videoFile, coverFile });
+                            alert('Vídeo publicado com sucesso no Supabase!');
+                        } else if (selectedType === 'article') {
+                            const articleFile = document.getElementById('articleFile').files[0];
+                            if (!articleFile) { alert('Selecione o arquivo do artigo PDF'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
+                            await saveSupabaseArticle({ title, category, pdfFile: articleFile, imageFile: coverFile });
+                            alert('Artigo publicado com sucesso no Supabase!');
+                        } else if (selectedType === 'audiobook') {
+                            const audioFile = document.getElementById('audioFile').files[0];
+                            if (!audioFile) { alert('Selecione o arquivo de áudio MP3'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
+                            await saveSupabaseAudiobook({ title, category, audioFile, coverFile });
+                            alert('Audio Book publicado com sucesso no Supabase!');
+                        } else if (selectedType === 'playbook') {
+                            const playbookFile = document.getElementById('playbookFile').files[0];
+                            if (!playbookFile) { alert('Selecione o E-book PDF'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
+                            await saveSupabasePlaybook({ title, category, pdfFile: playbookFile, coverFile });
+                            alert('Play Book publicado com sucesso no Supabase!');
+                        }
+
+                        document.getElementById('createForm').reset();
+                        ['videoPreview', 'articlePreview', 'audioPreview', 'playbookPreview', 'imagePreview'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) { el.innerHTML = ''; el.classList.remove('active'); }
+                        });
+                        return;
+                    }
+
+                    // 2. Fallback para API Node
+                    const formData = new FormData();
+                    formData.append('contentType', selectedType);
+                    formData.append('title', title);
+                    formData.append('category', category);
+                    formData.append('cover', coverFile);
+
+                    const fileObj = selectedType === 'video' ? document.getElementById('videoFile').files[0] :
+                                    selectedType === 'article' ? document.getElementById('articleFile').files[0] :
+                                    selectedType === 'audiobook' ? document.getElementById('audioFile').files[0] :
+                                    document.getElementById('playbookFile').files[0];
+
+                    if (fileObj) formData.append('file', fileObj);
+
+                    const response = await fetch('/api/content', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Conteúdo publicado com sucesso!');
+                        document.getElementById('createForm').reset();
+                    } else {
+                        const errorText = await response.text();
+                        alert('Erro ao publicar: ' + errorText);
+                    }
+                } catch (error) {
+                    console.error('Erro ao publicar:', error);
+                    alert('Erro ao enviar conteúdo: ' + error.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-upload"></i> Publicar Conteúdo';
+                }
+            });
+        </script>
+    </body>
+</html>
+

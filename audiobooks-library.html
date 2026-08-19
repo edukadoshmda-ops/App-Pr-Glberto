@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audiobooks - EliteFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .audiobook-player {
+        background: linear-gradient(135deg, #f7f8f5 0%, #ffffff 100%);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 32px;
+        border: 1px solid #e8ece7;
+        box-shadow: 0 18px 40px rgba(17, 27, 23, 0.06);
+      }
+      
+      .player-info {
+        margin-bottom: 24px;
+      }
+      
+      .player-info h3 {
+        color: #1a2c3e;
+        margin-bottom: 12px;
+        font-size: 20px;
+      }
+      
+      .player-info p {
+        color: #5c6f68;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      
+      audio {
+        width: 100%;
+        margin-top: 16px;
+        border-radius: 8px;
+      }
+      
+      .audiobook-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      
+      .audiobook-item {
+        background: #ffffff;
+        border: 1px solid #e8ece7;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .audiobook-item:hover {
+        box-shadow: 0 24px 48px rgba(77, 122, 99, 0.1);
+        transform: translateY(-6px);
+      }
+      
+      .audiobook-item h4 {
+        color: #1a2c3e;
+        margin-bottom: 8px;
+      }
+      
+      .audiobook-item p {
+        color: #5c6f68;
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+        </div>
+
+        <nav class="menu">
+          <a class="menu-item" href="dashboard.html">Dashboard</a>
+          <a class="menu-item active" href="audiobook.html">Audio Book</a>
+          <a class="menu-item" href="play-books.html">Play Books</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <span class="mini-label">Status</span>
+          <strong>Audiobooks ativados</strong>
+          <p>Conteúdo profissional</p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Biblioteca de áudio</p>
+            <h1>Audiobooks Profissionais</h1>
+          </div>
+        </header>
+
+        <section>
+          <h2 style="color: #1a2c3e; margin-bottom: 24px; font-size: 24px;">Audiobooks Disponíveis</h2>
+          
+          <div class="audiobook-list">
+            <div class="audiobook-item">
+              <div style="width: 100%; height: 160px; background: url('assets/playbooks/capas/eu-sou.jpg') center/cover no-repeat; border-radius: 8px; margin-bottom: 12px;"></div>
+              <h4>🎧 Audiobook: Eu Sou</h4>
+              <p>Série completa sobre identidade, propósito e transformação pessoal. Conteúdo inspirador para desenvolvimento pessoal.</p>
+              <button class="secondary-btn" onclick="playAudiobook('eusou')" style="display: inline-block;">Reproduzir</button>
+            </div>
+
+            <div class="audiobook-item">
+              <div style="width: 100%; height: 160px; background: url('assets/playbooks/capas/transformando-habitos.jpg') center/cover no-repeat; border-radius: 8px; margin-bottom: 12px;"></div>
+              <h4>🎧 Audiobook: Hábitos</h4>
+              <p>Conteúdo especializado em construção e manutenção de hábitos poderosos. Transforme sua rotina com estratégias comprovadas.</p>
+              <button class="secondary-btn" onclick="playAudiobook('habitos')" style="display: inline-block;">Reproduzir</button>
+            </div>
+
+            <div class="audiobook-item">
+              <div style="width: 100%; height: 160px; background: url('assets/playbooks/capas/inconformado.jpg') center/cover no-repeat; border-radius: 8px; margin-bottom: 12px;"></div>
+              <h4>🎧 Audiobook: Jonas</h4>
+              <p>Série de áudio com conteúdo de liderança e desenvolvimento executivo. Aprenda com experiências reais de sucesso.</p>
+              <button class="secondary-btn" onclick="playAudiobook('jonas')" style="display: inline-block;">Reproduzir</button>
+            </div>
+
+            <div class="audiobook-item">
+              <div style="width: 100%; height: 160px; background: url('assets/playbooks/capas/lideranca-crista.jpg') center/cover no-repeat; border-radius: 8px; margin-bottom: 12px;"></div>
+              <h4>🎧 Audiobook: Liderança</h4>
+              <p>Experiência sonora profunda sobre liderança, gestão e desenvolvimento profissional. Conteúdo transformador.</p>
+              <button class="secondary-btn" onclick="playAudiobook('lideranca')" style="display: inline-block;">Reproduzir</button>
+            </div>
+
+            <div class="audiobook-item">
+              <div style="width: 100%; height: 160px; background: url('assets/playbooks/capas/discipulado-pratico.png') center/cover no-repeat; border-radius: 8px; margin-bottom: 12px;"></div>
+              <h4>🎧 Audiobook: Discipulado</h4>
+              <p>Discipulado na Prática narrado com a voz natural Thalita. Manual completo de formação de líderes e multiplicação.</p>
+              <button class="secondary-btn" onclick="playAudiobook('discipulado')" style="display: inline-block;">Reproduzir</button>
+            </div>
+          </div>
+
+        <section class="playlist-section" id="playlistSection" style="display: none; margin-top: 32px;">
+          <div class="module-card" style="grid-column: span 3;">
+            <div class="module-header">
+              <div>
+                <span class="mini-label">Playlist</span>
+                <h2 id="playlistTitle">Faixas</h2>
+              </div>
+              <button class="secondary-btn" onclick="closePlaylist()" style="width: auto; padding: 8px 16px;">Fechar</button>
+            </div>
+            <div id="playlistTracks" class="playlist-tracks"></div>
+          </div>
+        </section>
+
+        <div class="audiobook-player" id="audioPlayerSection" style="display: none;">
+          <div class="player-info">
+            <h3 id="playerTitle">Reproduzindo</h3>
+            <p id="playerDescription">Selecione um audiobook para começar</p>
+          </div>
+          <audio id="mainPlayer" controls style="width: 100%; margin-top: 16px;">
+            <source src="" type="audio/mpeg">
+            Seu navegador não suporta áudio.
+          </audio>
+        </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

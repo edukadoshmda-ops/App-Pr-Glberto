@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Inline page styles intentionally left minimal — overlays handled globally in style.css */
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+        </div>
+
+        <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <nav class="menu">
+          <a class="menu-item" href="dashboard.html">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a class="menu-item active" href="audiobook.html">
+            <i class="fas fa-headphones"></i>
+            <span>Audio Book</span>
+          </a>
+          <a class="menu-item" href="play-books.html">
+            <i class="fas fa-book-open"></i>
+            <span>Play Books</span>
+          </a>
+          <a class="menu-item" href="videos.html">
+            <i class="fas fa-video"></i>
+            <span>Vídeos</span>
+          </a>
+          <a class="menu-item" href="artigos.html">
+            <i class="fas fa-file-alt"></i>
+            <span>Artigos</span>
+          </a>
+          <a href="relatorios.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+          </a>
+          <a href="usuarios.html" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+          <a href="criar.html" class="menu-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Criar</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-panel page-main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Conteúdo em áudio</p>
+            <h1>Audio Book</h1>
+          </div>
+        </header>
+
+        <section class="feature-player">
+          <div class="feature-cover audiobook-cover" style="background-image: url('assets/playbooks/capas/lideranca-crista.jpg');">
+            <div class="play-button" aria-hidden="true"><i class="fas fa-play"></i></div>
+          </div>
+          <div class="feature-info">
+            <span class="mini-label dark">Em destaque</span>
+            <h2>Audiobook: Liderança</h2>
+            <p>Uma experiência sonora profunda sobre liderança, gestão e desenvolvimento pessoal. Aprenda estratégias transformadoras em áudio de alta qualidade.</p>
+            <div class="meta-row">
+              <span>Audiobook</span>
+              <span>Liderança & Gestão</span>
+              <span>4.9/5</span>
+            </div>
+            <button class="primary-btn" type="button" onclick="playAudiobook('lideranca')" style="margin-top:16px;">Reproduzir</button>
+          </div>
+        </section>
+
+        <!-- Audio Player Section -->
+        <section class="audio-player-section">
+          <div class="elite-audio-player" id="audioPlayer">
+
+                <!-- AUDIO REAL -->
+                <audio id="mainPlayer" preload="metadata"></audio>
+
+                <!-- TOPO -->
+                <div class="player-top">
+
+                    <div class="now-playing">
+
+                        <div class="playing-indicator" id="playingIndicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <div class="track-info">
+                            <strong id="currentTrackTitle">
+                                Faixa 01
+                            </strong>
+
+                            <small id="currentTrackArtist">
+                                Liderança
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="playlist-toggle"
+                        id="playlistToggle"
+                        type="button"
+                    >
+                        <span>☷</span>
+                        <span>Faixas</span>
+                    </button>
+
+                </div>
+
+
+                <!-- PROGRESSO -->
+                <div class="progress-area">
+
+                    <span id="currentTime">0:00</span>
+
+                    <div class="progress-wrapper">
+
+                        <input
+                            type="range"
+                            id="progressBar"
+                            min="0"
+                            max="100"
+                            value="0"
+                            step="0.1"
+                            aria-label="Progresso"
+                        />
+
+                    </div>
+
+                    <span id="duration">0:00</span>
+
+                </div>
+
+
+                <!-- CONTROLES -->
+                <div class="player-controls">
+
+                    <button
+                        class="control-btn secondary-control"
+                        id="previousBtn"
+                        title="Faixa anterior"
+                    >
+                        ⏮
+                    </button>
+
+                    <button
+                        class="play-main-btn"
+                        id="playBtn"
+                        title="Reproduzir"
+                    >
+                        ▶
+                    </button>
+
+                    <button
+                        class="control-btn secondary-control"
+                        id="nextBtn"
+                        title="Próxima faixa"
+                    >
+                        ⏭
+                    </button>
+
+                    <div class="control-divider"></div>
+
+                    <!-- LOOP -->
+                    <button
+                        class="control-btn utility-btn"
+                        id="loopBtn"
+                        title="Repetir faixa"
+                    >
+                        ↻
+                    </button>
+
+                    <!-- VOLUME -->
+                    <div class="volume-control">
+
+                        <button
+                            class="control-btn utility-btn"
+                            id="muteBtn"
+                            title="Volume"
+                        >
+                            🔊
+                        </button>
+
+                        <input
+                            type="range"
+                            id="volumeBar"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value="0.8"
+                        />
+
+                    </div>
+
+                </div>
+
+
+                <!-- PLAYLIST -->
+                <div
+                    class="custom-playlist"
+                    id="customPlaylist"
+                >
+                    <div class="playlist-header">
+
+                        <div>
+                            <strong>Playlist</strong>
+                            <small id="playlistCount">
+                                0 faixas
+                            </small>
+                        </div>
+
+                        <span class="playlist-status">
+                            ÁUDIO
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="playlist-list"
+                        id="playlistList"
+                    ></div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="cards-grid">
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/eu-sou.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>🎧 Eu Sou</h3>
+                <span class="tag tag-gold">Áudio</span>
+              </div>
+              <p>Série completa sobre identidade, propósito e transformação pessoal. Conteúdo inspirador para desenvolvimento integral.</p>
+              <button class="secondary-btn" onclick="playAudiobook('eusou')">Reproduzir</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/transformando-habitos.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>🎧 Hábitos</h3>
+                <span class="tag tag-green">Áudio</span>
+              </div>
+              <p>Conteúdo especializado em construção e manutenção de hábitos poderosos. Transforme sua rotina com estratégias comprovadas.</p>
+              <button class="secondary-btn" onclick="playAudiobook('habitos')">Reproduzir</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/inconformado.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>🎧 Jonas</h3>
+                <span class="tag tag-blue">Áudio</span>
+              </div>
+              <p>Série de áudio com conteúdo de liderança e desenvolvimento executivo. Aprenda com experiências reais de sucesso.</p>
+              <button class="secondary-btn" onclick="playAudiobook('jonas')">Reproduzir</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/lideranca-crista.jpg');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>🎧 Liderança</h3>
+                <span class="tag tag-gold">Áudio</span>
+              </div>
+              <p>Os 5 Níveis da Liderança Cristã — Experiência sonora profunda sobre liderança, gestão e desenvolvimento pessoal.</p>
+              <button class="secondary-btn" onclick="playAudiobook('lideranca')">Reproduzir</button>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="media-thumb" style="background-image: url('assets/playbooks/capas/discipulado-pratico.png');"></div>
+            <div class="media-body">
+              <div class="title-row">
+                <h3>🎧 Discipulado</h3>
+                <span class="tag tag-gold">Áudio</span>
+              </div>
+              <p>Discipulado na Prática — Manual completo em áudio narrado com voz natural Thalita. Métodos de evangelismo e multiplicação.</p>
+              <button class="secondary-btn" onclick="playAudiobook('discipulado')">Reproduzir</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="playlist-section" id="playlistSection" style="display: none; margin-top: 32px;">
+          <div class="module-card" style="grid-column: span 3;">
+            <div class="module-header">
+              <div>
+                <span class="mini-label">Playlist</span>
+                <h2 id="playlistTitle">Faixas</h2>
+              </div>
+              <button class="secondary-btn" onclick="closePlaylist()" style="width: auto; padding: 8px 16px;">Fechar</button>
+            </div>
+            <div id="playlistTracks" class="playlist-tracks"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="script.js"></script>
+    <script>
+      // Buscar audiobooks cadastrados no Supabase
+      async function loadSupabaseAudiobooks() {
+        if (typeof getSupabaseClient !== 'function') return;
+        const supabase = getSupabaseClient();
+        if (!supabase) return;
+
+        try {
+          const { data: audiobooks, error } = await supabase.from('audiobooks').select('*').order('created_at', { ascending: false });
+          if (error) {
+            console.warn('Erro ao carregar audiobooks do Supabase:', error);
+            return;
+          }
+
+          if (audiobooks && audiobooks.length > 0) {
+            const playlistContainer = document.getElementById('playlistTracks');
+            if (playlistContainer) {
+              audiobooks.forEach(ab => {
+                const trackItem = document.createElement('div');
+                trackItem.className = 'track-item';
+                trackItem.style.cursor = 'pointer';
+                trackItem.innerHTML = `
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <i class="fas fa-play" style="color:var(--gold);"></i>
+                    <div>
+                      <strong>${ab.title}</strong>
+                      <small style="display:block;">${ab.author || 'Pr. Gilberto'}</small>
+                    </div>
+                  </div>
+                  <span>${ab.duration || 'Áudio'}</span>
+                `;
+                trackItem.addEventListener('click', () => {
+                  const audioElem = document.getElementById('audioPlayer') || document.querySelector('audio');
+                  if (audioElem && ab.audio_url) {
+                    audioElem.src = ab.audio_url;
+                    audioElem.play();
+                  }
+                });
+                playlistContainer.appendChild(trackItem);
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Erro na integração com Supabase:', err);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadSupabaseAudiobooks);
+      } else {
+        loadSupabaseAudiobooks();
+      }
+    </script>
+  </body>
+</html>
+

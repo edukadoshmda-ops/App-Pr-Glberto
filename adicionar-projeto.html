@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Adicionar Projeto - EliteFlow</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           ÁREA PRINCIPAL
+        ===================================================== */
+
+        .project-editor-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.45fr)
+                minmax(320px, .75fr);
+
+            gap: 24px;
+
+            margin-top: 25px;
+
+            align-items: start;
+        }
+
+
+        /* =====================================================
+           CARD DO FORMULÁRIO
+        ===================================================== */
+
+        .editor-card {
+
+            background: #ffffff;
+
+            border: 1px solid #e8ebef;
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 12px 35px rgba(20, 30, 45, .06);
+        }
+
+
+        .editor-heading {
+
+            padding-bottom: 20px;
+
+            margin-bottom: 25px;
+
+            border-bottom:
+                1px solid #edf0f3;
+        }
+
+
+        .editor-heading h2 {
+
+            margin: 7px 0 6px;
+
+            font-size: 22px;
+
+            color: #18202a;
+        }
+
+
+        .editor-heading p {
+
+            margin: 0;
+
+            color: #858f9a;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           CAMPOS
+        ===================================================== */
+
+        .project-field {
+
+            margin-bottom: 21px;
+        }
+
+
+        .project-field label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            margin-bottom: 8px;
+
+            color: #293440;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .project-field label small {
+
+            color: #9aa3ac;
+
+            font-size: 10px;
+
+            font-weight: 500;
+        }
+
+
+        .project-field input,
+        .project-field select,
+        .project-field textarea {
+
+            width: 100%;
+
+            height: 45px;
+
+            box-sizing: border-box;
+
+            padding: 0 13px;
+
+            border: 1px solid #dfe4e9;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            color: #26313d;
+
+            font-family: Inter, sans-serif;
+
+            font-size: 13px;
+
+            outline: none;
+
+            transition: .2s ease;
+        }
+
+
+        .project-field textarea {
+
+            min-height: 120px;
+
+            padding: 12px 13px;
+
+            resize: vertical;
+        }
+
+
+        .project-field input:focus,
+        .project-field select:focus,
+        .project-field textarea:focus {
+
+            border-color: #c79b43;
+
+            box-shadow:
+                0 0 0 3px rgba(199,155,67,.10);
+        }
+
+
+        .field-row {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+        }
+
+
+        /* =====================================================
+           UPLOAD DA IMAGEM
+        ===================================================== */
+
+        .image-upload {
+
+            position: relative;
+
+            min-height: 210px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1.5px dashed #cdd4db;
+
+            border-radius: 14px;
+
+            background: #fafbfc;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .image-upload:hover {
+
+            border-color: #c79b43;
+
+            background: #fffdf8;
+        }
+
+
+        .image-upload-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+
+        .image-upload-icon {
+
+            width: 50px;
+
+            height: 50px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 4px;
+
+            border-radius: 14px;
+
+            background: #f0f2f4;
+
+            color: #8b949e;
+
+            font-size: 21px;
+        }
+
+
+        .image-upload strong {
+
+            color: #35404b;
+
+            font-size: 12px;
+        }
+
+
+        .image-upload span {
+
+            color: #929ba5;
+
+            font-size: 10px;
+        }
+
+
+        #imagePreview {
+
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        .image-upload-content {
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        #imagePreview {
+
+            display: block;
+        }
+
+
+        .change-image {
+
+            position: absolute;
+
+            right: 10px;
+
+            bottom: 10px;
+
+            z-index: 3;
+
+            padding: 7px 10px;
+
+            border: 0;
+
+            border-radius: 7px;
+
+            color: #fff;
+
+            background: rgba(0,0,0,.65);
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        .change-image {
+
+            display: block;
+        }
+
+
+        /* =====================================================
+           UPLOAD DE ARQUIVOS
+        ===================================================== */
+
+        .file-upload {
+
+            position: relative;
+
+            min-height: 120px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1.5px dashed #cdd4db;
+
+            border-radius: 14px;
+
+            background: #fafbfc;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .file-upload:hover {
+
+            border-color: #c79b43;
+
+            background: #fffdf8;
+        }
+
+
+        .file-upload-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+
+        .file-upload-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 4px;
+
+            border-radius: 12px;
+
+            background: #f1f3f5;
+
+            color: #8b949e;
+
+            font-size: 20px;
+        }
+
+
+        .file-upload strong {
+
+            color: #35404b;
+
+            font-size: 12px;
+        }
+
+
+        .file-upload span {
+
+            color: #929ba5;
+
+            font-size: 10px;
+        }
+
+
+        .selected-file {
+
+            margin-top: 8px;
+
+            color: #5b6875;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           BOTÕES
+        ===================================================== */
+
+        .editor-actions {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 22px;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid #edf0f3;
+        }
+
+
+        .btn-cancel,
+        .btn-save {
+
+            min-height: 43px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 0 18px;
+
+            border-radius: 9px;
+
+            font-family: Inter, sans-serif;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+
+        .btn-cancel {
+
+            border: 1px solid #dfe4e9;
+
+            background: #fff;
+
+            color: #697581;
+        }
+
+
+        .btn-save {
+
+            border: 0;
+
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #cda451,
+                    #a97a29
+                );
+
+            box-shadow:
+                0 7px 20px rgba(169,122,41,.22);
+        }
+
+
+        .btn-save:hover {
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 25px rgba(169,122,41,.30);
+        }
+
+
+        /* =====================================================
+           PREVIEW
+        ===================================================== */
+
+        .project-preview-card {
+
+            position: sticky;
+
+            top: 20px;
+
+            overflow: hidden;
+
+            background: #fff;
+
+            border: 1px solid #e8ebef;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 12px 35px rgba(20,30,45,.06);
+        }
+
+
+        .preview-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 18px;
+        }
+
+
+        .draft-label {
+
+            padding: 5px 8px;
+
+            border-radius: 5px;
+
+            background: #f1f3f5;
+
+            color: #8c96a0;
+
+            font-size: 8px;
+
+            font-weight: 800;
+
+            letter-spacing: .08em;
+        }
+
+
+        .preview-cover {
+
+            position: relative;
+
+            height: 220px;
+
+            margin: 0 18px;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e8ecf0,
+                    #d6dce2
+                );
+
+            background-size: cover;
+
+            background-position: center;
+        }
+
+
+        .preview-cover::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(0,0,0,.35),
+                    transparent 60%
+                );
+        }
+
+
+        .preview-cover-icon {
+
+            position: absolute;
+
+            z-index: 2;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 48px;
+
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,.9);
+
+            color: #9b7531;
+
+            font-size: 18px;
+        }
+
+
+        .preview-project-body {
+
+            padding: 20px;
+        }
+
+
+        .preview-project-body h3 {
+
+            margin: 8px 0 9px;
+
+            color: #1c2630;
+
+            font-size: 20px;
+
+            line-height: 1.25;
+        }
+
+
+        .preview-meta {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 15px;
+
+            padding-top: 13px;
+
+            border-top:
+                1px solid #edf0f3;
+
+            color: #9ba4ad;
+
+            font-size: 9px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVO
+        ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .project-editor-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .project-preview-card {
+
+                position: static;
+
+                order: -1;
+            }
+
+
+            .preview-cover {
+
+                height: 260px;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .editor-card {
+
+                padding: 18px;
+            }
+
+
+            .field-row {
+
+                grid-template-columns: 1fr;
+
+                gap: 0;
+            }
+
+
+            .editor-actions {
+
+                flex-direction: column-reverse;
+            }
+
+
+            .btn-cancel,
+            .btn-save {
+
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand-block">
+
+            <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a
+                href="dashboard.html"
+                class="menu-item"
+            >
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="audiobook.html"
+                class="menu-item"
+            >
+                <i class="fas fa-headphones"></i>
+                <span>Audio Book</span>
+            </a>
+
+
+            <a
+                href="play-books.html"
+                class="menu-item"
+            >
+                <i class="fas fa-book-open"></i>
+                <span>Play Books</span>
+            </a>
+
+
+            <a
+                href="artigos.html"
+                class="menu-item"
+            >
+                <i class="fas fa-file-lines"></i>
+                <span>Artigos</span>
+            </a>
+
+
+            <a
+                href="videos.html"
+                class="menu-item"
+            >
+                <i class="fas fa-video"></i>
+                <span>Vídeos</span>
+            </a>
+
+
+            <a
+                href="projetos.html"
+                class="menu-item active"
+            >
+                <i class="fas fa-project-diagram"></i>
+                <span>Projetos</span>
+            </a>
+
+
+            <a
+                href="relatorios.html"
+                class="menu-item"
+            >
+                <i class="fas fa-chart-bar"></i>
+                <span>Relatórios</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-card">
+
+            <span class="mini-label">
+                Editor
+            </span>
+
+            <strong>
+                Novo projeto
+            </strong>
+
+            <p>
+                Crie e gerencie seus projetos
+            </p>
+
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main-panel page-main">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">
+                    Gestão de Projetos
+                </p>
+
+                <h1>
+                    Adicionar projeto
+                </h1>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             EDITOR
+        ================================================== -->
+
+        <section class="project-editor-layout">
+
+
+            <!-- =================================================
+                 FORMULÁRIO
+            ================================================== -->
+
+            <div class="editor-card">
+
+                <div class="editor-heading">
+
+                    <span class="mini-label">
+                        Novo projeto
+                    </span>
+
+                    <h2>
+                        Criar projeto
+                    </h2>
+
+                    <p>
+                        Adicione as informações do projeto
+                        para começar a gerenciar.
+                    </p>
+
+                </div>
+
+
+                <form id="projectForm">
+
+
+                    <!-- IMAGEM -->
+
+                    <div class="project-field">
+
+                        <label>
+                            <i class="fas fa-image"></i> Imagem do projeto
+                        </label>
+
+
+                        <label
+                            class="image-upload"
+                            id="imageUpload"
+                            for="projectImage"
+                        >
+
+                            <div class="image-upload-content">
+
+                                <div class="image-upload-icon">
+
+                                    <i class="fas fa-image"></i>
+
+                                </div>
+
+                                <strong>
+                                    Clique para adicionar uma imagem
+                                </strong>
+
+                                <span>
+                                    JPG, PNG ou WEBP • Recomendado 1280 × 720
+                                </span>
+
+                            </div>
+
+
+                            <img
+                                id="imagePreview"
+                                alt="Prévia da imagem"
+                            >
+
+
+                            <button
+                                type="button"
+                                class="change-image"
+                                onclick="document.getElementById('projectImage').click()"
+                            >
+                                <i class="fas fa-camera"></i>
+                                Alterar imagem
+                            </button>
+
+
+                            <input
+                                type="file"
+                                id="projectImage"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- NOME DO PROJETO -->
+
+                    <div class="project-field">
+
+                        <label for="projectName">
+
+                            <i class="fas fa-heading"></i> Nome do projeto
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="projectName"
+                            placeholder="Ex.: Sistema de Gestão"
+                            maxlength="120"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- RESPONSÁVEL -->
+
+                    <div class="project-field">
+
+                        <label for="projectResponsible">
+
+                            <i class="fas fa-user"></i> Responsável pelo projeto
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="projectResponsible"
+                            placeholder="Nome do responsável"
+                            value="Gilberto"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIÇÃO -->
+
+                    <div class="project-field">
+
+                        <label for="projectDescription">
+
+                            <i class="fas fa-align-left"></i> Descrição
+
+                        </label>
+
+
+                        <textarea
+                            id="projectDescription"
+                            placeholder="Descreva o objetivo e escopo do projeto..."
+                            rows="4"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- UPLOAD DE ARQUIVOS -->
+
+                    <div class="project-field">
+
+                        <label>
+                            <i class="fas fa-file-upload"></i> Arquivos do projeto
+                        </label>
+
+
+                        <label
+                            class="file-upload"
+                            id="fileUpload"
+                            for="projectFiles"
+                        >
+
+                            <div class="file-upload-content">
+
+                                <div class="file-upload-icon">
+
+                                    <i class="fas fa-cloud-upload-alt"></i>
+
+                                </div>
+
+                                <strong>
+                                    Clique para selecionar arquivos
+                                </strong>
+
+                                <span>
+                                    PDF, DOC, XLS, ZIP • Máx 50MB
+                                </span>
+
+                            </div>
+
+
+                            <input
+                                type="file"
+                                id="projectFiles"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip"
+                                multiple
+                                hidden
+                            >
+
+                        </label>
+
+
+                        <div
+                            id="selectedFiles"
+                            class="selected-file"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- BOTÕES -->
+
+                    <div class="editor-actions">
+
+                        <a
+                            href="projetos.html"
+                            class="btn-cancel"
+                        >
+                            Cancelar
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn-save"
+                        >
+
+                            <i class="fas fa-save"></i>
+
+                            Salvar projeto
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================================
+                 PRÉ-VISUALIZAÇÃO
+            ================================================== -->
+
+            <aside class="project-preview-card">
+
+
+                <div class="preview-top">
+
+                    <span class="mini-label">
+                        Pré-visualização
+                    </span>
+
+                    <span class="draft-label">
+                        RASCUNHO
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="preview-cover"
+                    id="previewCover"
+                >
+
+                    <div class="preview-cover-icon">
+
+                        <i class="fas fa-project-diagram"></i>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-project-body">
+
+                    <h3 id="previewName">
+                        Nome do projeto
+                    </h3>
+
+
+                    <div class="preview-meta">
+
+                        <span>
+                            <i class="far fa-user"></i>
+                            <span id="previewResponsible">
+                                Responsável
+                            </span>
+                        </span>
+
+                        <span>•</span>
+
+                        <span>
+                            <i class="far fa-calendar"></i>
+                            <span id="previewDate">
+                                Data de criação
+                            </span>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const projectForm =
+    document.getElementById("projectForm");
+
+const imageInput =
+    document.getElementById("projectImage");
+
+const imageUpload =
+    document.getElementById("imageUpload");
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+const nameInput =
+    document.getElementById("projectName");
+
+const responsibleInput =
+    document.getElementById("projectResponsible");
+
+const fileInput =
+    document.getElementById("projectFiles");
+
+const selectedFiles =
+    document.getElementById("selectedFiles");
+
+const previewCover =
+    document.getElementById("previewCover");
+
+const previewName =
+    document.getElementById("previewName");
+
+const previewResponsible =
+    document.getElementById("previewResponsible");
+
+const previewDate =
+    document.getElementById("previewDate");
+
+
+/* =========================================================
+   IMAGEM
+========================================================= */
+
+imageInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        if (!file) return;
+
+
+        const imageURL =
+            URL.createObjectURL(file);
+
+
+        imagePreview.src =
+            imageURL;
+
+        imageUpload.classList.add(
+            "has-image"
+        );
+
+
+        previewCover.style.backgroundImage =
+            `url("${imageURL}")`;
+    }
+);
+
+
+/* =========================================================
+   NOME
+========================================================= */
+
+nameInput.addEventListener(
+    "input",
+    function () {
+
+        previewName.textContent =
+            this.value.trim() ||
+            "Nome do projeto";
+    }
+);
+
+
+/* =========================================================
+   RESPONSÁVEL
+========================================================= */
+
+responsibleInput.addEventListener(
+    "input",
+    function () {
+
+        previewResponsible.textContent =
+            this.value.trim() ||
+            "Responsável";
+    }
+);
+
+
+/* =========================================================
+   ARQUIVOS
+========================================================= */
+
+fileInput.addEventListener(
+    "change",
+    function () {
+
+        const files = this.files;
+
+        if (files.length === 0) {
+
+            selectedFiles.textContent =
+                "";
+
+            return;
+        }
+
+
+        const fileNames =
+            Array.from(files)
+                .map(file => `✓ ${file.name}`)
+                .join(", ");
+
+
+        selectedFiles.textContent =
+            fileNames;
+    }
+);
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+previewDate.textContent =
+    new Date().toLocaleDateString('pt-BR');
+
+
+/* =========================================================
+   ENVIO
+========================================================= */
+
+projectForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const name =
+            nameInput.value.trim();
+
+
+        if (!name) {
+
+            alert(
+                "Digite o nome do projeto."
+            );
+
+            nameInput.focus();
+
+            return;
+        }
+
+
+        const submitBtn = projectForm.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : null;
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('responsible', responsibleInput.value);
+        formData.append('description', document.getElementById('projectDescription').value);
+
+        // Validações
+        const maxImageSize = 5 * 1024 * 1024; // 5 MB
+        const maxFileSize = 50 * 1024 * 1024; // 50 MB per file
+
+        if (imageInput.files[0] && imageInput.files[0].size > maxImageSize) {
+            alert('A imagem do projeto excede o limite de 5 MB.');
+            return;
+        }
+
+        if (fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (fileInput.files[i].size > maxFileSize) {
+                    alert('Um dos arquivos do projeto excede o limite de 50 MB.');
+                    return;
+                }
+                formData.append('files', fileInput.files[i]);
+            }
+        }
+
+        if (imageInput.files[0]) {
+            formData.append('image', imageInput.files[0]);
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Enviando...';
+        }
+
+        try {
+            // 1. Tentar salvar diretamente no Supabase se disponível
+            if (typeof saveSupabaseProject === 'function' && typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                const projectTitle = document.getElementById('projectTitle').value;
+                const projectDescription = document.getElementById('projectDescription') ? document.getElementById('projectDescription').value : '';
+                const projectLink = document.getElementById('projectLink') ? document.getElementById('projectLink').value : '';
+                const projectCategory = document.getElementById('projectCategory') ? document.getElementById('projectCategory').value : 'Projetos';
+                const attachedFile = (fileInput && fileInput.files[0]) ? fileInput.files[0] : (imageInput && imageInput.files[0]) ? imageInput.files[0] : null;
+
+                await saveSupabaseProject({
+                    title: projectTitle,
+                    description: projectDescription,
+                    category: projectCategory,
+                    externalLink: projectLink,
+                    attachedFile: attachedFile,
+                    status: 'ativo'
+                });
+
+                alert('Projeto salvo com sucesso no Supabase!');
+                window.location.href = 'projetos.html';
+                return;
+            }
+
+            // 2. Fallback para API Local Node
+            const response = await fetch('/api/projects', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Projeto salvo com sucesso!');
+                window.location.href = 'projetos.html';
+            } else {
+                const txt = await response.text();
+                console.error('Falha ao salvar projeto:', response.status, txt);
+                alert('Erro ao salvar projeto (código ' + response.status + ')');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao salvar projeto: ' + error.message);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                if (originalBtnHtml !== null) submitBtn.innerHTML = originalBtnHtml;
+            }
+        }
+    }
+);
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
+
+

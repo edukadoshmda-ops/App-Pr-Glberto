@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Root - EliteFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .users-table th {
+            background: rgba(199, 164, 81, 0.1);
+            color: #cda451;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+        }
+
+        .users-table td {
+            color: #b8c5d6;
+        }
+
+        .users-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-approved {
+            background: rgba(37, 211, 102, 0.2);
+            color: #25D366;
+        }
+
+        .status-pending {
+            background: rgba(245, 166, 35, 0.2);
+            color: #f5a623;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            padding: 8px 16px;
+            background: rgba(199, 164, 81, 0.2);
+            color: #cda451;
+            border: 1px solid rgba(199, 164, 81, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-edit:hover {
+            background: rgba(199, 164, 81, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #b8c5d6;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #b8c5d6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #cda451;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #cda451, #a97a29);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(199, 164, 81, 0.4);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .no-access {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .no-access i {
+            font-size: 64px;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+
+        .no-access h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .no-access p {
+            color: #b8c5d6;
+            font-size: 16px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #cda451, #a97a29);
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div id="noAccess" class="no-access" style="display: none;">
+        <i class="fas fa-shield-alt"></i>
+        <h2>Acesso Negado</h2>
+        <p>Você não tem permissão para acessar esta página.</p>
+        <a href="dashboard.html" style="margin-top: 20px; color: #cda451; text-decoration: none;">Voltar ao Dashboard</a>
+    </div>
+
+    <div id="adminPanel" style="display: none;">
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="brand-block">
+                    <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a href="dashboard.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="play-books.html" class="menu-item">
+                        <i class="fas fa-book"></i>
+                        <span>Play Books</span>
+                    </a>
+                    <a href="audiobook.html" class="menu-item">
+                        <i class="fas fa-headphones"></i>
+                        <span>Audio Books</span>
+                    </a>
+                    <a href="artigos.html" class="menu-item">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Artigos</span>
+                    </a>
+                    <a href="videos.html" class="menu-item">
+                        <i class="fas fa-video"></i>
+                        <span>Vídeos</span>
+                    </a>
+                    <a href="projetos.html" class="menu-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Projetos</span>
+                    </a>
+                    <a href="relatorios.html" class="menu-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    <a href="venda.html" class="menu-item" style="background: linear-gradient(135deg, #25D366, #128C7E); color: white;">
+                        <i class="fas fa-tag"></i>
+                        <span>Planos</span>
+                    </a>
+                    <a href="painel-root.html" class="menu-item active" style="background: linear-gradient(135deg, #cda451, #a97a29); color: white;">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Painel Root</span>
+                    </a>
+                    <button class="menu-item logout-menu" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sair</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <main class="main-panel">
+                <header class="topbar">
+                    <div>
+                        <p class="eyebrow">Administração</p>
+                        <h1>Painel Root - Gestão de Usuários</h1>
+                    </div>
+                </header>
+
+                <section>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #ffffff; font-size: 20px;">Usuários Cadastrados</h2>
+                        <button onclick="loadUsers()" class="btn-edit">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Admin</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Usuário</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editFullName">Nome Completo</label>
+                    <input type="text" id="editFullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Telefone</label>
+                    <input type="tel" id="editPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStatus">Status</label>
+                    <select id="editStatus">
+                        <option value="pending">Pendente</option>
+                        <option value="approved">Aprovado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editIsAdmin">Administrador</label>
+                    <select id="editIsAdmin">
+                        <option value="false">Não</option>
+                        <option value="true">Sim</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <p style="color: #b8c5d6; margin-bottom: 20px;">
+                Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn-delete" onclick="confirmDelete()">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deleteUserId = null;
+
+        // Verificar permissão de admin
+        function checkAdminAccess() {
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            if (!isAdmin) {
+                document.getElementById('noAccess').style.display = 'flex';
+                document.getElementById('adminPanel').style.display = 'none';
+            } else {
+                document.getElementById('noAccess').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadUsers();
+            }
+        }
+
+        // Carregar usuários
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users?apiKey=eliteflow-secret-key-2024');
+                const users = await response.json();
+                
+                const tbody = document.getElementById('usersTableBody');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum usuário cadastrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.fullName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone}</td>
+                        <td>
+                            <span class="status-badge ${user.status === 'approved' ? 'status-approved' : 'status-pending'}">
+                                ${user.status === 'approved' ? 'Aprovado' : 'Pendente'}
+                            </span>
+                        </td>
+                        <td>
+                            ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : '-'}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit" onclick="openEditModal('${user.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-delete" onclick="openDeleteModal('${user.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444;">Erro ao carregar usuários</td></tr>';
+            }
+        }
+
+        // Abrir modal de edição
+        function openEditModal(userId) {
+            const users = document.querySelectorAll('#usersTableBody tr');
+            users.forEach(row => {
+                const editBtn = row.querySelector('.btn-edit');
+                if (editBtn && editBtn.getAttribute('onclick').includes(userId)) {
+                    const cells = row.querySelectorAll('td');
+                    document.getElementById('editUserId').value = userId;
+                    document.getElementById('editFullName').value = cells[0].textContent;
+                    document.getElementById('editEmail').value = cells[1].textContent;
+                    document.getElementById('editPhone').value = cells[2].textContent;
+                    
+                    const statusText = cells[3].querySelector('.status-badge').textContent;
+                    document.getElementById('editStatus').value = statusText === 'Aprovado' ? 'approved' : 'pending';
+                    
+                    const isAdminBadge = cells[4].querySelector('.admin-badge');
+                    document.getElementById('editIsAdmin').value = isAdminBadge ? 'true' : 'false';
+                }
+            });
+            
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // Salvar edição
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('editUserId').value;
+            const userData = {
+                fullName: document.getElementById('editFullName').value,
+                phone: document.getElementById('editPhone').value,
+                email: document.getElementById('editEmail').value,
+                status: document.getElementById('editStatus').value,
+                isAdmin: document.getElementById('editIsAdmin').value === 'true'
+            };
+
+            try {
+                const response = await fetch(`/api/users/${userId}?apiKey=eliteflow-secret-key-2024`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    closeEditModal();
+                    loadUsers();
+                    alert('Usuário atualizado com sucesso!');
+                } else {
+                    alert('Erro ao atualizar usuário');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar usuário');
+            }
+        });
+
+        // Abrir modal de exclusão
+        function openDeleteModal(userId) {
+            deleteUserId = userId;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        // Fechar modal de exclusão
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteUserId = null;
+        }
+
+        // Confirmar exclusão
+        async function confirmDelete() {
+            if (!deleteUserId) return;
+
+            try {
+                const response = await fetch(`/api/users/${deleteUserId}?apiKey=eliteflow-secret-key-2024`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    closeDeleteModal();
+                    loadUsers();
+                    alert('Usuário excluído com sucesso!');
+                } else {
+                    alert('Erro ao excluir usuário');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir usuário');
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Inicializar
+        checkAdminAccess();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+

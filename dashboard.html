@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Profissional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+        </div>
+
+        <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item active">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="audiobook.html" class="menu-item">
+            <i class="fas fa-headphones"></i>
+            <span>Audio Book</span>
+          </a>
+          <a href="play-books.html" class="menu-item">
+            <i class="fas fa-book-open"></i>
+            <span>Play Books</span>
+          </a>
+          <a href="videos.html" class="menu-item">
+            <i class="fas fa-video"></i>
+            <span>Vídeos</span>
+          </a>
+          <a href="artigos.html" class="menu-item">
+            <i class="fas fa-file-alt"></i>
+            <span>Artigos</span>
+          </a>
+          <a href="relatorios.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+          </a>
+          <a href="usuarios.html" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+          <a href="criar.html" class="menu-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Criar</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Painel executivo</p>
+            <h1>Dashboard profissional</h1>
+          </div>
+        </header>
+
+        <section class="stats-row">
+          <article class="stat-card accent-green">
+            <span>Projetos ativos</span>
+            <strong>18</strong>
+            <small>+12% este mês</small>
+          </article>
+
+          <article class="stat-card accent-gold">
+            <span>Play Books</span>
+            <strong>46</strong>
+            <small>+8 títulos</small>
+          </article>
+
+          <article class="stat-card accent-blue">
+            <span>Artigos</span>
+            <strong>29</strong>
+            <small>+15 artigos</small>
+          </article>
+
+          <article class="stat-card accent-dark">
+            <span>Relatórios</span>
+            <strong>94%</strong>
+            <small>Meta concluída</small>
+          </article>
+        </section>
+
+        <section class="quick-actions-section" style="margin-top: 24px;">
+          <div class="module-card wide-card" style="background: linear-gradient(145deg, rgba(8, 17, 38, 0.95), rgba(15, 28, 55, 0.95)); border: 1px solid var(--border-gold); padding: 36px 28px; border-radius: 20px; text-align: center;">
+            <span class="mini-label" style="color: var(--gold-light); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 11px;">Plataforma Executiva Premium</span>
+            <h2 style="font-size: clamp(22px, 3vw, 30px); margin: 12px 0 8px; color: #fff; font-weight: 800;">Painel Ministerial — Pr. Gilberto Penido Bertho</h2>
+            <p style="color: var(--text-soft); max-width: 680px; margin: 0 auto 28px; font-size: 14px; line-height: 1.6;">
+              Seja bem-vindo ao seu painel central. Selecione um dos módulos abaixo para acessar os conteúdos, gerenciar projetos ou emitir relatórios pastorais.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 24px;">
+              <a href="audiobook.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-headphones"></i> Audio Book
+              </a>
+              <a href="play-books.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-book-open"></i> Play Books
+              </a>
+              <a href="artigos.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-file-alt"></i> Artigos
+              </a>
+              <a href="videos.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-video"></i> Vídeos
+              </a>
+              <a href="projetos.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-folder-plus"></i> Criar Projetos
+              </a>
+              <a href="relatorios.html" class="primary-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 14px; border-radius: 12px; font-weight: 700; font-size: 14px;">
+                <i class="fas fa-chart-bar"></i> Relatórios
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

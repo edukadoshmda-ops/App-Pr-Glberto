@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EliteFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --navy-950: #050914;
+            --navy-900: #081025;
+            --navy-800: #0d1835;
+            --navy-700: #121f43;
+            --gold: #f5a623;
+            --gold-light: #ffd36a;
+            --gold-dark: #b96e08;
+
+            --primary: var(--navy-700);
+            --primary-strong: var(--navy-900);
+            --secondary: var(--gold);
+            --secondary-soft: var(--gold-light);
+            --tertiary: var(--navy-950);
+            --bg-1: var(--navy-950);
+            --bg-2: var(--navy-800);
+            --panel: rgba(12, 24, 52, 0.82);
+            --panel-strong: rgba(8, 16, 37, 0.94);
+            --line: rgba(245,166,35,0.28);
+            --text: #f5f7fb;
+            --muted: #aab2c5;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            position: relative;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at 80% 10%, rgba(245, 166, 35, 0.08), transparent 30%),
+                linear-gradient(135deg, var(--navy-950), var(--navy-900) 50%, var(--navy-800));
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeInUp 0.6s ease-out;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            width: 440px;
+            height: 440px;
+            background: rgba(245, 166, 35, 0.12);
+            border-radius: 50%;
+            filter: blur(90px);
+            right: 10%;
+            bottom: 8%;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(12, 23, 42, 0.94), rgba(7, 16, 28, 0.9));
+            border-radius: 20px;
+            padding: 28px 24px 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 390px;
+            border: 1px solid rgba(130, 167, 255, 0.18);
+            backdrop-filter: blur(14px);
+            animation: slideInDown 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.26);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        .logo {
+            display: block;
+            width: 180px;
+            margin: 0 auto 18px;
+            animation: slideInDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
+        }
+
+        .logo img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 18px rgba(245, 166, 35, 0.18));
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .presentation-link {
+            text-align: center;
+            margin-bottom: 18px;
+            animation: fadeInUp 0.6s ease-out backwards 0.6s;
+        }
+
+        .presentation-link a {
+            color: var(--secondary-soft);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .presentation-link a:hover {
+            color: #fff;
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: var(--text);
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+            text-shadow: none;
+            animation: slideInDown 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 0;
+            animation: slideInDown 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.3s; }
+        .form-group:nth-child(2) { animation-delay: 0.4s; }
+
+        label {
+            display: block;
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 10.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 14px;
+            border: 1px solid rgba(124, 147, 196, 0.22);
+            border-radius: 12px;
+            background: rgba(10, 19, 31, 0.8);
+            color: var(--text);
+            font-size: 14px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: rgba(245, 166, 35, 0.6);
+            background: rgba(245, 166, 35, 0.04);
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.10);
+            transform: translateY(-1px);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(181,191,206,0.75);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px 16px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            color: #101522;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            box-shadow: 0 12px 35px rgba(245, 166, 35, 0.25);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out backwards 0.5s;
+        }
+
+        .btn-login::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(255,255,255,0.10), transparent 55%);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .btn-login:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(245, 166, 35, 0.28);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 18px rgba(245, 166, 35, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            margin-bottom: 18px;
+            animation: fadeInUp 0.6s ease-out backwards 0.55s;
+        }
+
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: var(--secondary);
+            transition: all 0.25s ease;
+        }
+
+        input[type="checkbox"]:hover {
+            transform: scale(1.04);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: none;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            gap: 10px;
+            animation: fadeInUp 0.6s ease-out backwards 0.6s;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-align: center;
+            padding: 9px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.015);
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 18px 18px;
+                border-radius: 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"],
+            input[type="password"],
+            .btn-login {
+                font-size: 13px;
+                padding: 12px 11px;
+                border-radius: 10px;
+            }
+        }
+
+        .container { position: relative; }
+        .back-arrow {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+        }
+
+        .back-arrow:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .back-arrow i { transform: translateX(-1px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i> Apresentação</a>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:10px;">
+            <img class="login-logo" src="assets/logo.png" alt="EliteFlow logo" style="width: 220px; height: auto; display: block;" />
+            <h1 style="display:none;font-size:24px;letter-spacing:1px;margin-bottom:0;">ENTRAR</h1>
+            <p class="subtitle" style="margin-top:2px;">Seja Bem Vindo</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">EMAIL OU USUÁRIO</label>
+                <input 
+                    type="text" 
+                    id="email" 
+                    name="email" 
+                    placeholder="edu...@gmail.com"
+                    required
+                    style="background:rgba(15,41,41,0.03);border-radius:12px;padding:12px;border:1px solid rgba(16,32,32,0.06);"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">SENHA</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="••••••"
+                    required
+                    style="background:rgba(15,41,41,0.03);border-radius:12px;padding:12px;border:1px solid rgba(16,32,32,0.06);"
+                >
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Manter-me conectado</label>
+            </div>
+
+            <button type="submit" class="btn-login" style="background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));color:#101522;display:flex;align-items:center;justify-content:center;">ENTRAR</button>
+
+            <div class="footer-links">
+                <a href="venda.html">Comprar Acesso</a>
+                <a href="compra.html">Criar conta</a>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script>
+        // Redireciona para o dashboard se já estiver autenticado
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const submitBtn = this.querySelector('.btn-login');
+
+            if (!email || !password) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+
+            try {
+                // 1. Tentar Login via Supabase Auth se o cliente estiver disponível
+                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+                
+                if (supabase) {
+                    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (!authError && authData.user) {
+                        // Buscar perfil do usuário na tabela profiles
+                        const { data: profile, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', authData.user.id)
+                            .single();
+
+                        const status = profile ? profile.status : 'approved';
+                        const isAdmin = profile ? profile.is_admin : (email === 'edukadoshmda@gmail.com');
+                        const createdAt = profile ? new Date(profile.created_at) : new Date();
+                        const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
+                        const isTrialActive = daysSinceRegistration <= 7;
+
+                        if (status !== 'approved' && !isAdmin && !isTrialActive) {
+                            alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = 'ENTRAR';
+                            return;
+                        }
+
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userId', authData.user.id);
+                        localStorage.setItem('userName', profile ? profile.full_name : email);
+                        localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+                        localStorage.setItem('userStatus', status);
+                        localStorage.setItem('userCreatedAt', profile ? profile.created_at : new Date().toISOString());
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                }
+
+                // 2. Fallback para a API do Servidor Node se Supabase Auth falhar/estiver usando autenticação backend
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const status = data.user.status || 'approved';
+                    const isAdmin = data.user.isAdmin;
+                    const createdAt = new Date(data.user.createdAt || new Date());
+                    const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
+                    const isTrialActive = daysSinceRegistration <= 7;
+
+                    if (status !== 'approved' && !isAdmin && !isTrialActive) {
+                        alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'ENTRAR';
+                        return;
+                    }
+
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('userName', data.user.fullName);
+                    localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+                    localStorage.setItem('userStatus', status);
+                    localStorage.setItem('userCreatedAt', createdAt.toISOString());
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.error || 'Erro ao fazer login. Verifique seu e-mail e senha.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'ENTRAR';
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                alert('Erro de conexão ao fazer login. Tente novamente.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'ENTRAR';
+            }
+        });
+    </script>
+</body>
+</html>

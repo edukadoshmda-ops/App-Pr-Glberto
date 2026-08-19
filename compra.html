@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprar Acesso - EliteFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+        }
+
+        .purchase-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .purchase-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            margin-top: 40px;
+            margin-bottom: 80px;
+        }
+
+        .purchase-grid .purchase-card {
+            flex: 1;
+        }
+
+        .purchase-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .purchase-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .purchase-header p {
+            font-size: 18px;
+            color: #b8c5d6;
+        }
+
+        .purchase-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #cda451, #a97a29);
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .pix-info {
+            background: rgba(199,164,81,0.1);
+            border: 2px solid rgba(199,164,81,0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .pix-info h3 {
+            color: #cda451;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .pix-info p {
+            color: #b8c5d6;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .pix-info strong {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #cda451;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .form-group input::placeholder {
+            color: #858f9a;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #cda451, #a97a29);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(199,164,81,0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37,211,102,0.4);
+        }
+
+        .success-message {
+            background: rgba(37,211,102,0.1);
+            border: 2px solid rgba(37,211,102,0.3);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message h3 {
+            color: #25D366;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: #b8c5d6;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .purchase-header h1 {
+                font-size: 28px;
+            }
+
+            .purchase-card {
+                padding: 25px;
+            }
+
+            .purchase-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="purchase-container">
+        <a href="venda.html" style="display: inline-flex; align-items: center; gap: 8px; color: #b8c5d6; text-decoration: none; font-weight: 600; font-size: 14px; margin-bottom: 20px; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </a>
+        
+        <div class="purchase-header">
+            <h1>Finalizar Compra</h1>
+            <p>Acesso vitalício por apenas R$ 19,90</p>
+        </div>
+
+        <div class="purchase-grid">
+            <!-- Step 1: PIX Information -->
+            <div class="purchase-card">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    Faça o pagamento via PIX
+                </div>
+                
+                <div class="pix-info">
+                    <h3><i class="fas fa-qrcode"></i> Chave PIX</h3>
+                    <p><strong>Valor:</strong> R$ 19,90</p>
+                    <p><strong>Chave:</strong> (32) 99103-5632</p>
+                    <p><strong>Beneficiário:</strong> Pr. Gilberto Penido Bertho</p>
+                    <p style="margin-top: 15px; font-size: 14px;">
+                        <i class="fas fa-info-circle" style="color: #cda451;"></i>
+                        Após fazer o PIX, envie o comprovante para o WhatsApp do Pr. Gilberto
+                    </p>
+                </div>
+
+                <a href="https://wa.me/5532991035632?text=Olá, fiz o PIX de R$ 19,90 para o acesso vitalício do EliteFlow. Segue o comprovante." target="_blank" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    Enviar Comprovante via WhatsApp
+                </a>
+            </div>
+
+            <!-- Step 2: Registration Form -->
+            <div class="purchase-card">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                Cadastre seus dados
+            </div>
+            
+            <form id="purchaseForm">
+                <div class="form-group">
+                    <label for="fullName">Nome Completo</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Telefone (WhatsApp)</label>
+                    <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Crie uma senha" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Senha</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required minlength="6">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Cadastrar e Aguardar Liberação
+                </button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                <h3><i class="fas fa-check-circle"></i> Cadastro Realizado!</h3>
+                <p>Seus dados foram enviados com sucesso. Aguarde a confirmação do pagamento via WhatsApp para liberar seu acesso.</p>
+                <p style="font-size: 14px; color: #858f9a;">
+                    Após a confirmação, você poderá acessar o app com seu e-mail e senha.
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Step 3: Instructions -->
+        <div class="purchase-card" style="margin-top: 80px;">
+            <div class="step-title">
+                <span class="step-number">3</span>
+                Próximos passos
+            </div>
+            
+            <div style="color: #b8c5d6; line-height: 1.8;">
+                <p style="margin-bottom: 15px;">
+                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
+                    Faça o PIX de R$ 19,90 para a chave (32) 9103-5632
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
+                    Envie o comprovante para o WhatsApp do Pr. Gilberto
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
+                    Preencha o formulário acima com seus dados
+                </p>
+                <p style="margin-bottom: 15px;">
+                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
+                    Aguarde a confirmação do pagamento
+                </p>
+                <p>
+                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
+                    Após confirmação, acesse o app com seu e-mail e senha
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="venda.html" style="color: #b8c5d6; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Voltar para página de venda
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script>
+        function copyPix() {
+            const pixCode = document.getElementById('pixCode').value;
+            navigator.clipboard.writeText(pixCode).then(() => {
+                alert('Código PIX copiado com sucesso! Abra o app do seu banco e cole na opção PIX Copia e Cola.');
+            }).catch(err => {
+                console.error('Erro ao copiar:', err);
+                const input = document.getElementById('pixCode');
+                input.select();
+                document.execCommand('copy');
+                alert('Código PIX copiado!');
+            });
+        }
+
+        document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            if (!fullName || !phone || !email || !password) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+
+            const submitBtn = this.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+            try {
+                // 1. Tentar cadastro via Supabase Auth
+                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+
+                if (supabase) {
+                    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: fullName,
+                                phone: phone
+                            }
+                        }
+                    });
+
+                    if (!signUpError) {
+                        document.getElementById('purchaseForm').style.display = 'none';
+                        document.getElementById('successMessage').style.display = 'block';
+                        return;
+                    } else if (signUpError.message && signUpError.message.includes('User already registered')) {
+                        alert('Este e-mail já está cadastrado. Faça login na plataforma.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
+                        return;
+                    }
+                }
+
+                // 2. Fallback para API Node caso Supabase esteja em desenvolvimento local
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, phone, email, password })
+                });
+
+                if (response.ok) {
+                    document.getElementById('purchaseForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    const error = await response.json();
+                    alert('Erro ao cadastrar: ' + (error.error || 'Tente novamente'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
+                }
+            } catch (error) {
+                console.error('Erro no cadastro:', error);
+                alert('Erro de conexão ao cadastrar. Tente novamente.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
+            }
+        });
+
+        // Máscara de telefone
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 0) {
+                value = '(' + value;
+                if (value.length > 3) {
+                    value = value.slice(0, 3) + ') ' + value.slice(3);
+                }
+                if (value.length > 10) {
+                    value = value.slice(0, 10) + '-' + value.slice(10);
+                }
+            }
+            
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

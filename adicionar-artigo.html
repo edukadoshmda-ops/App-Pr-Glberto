@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Adicionar Artigo - EliteFlow</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           ÁREA PRINCIPAL
+        ===================================================== */
+
+        .article-editor-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                280px
+                minmax(0, 1fr);
+
+            gap: 24px;
+
+            margin-top: 25px;
+
+            align-items: start;
+        }
+
+
+        /* =====================================================
+           CARD DO FORMULÁRIO
+        ===================================================== */
+
+        .editor-card {
+
+            background: #ffffff;
+
+            border: 1px solid #e8ebef;
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 12px 35px rgba(20, 30, 45, .06);
+        }
+
+
+        .editor-heading {
+
+            padding-bottom: 20px;
+
+            margin-bottom: 25px;
+
+            border-bottom:
+                1px solid #edf0f3;
+        }
+
+
+        .editor-heading h2 {
+
+            margin: 7px 0 6px;
+
+            font-size: 22px;
+
+            color: #18202a;
+        }
+
+
+        .editor-heading p {
+
+            margin: 0;
+
+            color: #858f9a;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           CAMPOS
+        ===================================================== */
+
+        .article-field {
+
+            margin-bottom: 21px;
+        }
+
+
+        .article-field label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            margin-bottom: 8px;
+
+            color: #293440;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .article-field label small {
+
+            color: #9aa3ac;
+
+            font-size: 10px;
+
+            font-weight: 500;
+        }
+
+
+        .article-field input,
+        .article-field select {
+
+            width: 100%;
+
+            height: 45px;
+
+            box-sizing: border-box;
+
+            padding: 0 13px;
+
+            border: 1px solid #dfe4e9;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            color: #26313d;
+
+            font-family: Inter, sans-serif;
+
+            font-size: 13px;
+
+            outline: none;
+
+            transition: .2s ease;
+        }
+
+
+        .article-field input:focus,
+        .article-field select:focus {
+
+            border-color: #c79b43;
+
+            box-shadow:
+                0 0 0 3px rgba(199,155,67,.10);
+        }
+
+
+        .field-row {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+        }
+
+
+        /* =====================================================
+           UPLOAD DA IMAGEM
+        ===================================================== */
+
+        .image-upload {
+
+            position: relative;
+
+            min-height: 210px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1.5px dashed #cdd4db;
+
+            border-radius: 14px;
+
+            background: #fafbfc;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .image-upload:hover {
+
+            border-color: #c79b43;
+
+            background: #fffdf8;
+        }
+
+        /* =====================================================
+           UPLOAD DO PDF
+        ===================================================== */
+
+        .pdf-upload {
+
+            position: relative;
+
+            min-height: 140px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1.5px dashed #cdd4db;
+
+            border-radius: 14px;
+
+            background: #fafbfc;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .pdf-upload:hover {
+
+            border-color: #c79b43;
+
+            background: #fffdf8;
+        }
+
+
+        .pdf-upload-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+
+        .pdf-upload-icon {
+
+            width: 45px;
+
+            height: 45px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 4px;
+
+            border-radius: 12px;
+
+            background: #ffe8cc;
+
+            color: #c79b43;
+
+            font-size: 20px;
+        }
+
+
+        .pdf-upload strong {
+
+            color: #35404b;
+
+            font-size: 12px;
+        }
+
+
+        .pdf-upload span {
+
+            color: #929ba5;
+
+            font-size: 10px;
+        }
+
+
+        .selected-file {
+
+            margin-top: 10px;
+
+            padding: 10px;
+
+            background: #e8f5e9;
+
+            border-radius: 8px;
+
+            color: #2e7d32;
+
+            font-size: 11px;
+
+            text-align: center;
+
+            display: none;
+        }
+
+
+        .selected-file.active {
+
+            display: block;
+        }
+
+        /* =====================================================
+           UPLOAD DA IMAGEM
+        ===================================================== */
+
+        .image-upload {
+
+            position: relative;
+
+            min-height: 210px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1.5px dashed #cdd4db;
+
+            border-radius: 14px;
+
+            background: #fafbfc;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+
+        .image-upload:hover {
+
+            border-color: #c79b43;
+
+            background: #fffdf8;
+        }
+
+
+        .image-upload-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+
+        .image-upload-icon {
+
+            width: 50px;
+
+            height: 50px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 4px;
+
+            border-radius: 14px;
+
+            background: #f0f2f4;
+
+            color: #8b949e;
+
+            font-size: 21px;
+        }
+
+
+        .image-upload strong {
+
+            color: #35404b;
+
+            font-size: 12px;
+        }
+
+
+        .image-upload span {
+
+            color: #929ba5;
+
+            font-size: 10px;
+        }
+
+
+        #imagePreview {
+
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        .image-upload-content {
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        #imagePreview {
+
+            display: block;
+        }
+
+
+        .change-image {
+
+            position: absolute;
+
+            right: 10px;
+
+            bottom: 10px;
+
+            z-index: 3;
+
+            padding: 7px 10px;
+
+            border: 0;
+
+            border-radius: 7px;
+
+            color: #fff;
+
+            background: rgba(0,0,0,.65);
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            display: none;
+        }
+
+
+        .image-upload.has-image
+        .change-image {
+
+            display: block;
+        }
+
+
+        /* =====================================================
+           EDITOR DE TEXTO
+        ===================================================== */
+
+        .text-editor {
+
+            border: 1px solid #dfe4e9;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: #fff;
+        }
+
+
+        .editor-toolbar {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 4px;
+
+            padding: 8px;
+
+            border-bottom:
+                1px solid #e7ebee;
+
+            background: #f8f9fa;
+
+            flex-wrap: wrap;
+        }
+
+
+        .toolbar-btn {
+
+            width: 34px;
+
+            height: 32px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: 0;
+
+            border-radius: 7px;
+
+            background: transparent;
+
+            color: #626d78;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+
+        .toolbar-btn:hover {
+
+            background: #e8ebee;
+
+            color: #1e2933;
+        }
+
+
+        .toolbar-separator {
+
+            width: 1px;
+
+            height: 22px;
+
+            margin: 0 3px;
+
+            background: #dce1e5;
+        }
+
+
+        #articleText {
+
+            min-height: 350px;
+
+            padding: 18px;
+
+            outline: none;
+
+            color: #303a45;
+
+            font-family: Inter, sans-serif;
+
+            font-size: 14px;
+
+            line-height: 1.8;
+
+            overflow-y: auto;
+        }
+
+
+        #articleText:empty::before {
+
+            content:
+                "Escreva o conteúdo do seu artigo aqui...";
+
+            color: #a4adb6;
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           OPÇÕES
+        ===================================================== */
+
+        .article-options {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 15px;
+
+            margin-top: 20px;
+
+            border-radius: 11px;
+
+            background: #f8f9fa;
+        }
+
+
+        .checkbox-option {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            cursor: pointer;
+        }
+
+
+        .checkbox-option input {
+
+            width: 18px;
+
+            height: 18px;
+
+            accent-color: #b18437;
+
+            cursor: pointer;
+        }
+
+
+        .checkbox-text strong {
+
+            display: block;
+
+            color: #303b46;
+
+            font-size: 11px;
+        }
+
+
+        .checkbox-text span {
+
+            display: block;
+
+            margin-top: 3px;
+
+            color: #8c96a0;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           BOTÕES
+        ===================================================== */
+
+        .editor-actions {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 22px;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid #edf0f3;
+        }
+
+
+        .btn-cancel,
+        .btn-publish {
+
+            min-height: 43px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 0 18px;
+
+            border-radius: 9px;
+
+            font-family: Inter, sans-serif;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+
+        .btn-cancel {
+
+            border: 1px solid #dfe4e9;
+
+            background: #fff;
+
+            color: #697581;
+        }
+
+
+        .btn-publish {
+
+            border: 0;
+
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #cda451,
+                    #a97a29
+                );
+
+            box-shadow:
+                0 7px 20px rgba(169,122,41,.22);
+        }
+
+
+        .btn-publish:hover {
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 25px rgba(169,122,41,.30);
+        }
+
+
+        /* =====================================================
+           PREVIEW
+        ===================================================== */
+
+        .article-preview-card {
+
+            position: sticky;
+
+            top: 20px;
+
+            overflow: hidden;
+
+            background: #fff;
+
+            border: 1px solid #e8ebef;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 12px 35px rgba(20,30,45,.06);
+        }
+
+
+        .preview-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 18px;
+        }
+
+
+        .draft-label {
+
+            padding: 5px 8px;
+
+            border-radius: 5px;
+
+            background: #f1f3f5;
+
+            color: #8c96a0;
+
+            font-size: 8px;
+
+            font-weight: 800;
+
+            letter-spacing: .08em;
+        }
+
+
+        .preview-cover {
+
+            position: relative;
+
+            height: 220px;
+
+            margin: 0 18px;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e8ecf0,
+                    #d6dce2
+                );
+
+            background-size: cover;
+
+            background-position: center;
+        }
+
+
+        .preview-cover::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(0,0,0,.35),
+                    transparent 60%
+                );
+        }
+
+
+        .preview-cover-icon {
+
+            position: absolute;
+
+            z-index: 2;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 48px;
+
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,.9);
+
+            color: #9b7531;
+
+            font-size: 18px;
+        }
+
+
+        .preview-article-body {
+
+            padding: 20px;
+        }
+
+
+        .preview-category {
+
+            color: #b18437;
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+            letter-spacing: .08em;
+        }
+
+
+        .preview-article-body h3 {
+
+            margin: 8px 0 9px;
+
+            color: #1c2630;
+
+            font-size: 20px;
+
+            line-height: 1.25;
+        }
+
+
+        .preview-text {
+
+            color: #78838e;
+
+            font-size: 11px;
+
+            line-height: 1.7;
+
+            display: -webkit-box;
+
+            -webkit-line-clamp: 6;
+
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+
+        .preview-meta {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 15px;
+
+            padding-top: 13px;
+
+            border-top:
+                1px solid #edf0f3;
+
+            color: #9ba4ad;
+
+            font-size: 9px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVO
+        ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .article-editor-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .article-preview-card {
+
+                position: static;
+
+                order: -1;
+            }
+
+
+            .preview-cover {
+
+                height: 260px;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .editor-card {
+
+                padding: 18px;
+            }
+
+
+            .field-row {
+
+                grid-template-columns: 1fr;
+
+                gap: 0;
+            }
+
+
+            .article-options {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .editor-actions {
+
+                flex-direction: column-reverse;
+            }
+
+
+            .btn-cancel,
+            .btn-publish {
+
+                width: 100%;
+            }
+
+
+            #articleText {
+
+                min-height: 300px;
+            }
+
+
+            .preview-cover {
+
+                height: 210px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand-block">
+
+            <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a
+                href="dashboard.html"
+                class="menu-item"
+            >
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="audiobook.html"
+                class="menu-item"
+            >
+                <i class="fas fa-headphones"></i>
+                <span>Audio Book</span>
+            </a>
+
+
+            <a
+                href="play-books.html"
+                class="menu-item"
+            >
+                <i class="fas fa-book-open"></i>
+                <span>Play Books</span>
+            </a>
+
+
+            <a
+                href="artigos.html"
+                class="menu-item active"
+            >
+                <i class="fas fa-file-lines"></i>
+                <span>Artigos</span>
+            </a>
+
+
+            <a
+                href="videos.html"
+                class="menu-item"
+            >
+                <i class="fas fa-video"></i>
+                <span>Vídeos</span>
+            </a>
+
+
+            <a
+                href="relatorios.html"
+                class="menu-item"
+            >
+                <i class="fas fa-chart-bar"></i>
+                <span>Relatórios</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-card">
+
+            <span class="mini-label">
+                Editor
+            </span>
+
+            <strong>
+                Novo artigo
+            </strong>
+
+            <p>
+                Crie conteúdo para sua biblioteca
+            </p>
+
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main-panel page-main">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">
+                    Biblioteca de conteúdo
+                </p>
+
+                <h1>
+                    Adicionar artigo
+                </h1>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             EDITOR
+        ================================================== -->
+
+        <section class="article-editor-layout">
+
+
+            <!-- =================================================
+                 PRÉ-VISUALIZAÇÃO
+            ================================================== -->
+
+            <aside class="article-preview-card">
+
+
+                <div class="preview-top">
+
+                    <span class="mini-label">
+                        Pré-visualização
+                    </span>
+
+                    <span class="draft-label">
+                        RASCUNHO
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="preview-cover"
+                    id="previewCover"
+                >
+
+                    <div class="preview-cover-icon">
+
+                        <i class="fas fa-file-lines"></i>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-article-body">
+
+                    <span
+                        class="preview-category"
+                        id="previewCategory"
+                    >
+                        ARTIGO
+                    </span>
+
+
+                    <h3 id="previewTitle">
+                        Título do seu artigo
+                    </h3>
+
+
+                    <div
+                        class="preview-text"
+                        id="previewText"
+                    >
+                        O conteúdo do seu artigo aparecerá
+                        aqui conforme você escreve.
+                    </div>
+
+
+                    <div class="preview-meta">
+
+                        <span>
+                            <i class="far fa-user"></i>
+                            <span id="previewAuthor">
+                                Gilberto
+                            </span>
+                        </span>
+
+                        <span>•</span>
+
+                        <span>
+                            <i class="far fa-clock"></i>
+                            Leitura
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =================================================
+                 FORMULÁRIO
+            ================================================== -->
+
+            <div class="editor-card">
+
+                <div class="editor-heading">
+
+                    <span class="mini-label">
+                        Novo conteúdo
+                    </span>
+
+                    <h2>
+                        Criar artigo
+                    </h2>
+
+                    <p>
+                        Adicione uma imagem, título e conteúdo
+                        para publicar um novo artigo na biblioteca.
+                    </p>
+
+                </div>
+
+
+                <form id="articleForm">
+
+
+                    <!-- IMAGEM -->
+
+                    <div class="article-field">
+
+                        <label>
+                            <i class="fas fa-image"></i> Imagem do artigo
+                        </label>
+
+
+                        <label
+                            class="image-upload"
+                            id="imageUpload"
+                            for="articleImage"
+                        >
+
+                            <div class="image-upload-content">
+
+                                <div class="image-upload-icon">
+
+                                    <i class="fas fa-image"></i>
+
+                                </div>
+
+                                <strong>
+                                    Clique para adicionar uma imagem
+                                </strong>
+
+                                <span>
+                                    JPG, PNG ou WEBP • Recomendado 1280 × 720
+                                </span>
+
+                            </div>
+
+
+                            <img
+                                id="imagePreview"
+                                alt="Prévia da imagem"
+                            >
+
+
+                            <button
+                                type="button"
+                                class="change-image"
+                                onclick="document.getElementById('articleImage').click()"
+                            >
+                                <i class="fas fa-camera"></i>
+                                Alterar imagem
+                            </button>
+
+
+                            <input
+                                type="file"
+                                id="articleImage"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- TÍTULO -->
+
+                    <div class="article-field">
+
+                        <label for="articleTitle">
+
+                            <i class="fas fa-heading"></i> Título do artigo
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="articleTitle"
+                            placeholder="Ex.: Os princípios da liderança cristã"
+                            maxlength="120"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORIA -->
+
+                    <div class="field-row">
+
+
+                        <div class="article-field">
+
+                            <label for="articleCategory">
+
+                                <i class="fas fa-folder"></i> Categoria
+
+                            </label>
+
+
+                            <select id="articleCategory">
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="Liderança">
+                                    Liderança
+                                </option>
+
+                                <option value="Teologia">
+                                    Teologia
+                                </option>
+
+                                <option value="Comportamento">
+                                    Comportamento
+                                </option>
+
+                                <option value="Discipulado">
+                                    Discipulado
+                                </option>
+
+                                <option value="Caráter">
+                                    Caráter
+                                </option>
+
+                                <option value="Missão">
+                                    Missão
+                                </option>
+
+                                <option value="Desenvolvimento">
+                                    Desenvolvimento
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="article-field">
+
+                            <label for="articleAuthor">
+
+                                <i class="fas fa-user"></i> Autor
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="articleAuthor"
+                                placeholder="Nome do autor"
+                                value="Gilberto"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TEXTO -->
+
+                    <div class="article-field">
+
+                        <label>
+
+                            <i class="fas fa-align-left"></i> Conteúdo do artigo
+
+                        </label>
+
+
+                        <div class="text-editor">
+
+
+                            <!-- TOOLBAR -->
+
+                            <div class="editor-toolbar">
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('bold')"
+                                    title="Negrito"
+                                >
+                                    <i class="fas fa-bold"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('italic')"
+                                    title="Itálico"
+                                >
+                                    <i class="fas fa-italic"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('underline')"
+                                    title="Sublinhado"
+                                >
+                                    <i class="fas fa-underline"></i>
+                                </button>
+
+
+                                <span class="toolbar-separator"></span>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('formatBlock','h2')"
+                                    title="Título"
+                                >
+                                    <i class="fas fa-heading"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('insertUnorderedList')"
+                                    title="Lista"
+                                >
+                                    <i class="fas fa-list-ul"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('insertOrderedList')"
+                                    title="Lista numerada"
+                                >
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
+
+
+                                <span class="toolbar-separator"></span>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('justifyLeft')"
+                                    title="Alinhar à esquerda"
+                                >
+                                    <i class="fas fa-align-left"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('justifyCenter')"
+                                    title="Centralizar"
+                                >
+                                    <i class="fas fa-align-center"></i>
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="toolbar-btn"
+                                    onclick="formatText('justifyRight')"
+                                    title="Alinhar à direita"
+                                >
+                                    <i class="fas fa-align-right"></i>
+                                </button>
+
+                            </div>
+
+
+                            <!-- ÁREA DE TEXTO -->
+
+                            <div
+                                id="articleText"
+                                contenteditable="true"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UPLOAD PDF -->
+
+                    <div class="article-field">
+
+                        <label>
+                            <i class="fas fa-file-pdf"></i> Arquivo PDF
+                            <span style="color: #929ba5; font-size: 11px;">
+                                (opcional)
+                            </span>
+                        </label>
+
+                        <label class="pdf-upload" for="pdfFile">
+
+                            <div class="pdf-upload-content">
+
+                                <div class="pdf-upload-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+
+                                <strong>
+                                    Clique para enviar um PDF
+                                </strong>
+
+                                <span>
+                                    PDF • Máximo 20 MB
+                                </span>
+
+                            </div>
+
+                            <input
+                                type="file"
+                                id="pdfFile"
+                                name="pdf"
+                                accept="application/pdf"
+                                hidden
+                            >
+
+                        </label>
+
+                        <div id="pdfFileName" class="selected-file"></div>
+
+                    </div>
+
+
+                    <!-- OPÇÕES -->
+
+                    <div class="article-options">
+
+                        <label class="checkbox-option">
+
+                            <input
+                                type="checkbox"
+                                id="featuredArticle"
+                            >
+
+                            <span class="checkbox-text">
+
+                                <strong>
+                                    Artigo em destaque
+                                </strong>
+
+                                <span>
+                                    Exibir na área principal da página
+                                </span>
+
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- BOTÕES -->
+
+                    <div class="editor-actions">
+
+                        <a
+                            href="artigos.html"
+                            class="btn-cancel"
+                        >
+                            Cancelar
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn-publish"
+                        >
+
+                            <i class="fas fa-paper-plane"></i>
+
+                            Publicar artigo
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const articleForm =
+    document.getElementById("articleForm");
+
+const imageInput =
+    document.getElementById("articleImage");
+
+const imageUpload =
+    document.getElementById("imageUpload");
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+const titleInput =
+    document.getElementById("articleTitle");
+
+const categoryInput =
+    document.getElementById("articleCategory");
+
+const authorInput =
+    document.getElementById("articleAuthor");
+
+const articleText =
+    document.getElementById("articleText");
+
+const previewCover =
+    document.getElementById("previewCover");
+
+const previewTitle =
+    document.getElementById("previewTitle");
+
+const previewCategory =
+    document.getElementById("previewCategory");
+
+const previewText =
+    document.getElementById("previewText");
+
+const previewAuthor =
+    document.getElementById("previewAuthor");
+
+const pdfInput =
+    document.getElementById("pdfFile");
+
+const pdfFileName =
+    document.getElementById("pdfFileName");
+
+
+/* =========================================================
+   IMAGEM
+========================================================= */
+
+imageInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        if (!file) return;
+
+
+        const imageURL =
+            URL.createObjectURL(file);
+
+
+        imagePreview.src =
+            imageURL;
+
+        imageUpload.classList.add(
+            "has-image"
+        );
+
+
+        previewCover.style.backgroundImage =
+            `url("${imageURL}")`;
+    }
+);
+
+
+/* =========================================================
+   PDF
+========================================================= */
+
+pdfInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+            pdfFileName.textContent = "";
+            pdfFileName.classList.remove("active");
+            return;
+        }
+
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        pdfFileName.textContent = 
+            `✓ ${file.name} • ${sizeMB} MB`;
+        pdfFileName.classList.add("active");
+    }
+);
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+titleInput.addEventListener(
+    "input",
+    function () {
+
+        previewTitle.textContent =
+            this.value.trim() ||
+            "Título do seu artigo";
+    }
+);
+
+
+/* =========================================================
+   CATEGORIA
+========================================================= */
+
+categoryInput.addEventListener(
+    "change",
+    function () {
+
+        previewCategory.textContent =
+            this.value
+                ? this.value.toUpperCase()
+                : "ARTIGO";
+    }
+);
+
+
+/* =========================================================
+   AUTOR
+========================================================= */
+
+authorInput.addEventListener(
+    "input",
+    function () {
+
+        previewAuthor.textContent =
+            this.value.trim() ||
+            "Autor";
+    }
+);
+
+
+/* =========================================================
+   TEXTO
+========================================================= */
+
+articleText.addEventListener(
+    "input",
+    updatePreview
+);
+
+
+function updatePreview() {
+
+    const text =
+        articleText.innerText.trim();
+
+
+    previewText.textContent =
+        text ||
+        "O conteúdo do seu artigo aparecerá aqui conforme você escreve.";
+}
+
+
+/* =========================================================
+   FORMATAÇÃO
+========================================================= */
+
+function formatText(command, value = null) {
+
+    document.execCommand(
+        command,
+        false,
+        value
+    );
+
+    articleText.focus();
+
+    updatePreview();
+}
+
+
+/* =========================================================
+   ENVIO
+========================================================= */
+
+articleForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        const submitBtn = articleForm.querySelector('button[type="submit"]');
+        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : null;
+
+        const title =
+            titleInput.value.trim();
+
+        const text =
+            articleText.innerText.trim();
+
+        // Validações simples
+        if (!title) {
+            showToast('warning', 'Campo obrigatório', 'Digite o título do artigo.');
+            titleInput.focus();
+            return;
+        }
+
+        if (!text) {
+            showToast('warning', 'Campo obrigatório', 'Escreva o conteúdo do artigo.');
+            articleText.focus();
+            return;
+        }
+
+        const maxImageSize = 5 * 1024 * 1024; // 5 MB
+        const maxPdfSize = 20 * 1024 * 1024; // 20 MB
+
+        if (imageInput.files[0] && imageInput.files[0].size > maxImageSize) {
+            showToast('error', 'Arquivo muito grande', 'A imagem excede o limite de 5 MB.');
+            return;
+        }
+
+        if (pdfInput.files[0] && pdfInput.files[0].size > maxPdfSize) {
+            showToast('error', 'Arquivo muito grande', 'O PDF excede o limite de 20 MB.');
+            return;
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Enviando...';
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('category', categoryInput.value);
+        formData.append('author', authorInput.value);
+        formData.append('content', articleText.innerHTML);
+        formData.append('featured', document.getElementById('featuredArticle').checked);
+
+        if (imageInput.files[0]) {
+            formData.append('image', imageInput.files[0]);
+        }
+
+        if (pdfInput.files[0]) {
+            formData.append('pdf', pdfInput.files[0]);
+        }
+
+        try {
+            // 1. Tentar salvar no Supabase se disponível
+            if (typeof saveSupabaseArticle === 'function' && typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                const articleTitle = document.getElementById('articleTitle').value;
+                const articleCategory = document.getElementById('articleCategory').value;
+                const articleAuthor = document.getElementById('articleAuthor').value;
+                const articleDescription = document.getElementById('articleDescription').value;
+                const articleContent = document.getElementById('articleContent') ? document.getElementById('articleContent').value : '';
+
+                await saveSupabaseArticle({
+                    title: articleTitle,
+                    category: articleCategory,
+                    author: articleAuthor,
+                    description: articleDescription,
+                    content: articleContent,
+                    imageFile: imageInput.files[0] || null,
+                    pdfFile: pdfInput.files[0] || null,
+                    featured: document.getElementById('featuredArticle') ? document.getElementById('featuredArticle').checked : false
+                });
+
+                showToast('success', 'Publicado!', 'Artigo publicado com sucesso no Supabase!');
+                setTimeout(() => { window.location.href = 'artigos.html'; }, 1800);
+                return;
+            }
+
+            // 2. Fallback para API Local Node
+            const response = await fetch('/api/articles', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                showToast('success', 'Publicado!', 'Artigo publicado com sucesso!');
+                setTimeout(() => { window.location.href = 'artigos.html'; }, 1800);
+            } else {
+                const txt = await response.text();
+                console.error('Falha ao publicar artigo:', response.status, txt);
+                showToast('error', 'Erro ao publicar', 'Código ' + response.status + '. Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('error', 'Erro de conexão', error.message || 'Tente novamente.');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                if (originalBtnHtml !== null) submitBtn.innerHTML = originalBtnHtml;
+            }
+        }
+    }
+);
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="script.js"></script>
+
+<!-- ── Toast Notification System ── -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;"></div>
+<script>
+function showToast(type, title, message, duration) {
+    duration = duration || 4000;
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+    const colors = { success: '#22c55e', error: '#ef4444', warning: '#f59e0b', info: '#38bdf8' };
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.style.cssText = `display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,rgba(13,24,52,0.98),rgba(6,12,30,0.99));border:1px solid ${colors[type] || '#38bdf8'}33;border-left:3px solid ${colors[type] || '#38bdf8'};border-radius:12px;padding:14px 18px;min-width:280px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.56,.64,1);`;
+    toast.innerHTML = `
+        <i class="fas ${icons[type] || 'fa-info-circle'}" style="color:${colors[type]};font-size:18px;margin-top:1px;flex-shrink:0;"></i>
+        <div style="flex:1;">
+            <div style="font-weight:700;color:#fff;font-size:13px;margin-bottom:2px;">${title}</div>
+            <div style="color:#b8c5d6;font-size:12px;line-height:1.4;">${message}</div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#6b7a90;cursor:pointer;font-size:14px;padding:0;flex-shrink:0;"><i class="fas fa-times"></i></button>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => toast.remove(), 300); }, duration);
+}
+if (!document.getElementById('toastKeyframes')) {
+    const s = document.createElement('style');
+    s.id = 'toastKeyframes';
+    s.textContent = '@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}@keyframes toastOut{from{transform:none;opacity:1}to{transform:translateX(110%);opacity:0}}';
+    document.head.appendChild(s);
+}
+</script>
+</body>
+</html>
+
+

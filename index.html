@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EliteFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="app-background"></div>
+
+      <header class="header">
+        <a class="logo" href="#top" aria-label="EliteFlow home">
+          <img class="logo-image" src="assets/logo.png" alt="EliteFlow logo" />
+        </a>
+
+        <nav class="nav" aria-label="Navegação principal">
+          <a href="#inicio">Inicio</a>
+          <a href="#recursos">Recursos</a>
+          <a href="#proposta">Proposta</a>
+          <a href="#contato">Contato</a>
+        </nav>
+
+        <!-- Login link: inline styles to ensure visibility even if global CSS is overridden -->
+        <a class="btn-gold" href="login.html" style="display:inline-block;padding:8px 12px;background:var(--gold);color:#101827;border-radius:8px;font-weight:700;text-decoration:none;">Entrar</a>
+      </header>
+
+      <main id="inicio">
+        <section class="hero">
+          <div class="hero-content">
+            <div class="eyebrow">Conexão &amp; estratégia</div>
+            <h1>Seu próximo nível começa aqui.</h1>
+            <p>
+              Um ambiente premium para liderar, aprender e transformar ideias em ação.
+              Centralize conteúdos, relatórios, materiais e ferramentas em uma experiência
+              elegante, clara e poderosa.
+            </p>
+            <div style="margin-top: 40px;">
+              <a class="btn-gold" href="login.html" style="display: flex; align-items: center; justify-content: center; width: 100%; max-width: 300px; margin: 0 auto 30px auto; text-align: center; padding: 16px 24px; min-height: 50px;">Acessar plataforma</a>
+              <a class="btn-gold" href="venda.html" style="display: flex; align-items: center; justify-content: center; width: 100%; max-width: 300px; margin: 0 auto; text-align: center; padding: 16px 24px; min-height: 50px; background: linear-gradient(135deg, #25D366, #128C7E);">Ver Planos</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="bio-summary" id="proposta">
+          <div class="bio-summary-visual">
+            <div class="bio-summary-frame">
+              <img src="assets/gilberto.jpg" alt="Pr. Gilberto Penido Bertho" />
+            </div>
+          </div>
+
+          <div class="bio-summary-copy">
+            <div class="eyebrow">Pr. Gilberto Penido Bertho</div>
+            <h2>Uma vida de fé, discipulado e impacto real para o Reino.</h2>
+
+            <div class="bio-pillars">
+              <article class="pillar-card">
+                <span class="pillar-index">01</span>
+                <h3>Raízes e formação</h3>
+                <p>
+                  Nascido em Paracambi, filho de um lar de fé, aprendeu desde cedo valores de
+                  amor a Deus, amor às pessoas e compromisso com a verdade.
+                </p>
+              </article>
+
+              <article class="pillar-card">
+                <span class="pillar-index">02</span>
+                <h3>Ministério e liderança</h3>
+                <p>
+                  Mais de quatro décadas dedicadas à pregação, ao discipulado e à formação de
+                  líderes em igrejas, missões e projetos evangelísticos.
+                </p>
+              </article>
+
+              <article class="pillar-card">
+                <span class="pillar-index">03</span>
+                <h3>Legado e mensagem</h3>
+                <p>
+                  Como pastor, professor e escritor, continua inspirando pessoas a viverem a
+                  realidade do Reino de Deus onde estiverem.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="summary-section" aria-labelledby="summary-title">
+          <div class="eyebrow">Resumo biográfico</div>
+          <h2 id="summary-title">10 pontos da trajetória do Pr. Gilberto Penido Bertho</h2>
+          <ol class="summary-list">
+            <li><strong>Nascido em 29 de junho de 1959</strong> em Paracambi, Rio de Janeiro.</li>
+            <li><strong>Filho de um lar de fé</strong>, com valores de amor a Deus, amor às pessoas e compromisso com a verdade.</li>
+            <li><strong>Casado com Mara Raquel desde 1985</strong>, pai de Jônatas e avô de Benjamim.</li>
+            <li><strong>Cresceu ao lado de seus irmãos</strong> Reinaldo, Aloísio, Reginaldo, Lea e Roberto.</li>
+            <li><strong>Formado em Teologia e Educação Religiosa</strong> e com pós-graduação em Psicanálise Clínica.</li>
+            <li><strong>Atuou em Minas Gerais</strong> como missionário e plantou igrejas em Varginha e Três Corações.</li>
+            <li><strong>Trabalhou com missões e campanhas evangelísticas</strong>, incluindo projetos de grande impacto no país.</li>
+            <li><strong>Foi professor e mentor</strong>, servindo como diretor e docente de seminário e formando líderes.</li>
+            <li><strong>Escreveu e publicou materiais</strong> como Discipulado na Prática, Os 5 Níveis da Liderança Cristã e Transformando Hábitos.</li>
+            <li><strong>Hoje continua servindo</strong> com a missão de anunciar Cristo, formar discípulos e viver o Reino de Deus onde está.</li>
+          </ol>
+        </section>
+
+        <section class="cards-grid" id="recursos">
+          <article class="card">
+            <div class="card-icon">◎</div>
+            <h2>Dashboard Executivo</h2>
+            <p>
+              Visão estratégica de indicadores, foco de atuação e acompanhamento em tempo real
+              para decisões com maior clareza.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon">◉</div>
+            <h2>Conteúdo Premium</h2>
+            <p>
+              Audiobooks, playbooks, artigos e recursos de desenvolvimento para crescimento pessoal,
+              ministerial e profissional.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon">✦</div>
+            <h2>Relatórios &amp; Projetos</h2>
+            <p>
+              Organização, gestão e apresentação de ideias com uma estrutura visual sofisticada e
+              alinhada à liderança moderna.
+            </p>
+          </article>
+        </section>
+
+        <section class="stats" aria-label="Estatísticas da plataforma">
+          <div class="stat">
+            <strong>6</strong>
+            <span>Módulos</span>
+          </div>
+          <div class="stat">
+            <strong>24/7</strong>
+            <span>Acesso</span>
+          </div>
+          <div class="stat">
+            <strong>Elite</strong>
+            <span>Experiência</span>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer" id="contato">
+        <div class="footer-content">
+          <div class="footer-info">
+            <h3>Contato</h3>
+            <p>Entre em contato pelas redes sociais</p>
+          </div>
+          <div class="footer-contact">
+            <a href="mailto:gilbertobertho@gmail.com" class="contact-item">
+              <i class="fas fa-envelope"></i>
+              gilbertobertho@gmail.com
+            </a>
+            <a href="https://www.facebook.com/gilberto.bertho/" target="_blank" class="contact-item">
+              <i class="fab fa-facebook"></i>
+              facebook.com/gilberto.bertho
+            </a>
+            <a href="https://www.instagram.com/" target="_blank" class="contact-item">
+              <i class="fab fa-instagram"></i>
+              Instagram
+            </a>
+            <a href="https://wa.me/553291035632" target="_blank" class="contact-item">
+              <i class="fab fa-whatsapp"></i>
+              (32) 9103-5632
+            </a>
+            <a href="https://www.youtube.com/" target="_blank" class="contact-item">
+              <i class="fab fa-youtube"></i>
+              YouTube
+            </a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          © 2026 EliteFlow — design premium para impacto, clareza e crescimento.
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios Profissionais - EliteFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .relatorio-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            margin-top: 25px;
+            align-items: start;
+        }
+
+        .relatorio-card {
+            background: #ffffff;
+            border: 1px solid #e8ebef;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 12px 35px rgba(20, 30, 45, .06);
+        }
+
+        .relatorio-heading {
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #edf0f3;
+        }
+
+        .relatorio-heading h2 {
+            margin: 7px 0 6px;
+            font-size: 22px;
+            color: #18202a;
+        }
+
+        .relatorio-heading p {
+            margin: 0;
+            color: #858f9a;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .form-group-relatorio {
+            margin-bottom: 18px;
+        }
+
+        .form-group-relatorio label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #35404b;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .form-group-relatorio input,
+        .form-group-relatorio select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d5dbe1;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #35404b;
+            font-family: inherit;
+            transition: .2s ease;
+        }
+
+        .form-group-relatorio input:focus,
+        .form-group-relatorio select:focus {
+            outline: none;
+            border-color: #c79b43;
+            box-shadow: 0 0 0 3px rgba(199, 155, 67, .1);
+        }
+
+        .form-row-relatorio {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .tabela-preview {
+            margin-top: 25px;
+            border: 1px solid #e8ebef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .tabela-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .tabela-preview th {
+            background: #f5f7fa;
+            padding: 12px;
+            text-align: left;
+            color: #35404b;
+            font-weight: 600;
+            border-bottom: 1px solid #e8ebef;
+        }
+
+        .tabela-preview td {
+            padding: 12px;
+            border-bottom: 1px solid #edf0f3;
+            color: #697581;
+        }
+
+        .tabela-preview tr:hover {
+            background: #fafbfc;
+        }
+
+        .btn-adicionar-linha {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: 2px dashed #cdd4db;
+            background: transparent;
+            color: #35404b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: .2s ease;
+        }
+
+        .btn-adicionar-linha:hover {
+            border-color: #c79b43;
+            background: #fffdf8;
+            color: #c79b43;
+        }
+
+        .btn-remover {
+            background: #f5e6e6;
+            color: #d32f2f;
+            border: 0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: .2s ease;
+        }
+
+        .btn-remover:hover {
+            background: #d32f2f;
+            color: #fff;
+        }
+
+        .info-box {
+            position: sticky;
+            top: 20px;
+            background: linear-gradient(135deg, #c79b43, #a97a29);
+            color: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(199, 155, 67, .15);
+        }
+
+        .info-box h3 {
+            margin: 0 0 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, .2);
+            border-radius: 8px;
+            font-size: 18px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-text strong {
+            display: block;
+            font-size: 11px;
+        }
+
+        .info-text span {
+            display: block;
+            font-size: 13px;
+            opacity: .9;
+            margin-top: 2px;
+        }
+
+        .form-actions-relatorio {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #edf0f3;
+        }
+
+        .btn-cancel-relatorio {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #d5dbe1;
+            background: transparent;
+            color: #35404b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: .2s ease;
+        }
+
+        .btn-cancel-relatorio:hover {
+            background: #f5f7fa;
+        }
+
+        .btn-gerar-relatorio {
+            flex: 1;
+            padding: 12px;
+            border: 0;
+            background: linear-gradient(135deg, #c79b43, #a97a29);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s ease;
+            box-shadow: 0 4px 12px rgba(199, 155, 67, .2);
+        }
+
+        .btn-gerar-relatorio:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(199, 155, 67, .3);
+        }
+
+        @media (max-width: 1000px) {
+            .relatorio-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .info-box {
+                position: static;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .relatorio-card {
+                padding: 18px;
+            }
+
+            .form-row-relatorio {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions-relatorio {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-block">
+                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+            </div>
+
+            <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Voltar</span>
+            </button>
+
+            <nav class="menu">
+                <a href="dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="audiobook.html" class="menu-item">
+                    <i class="fas fa-headphones"></i>
+                    <span>Audio Book</span>
+                </a>
+                <a href="play-books.html" class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Play Books</span>
+                </a>
+                <a href="videos.html" class="menu-item">
+                    <i class="fas fa-video"></i>
+                    <span>Vídeos</span>
+                </a>
+                <a href="artigos.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Artigos</span>
+                </a>
+                <a href="relatorios.html" class="menu-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Relatórios</span>
+                </a>
+                <a href="usuarios.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Usuários</span>
+                </a>
+                <a href="criar.html" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Criar</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+              <button class="logout-btn" onclick="logout()" title="Sair da aplicação">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+              </button>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="main-panel">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Análise de dados</p>
+                    <h1>Relatórios</h1>
+                </div>
+            </header>
+
+            <!-- Layout -->
+            <section class="relatorio-layout">
+                <!-- Formulário -->
+                <div class="relatorio-card">
+                    <div class="relatorio-heading">
+                        <h2>Criar Relatório</h2>
+                        <p>Preencha os dados para gerar um relatório profissional em Excel</p>
+                    </div>
+
+                    <form id="relatorioForm">
+                        <!-- Data -->
+                        <div class="form-group-relatorio">
+                            <label for="dataRelatorio">
+                                <i class="fas fa-calendar"></i> Data do Relatório
+                            </label>
+                            <input 
+                                type="date" 
+                                id="dataRelatorio" 
+                                required
+                            >
+                        </div>
+
+                        <!-- Período -->
+                        <div class="form-row-relatorio">
+                            <div class="form-group-relatorio">
+                                <label for="dataInicio">
+                                    <i class="fas fa-calendar-check"></i> Data Início
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="dataInicio" 
+                                    required
+                                >
+                            </div>
+                            <div class="form-group-relatorio">
+                                <label for="dataFim">
+                                    <i class="fas fa-calendar-times"></i> Data Fim
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="dataFim" 
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Pastor e Igreja -->
+                        <div class="form-row-relatorio">
+                            <div class="form-group-relatorio">
+                                <label for="nomePastor">
+                                    <i class="fas fa-user"></i> Nome do Pastor
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="nomePastor" 
+                                    placeholder="Gilberto"
+                                    value="Gilberto"
+                                    required
+                                >
+                            </div>
+                            <div class="form-group-relatorio">
+                                <label for="nomeIgreja">
+                                    <i class="fas fa-church"></i> Nome da Igreja
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="nomeIgreja" 
+                                    placeholder="Batista"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Tabela de Dados -->
+                        <div class="form-group-relatorio">
+                            <label>
+                                <i class="fas fa-table"></i> Dados de Conversão e Batismo
+                            </label>
+
+                            <div class="tabela-preview">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Conversão</th>
+                                            <th>Batismo</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelaDados">
+                                        <tr class="linha-dados">
+                                            <td><input type="text" placeholder="Nome completo" class="input-nome"></td>
+                                            <td><input type="date" class="input-conversao"></td>
+                                            <td><input type="date" class="input-batismo"></td>
+                                            <td><button type="button" class="btn-remover" onclick="removerLinha(this)">Remover</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <button type="button" class="btn-adicionar-linha" onclick="adicionarLinha()">
+                                <i class="fas fa-plus"></i> Adicionar Pessoa
+                            </button>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="form-actions-relatorio">
+                            <a href="dashboard.html" class="btn-cancel-relatorio">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn-gerar-relatorio">
+                                <i class="fas fa-file-excel"></i> Gerar Excel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- SheetJS para gerar Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Data padrão hoje
+        document.getElementById('dataRelatorio').valueAsDate = new Date();
+        document.getElementById('dataInicio').valueAsDate = new Date(new Date().setDate(new Date().getDate() - 30));
+        document.getElementById('dataFim').valueAsDate = new Date();
+
+        function adicionarLinha() {
+            const tabela = document.getElementById('tabelaDados');
+            const novaLinha = document.createElement('tr');
+            novaLinha.className = 'linha-dados';
+            novaLinha.innerHTML = `
+                <td><input type="text" placeholder="Nome completo" class="input-nome"></td>
+                <td><input type="date" class="input-conversao"></td>
+                <td><input type="date" class="input-batismo"></td>
+                <td><button type="button" class="btn-remover" onclick="removerLinha(this)">Remover</button></td>
+            `;
+            tabela.appendChild(novaLinha);
+        }
+
+        function removerLinha(btn) {
+            const tabela = document.getElementById('tabelaDados');
+            if (tabela.querySelectorAll('tr').length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert('Você deve ter pelo menos uma linha de dados!');
+            }
+        }
+
+        document.getElementById('relatorioForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dataRelatorio = document.getElementById('dataRelatorio').value;
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            const nomePastor = document.getElementById('nomePastor').value;
+            const nomeIgreja = document.getElementById('nomeIgreja').value;
+
+            // Coletar dados das linhas
+            const linhas = document.querySelectorAll('.linha-dados');
+            const dados = [];
+            let conversoes = 0;
+            let batismos = 0;
+
+            linhas.forEach((linha, index) => {
+                const nome = linha.querySelector('.input-nome').value.trim();
+                const conversao = linha.querySelector('.input-conversao').value;
+                const batismo = linha.querySelector('.input-batismo').value;
+
+                if (nome) {
+                    dados.push({
+                        numero: index + 1,
+                        nome,
+                        conversao: conversao ? new Date(conversao).toLocaleDateString('pt-BR') : '-',
+                        batismo: batismo ? new Date(batismo).toLocaleDateString('pt-BR') : '-',
+                        temConversao: conversao ? 1 : 0,
+                        temBatismo: batismo ? 1 : 0
+                    });
+
+                    if (conversao) conversoes++;
+                    if (batismo) batismos++;
+                }
+            });
+
+            if (dados.length === 0) {
+                alert('Adicione pelo menos uma pessoa aos dados!');
+                return;
+            }
+
+            // Criar planilha
+            const wb = XLSX.utils.book_new();
+
+            // ===== ABA 1: RESUMO =====
+            const resumoData = [
+                ['RELATÓRIO DE CONVERSÃO E BATISMO'],
+                [],
+                ['Data do Relatório:', new Date(dataRelatorio).toLocaleDateString('pt-BR')],
+                ['Período:', `${new Date(dataInicio).toLocaleDateString('pt-BR')} até ${new Date(dataFim).toLocaleDateString('pt-BR')}`],
+                ['Pastor:', nomePastor],
+                ['Igreja:', nomeIgreja],
+                [],
+                ['ESTATÍSTICAS'],
+                ['Total de Pessoas:', dados.length],
+                ['Conversões:', conversoes],
+                ['Batismos:', batismos],
+                ['Taxa de Conversão:', `${((conversoes / dados.length) * 100).toFixed(1)}%`],
+                ['Taxa de Batismo:', `${((batismos / dados.length) * 100).toFixed(1)}%`]
+            ];
+
+            const wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
+            wsResumo['!cols'] = [{ wch: 25 }, { wch: 25 }];
+            XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
+
+            // ===== ABA 2: DADOS DETALHADOS =====
+            const dadosComFormato = [
+                ['#', 'NOME', 'CONVERSÃO', 'BATISMO'],
+                ...dados.map(d => [d.numero, d.nome, d.conversao, d.batismo])
+            ];
+
+            const wsDados = XLSX.utils.aoa_to_sheet(dadosComFormato);
+            
+            // Congelar primeira linha e primeira coluna
+            wsDados['!freeze'] = { xSplit: 1, ySplit: 1 };
+            wsDados['!cols'] = [
+                { wch: 5 },
+                { wch: 30 },
+                { wch: 15 },
+                { wch: 15 }
+            ];
+
+            // Estilo para cabeçalho
+            for (let i = 0; i < 4; i++) {
+                const cell = wsDados[XLSX.utils.encode_cell({ r: 0, c: i })];
+                if (cell) {
+                    cell.s = {
+                        fill: { fgColor: { rgb: 'FFC79B43' } },
+                        font: { bold: true, color: { rgb: 'FFFFFFFF' } },
+                        alignment: { horizontal: 'center', vertical: 'center' }
+                    };
+                }
+            }
+
+            XLSX.utils.book_append_sheet(wb, wsDados, 'Dados');
+
+            // ===== ABA 3: ESTATÍSTICAS =====
+            const statsData = [
+                ['ESTATÍSTICAS DETALHADAS'],
+                [],
+                ['Métrica', 'Quantidade', 'Percentual'],
+                ['Conversões', conversoes, `${((conversoes / dados.length) * 100).toFixed(1)}%`],
+                ['Batismos', batismos, `${((batismos / dados.length) * 100).toFixed(1)}%`],
+                ['Sem Conversão', dados.length - conversoes, `${(((dados.length - conversoes) / dados.length) * 100).toFixed(1)}%`],
+                ['Sem Batismo', dados.length - batismos, `${(((dados.length - batismos) / dados.length) * 100).toFixed(1)}%`]
+            ];
+
+            const wsStats = XLSX.utils.aoa_to_sheet(statsData);
+            wsStats['!freeze'] = { xSplit: 1, ySplit: 1 };
+            wsStats['!cols'] = [{ wch: 25 }, { wch: 15 }, { wch: 15 }];
+
+            XLSX.utils.book_append_sheet(wb, wsStats, 'Estatísticas');
+
+            // Gerar arquivo
+            const nomeArquivo = `Relatorio_${nomePastor}_${nomeIgreja}_${new Date(dataRelatorio).toLocaleDateString('pt-BR').replace(/\//g, '-')}.xlsx`;
+            XLSX.writeFile(wb, nomeArquivo);
+
+            // Salvar no Supabase em segundo plano se disponível
+            if (typeof saveSupabaseReport === 'function' && typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                saveSupabaseReport({
+                    title: `Relatório ${nomeIgreja} (${dataInicio} a ${dataFim})`,
+                    pastorName: nomePastor,
+                    churchName: nomeIgreja,
+                    startDate: dataInicio,
+                    endDate: dataFim,
+                    conversionCount: conversoes,
+                    baptismCount: batismos,
+                    details: dados
+                }).then(() => {
+                    console.log('Relatório salvo no Supabase com sucesso');
+                }).catch(err => {
+                    console.error('Erro ao salvar relatório no Supabase:', err);
+                });
+            }
+
+            alert('✅ Relatório gerado com sucesso e salvo no sistema!');
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

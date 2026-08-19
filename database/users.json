@@ -1,0 +1,22 @@
+[
+  {
+    "id": "admin-001",
+    "fullName": "Super Admin",
+    "phone": "(32) 9103-5632",
+    "email": "edukadoshmda@gmail.com",
+    "password": "123456",
+    "status": "approved",
+    "isAdmin": true,
+    "createdAt": "2026-08-16T00:00:00.000Z"
+  },
+  {
+    "id": "admin-002",
+    "fullName": "Pr. Gilberto Penido Bertho",
+    "phone": "(32) 9103-5632",
+    "email": "gilbertobertho@gmail.com",
+    "password": "123456",
+    "status": "approved",
+    "isAdmin": true,
+    "createdAt": "2026-08-19T16:31:00.000Z"
+  }
+]
