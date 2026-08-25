@@ -958,7 +958,7 @@ app.post('/api/content', express.json(), async (req, res) => {
             return res.status(400).json({ error: 'Link do conteúdo é obrigatório' });
         }
 
-        // Se a capa não for fornecida, gerar uma baseada no tipo de conteúdo
+        // Se a capa não for fornecida, gerar uma baseada no tipo de conteúdo apenas se possível (ex: YouTube)
         if (!coverUrl || coverUrl.trim() === '') {
             if (contentType === 'video' && contentUrl) {
                 const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
@@ -967,16 +967,10 @@ app.post('/api/content', express.json(), async (req, res) => {
                     // Extrai a capa padrão do YouTube em alta resolução
                     coverUrl = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
                 } else {
-                    coverUrl = 'assets/playbooks/capas/gilberto.jpg'; // Vídeo genérico
+                    coverUrl = ''; // Deixa vazio para o frontend criar o gradiente
                 }
-            } else if (contentType === 'article') {
-                coverUrl = 'assets/playbooks/capas/eu-sou.jpg';
-            } else if (contentType === 'audiobook') {
-                coverUrl = 'assets/playbooks/capas/discipulado-pratico.png';
-            } else if (contentType === 'playbook') {
-                coverUrl = 'assets/playbooks/capas/lideranca-crista.jpg';
             } else {
-                coverUrl = 'assets/playbooks/capas/gilberto.jpg';
+                coverUrl = ''; // Deixa vazio para o frontend criar o gradiente dinâmico com ícones
             }
         }
 
