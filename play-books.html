@@ -243,16 +243,31 @@
           const isAdmin = localStorage.getItem('isAdmin') === 'true';
           const grid = document.querySelector('.cards-grid');
 
-          const getCorrectCover = (title, originalCover) => {
+          const getDriveThumbnail = (url) => {
+            if (!url) return null;
+            const match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && !url.includes('/folders/')) {
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+            }
+            return null;
+          };
+
+          const getCorrectCover = (title, originalCover, contentUrl) => {
             if (originalCover && originalCover.trim() !== '') return toImageUrl(originalCover);
+            
+            const driveThumb = getDriveThumbnail(contentUrl);
+            if (driveThumb) return driveThumb;
+
             const t = (title || '').toLowerCase();
             if (t.includes('hábito') || t.includes('habito')) return 'assets/playbooks/capas/transformando-habitos.jpg';
             if (t.includes('jonas') || t.includes('inconformado')) return 'assets/playbooks/capas/inconformado.jpg';
             if (t.includes('liderança') || t.includes('lideranca')) return 'assets/playbooks/capas/lideranca-crista.jpg';
             if (t.includes('eu sou')) return 'assets/playbooks/capas/eu-sou.jpg';
             if (t.includes('discipulado')) return 'assets/playbooks/capas/discipulado-pratico.png';
+            
             return 'assets/logo.png';
           };
+
 
           if (playbooks && playbooks.length > 0 && grid) {
             playbooks.forEach(pb => {
@@ -263,7 +278,7 @@
               const card = document.createElement('article');
               card.className = 'media-card';
               card.style.position = 'relative';
-              const finalCover = getCorrectCover(pb.title, pb.coverUrl);
+              const finalCover = getCorrectCover(pb.title, pb.coverUrl, pb.contentUrl);
               const embedUrl = toEmbedUrl(pb.contentUrl);
               card.innerHTML = `
                 <div class="media-thumb" style="background-image: url('${finalCover}'); position: relative; background-size: contain; background-repeat: no-repeat; background-position: center;">
