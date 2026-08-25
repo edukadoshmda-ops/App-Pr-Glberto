@@ -1,4 +1,4 @@
-# 📚 Integração de Audiobooks e Play Books - EliteFlow
+# 📚 Integração de Audiobooks e Play Books - PrGilbertoPenido
 
 ## ✅ Status: CONTEÚDO INTEGRADO
 
@@ -75,7 +75,7 @@ Os seguintes audiobooks profissionais foram localizados e catalogados:
 3. Reproduza os arquivos na ordem desejada
 
 **Opção 2 - Via Aplicação Web**
-1. Acesse a página "Audio Book" no EliteFlow
+1. Acesse a página "Audio Book" no PrGilbertoPenido
 2. Clique no audiobook desejado
 3. A página abrirá em uma nova aba com acesso aos arquivos
 
@@ -83,7 +83,7 @@ Os seguintes audiobooks profissionais foram localizados e catalogados:
 
 ## 📁 Estrutura de Diretórios
 
-### Project EliteFlow
+### Project PrGilbertoPenido
 ```
 App Gilberto Atualizado/
 ├── assets/
@@ -153,7 +153,7 @@ Portif-lio-Pr.-Gilberto-main/audiobook/
 ## ✨ Destaques
 
 ### Integração Completa
-✅ Conteúdo profissional integrado ao EliteFlow
+✅ Conteúdo profissional integrado ao PrGilbertoPenido
 ✅ 3 Play Books em formato texto acessível
 ✅ 4 Coleções de Audiobooks profissionais catalogadas
 ✅ Interface amigável e intuitiva
@@ -179,7 +179,7 @@ Portif-lio-Pr.-Gilberto-main/audiobook/
 ## 🎓 Como Usar
 
 ### Para o Usuário Final
-1. Login no EliteFlow
+1. Login no PrGilbertoPenido
 2. Acesse "Play Books" ou "Audio Book" no menu
 3. Clique no conteúdo desejado
 4. Comece sua aprendizagem!

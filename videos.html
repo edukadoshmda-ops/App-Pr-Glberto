@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vídeos - EliteFlow</title>
+    <title>Vídeos - PrGilbertoPenido</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -54,7 +54,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand-block">
-                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+                <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
             </div>
 
             <button class="mobile-back-btn" onclick="window.location.href='index.html'">
@@ -201,7 +201,7 @@
                 
                 // 3. Complementar com localStorage
                 try {
-                    const localItems = JSON.parse(localStorage.getItem('eliteflow_videos') || '[]');
+                    const localItems = JSON.parse(localStorage.getItem('prgilbertopenido_videos') || '[]');
                     if (localItems.length > 0) {
                         const existingIds = new Set(videos.map(v => String(v.id)));
                         const localMapped = localItems
@@ -230,7 +230,7 @@
                 const res = await fetch(`/api/videos/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'x-api-key': 'eliteflow-secret-key-2024' // O valor que estiver configurado no backend (hardcoded temporário para garantir auth, já que não sabemos se tem dotenv)
+                        'x-api-key': 'prgilbertopenido-secret-key-2024' // O valor que estiver configurado no backend (hardcoded temporário para garantir auth, já que não sabemos se tem dotenv)
                     }
                 });
                 if (res.ok) {

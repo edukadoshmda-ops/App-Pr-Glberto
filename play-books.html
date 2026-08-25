@@ -39,7 +39,7 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-block">
-          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+          <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
         </div>
 
         <button class="mobile-back-btn" onclick="window.location.href='index.html'">
@@ -222,7 +222,7 @@
 
           // Complementar com itens salvos localmente
           try {
-            const localItems = JSON.parse(localStorage.getItem('eliteflow_playbooks') || '[]');
+            const localItems = JSON.parse(localStorage.getItem('prgilbertopenido_playbooks') || '[]');
             if (localItems.length > 0) {
               const existingIds = new Set((playbooks || []).map(p => String(p.id)));
               const localMapped = localItems
@@ -504,9 +504,9 @@
           }
           // Remove do localStorage
           try {
-            let local = JSON.parse(localStorage.getItem('eliteflow_playbooks') || '[]');
+            let local = JSON.parse(localStorage.getItem('prgilbertopenido_playbooks') || '[]');
             local = local.filter(p => String(p.id) !== String(id));
-            localStorage.setItem('eliteflow_playbooks', JSON.stringify(local));
+            localStorage.setItem('prgilbertopenido_playbooks', JSON.stringify(local));
           } catch(e) {}
 
           // Remove o card da tela

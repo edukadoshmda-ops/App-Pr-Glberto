@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artigos - EliteFlow</title>
+    <title>Artigos - PrGilbertoPenido</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -69,7 +69,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand-block">
-                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+                <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
             </div>
 
             <button class="mobile-back-btn" onclick="window.location.href='index.html'">
@@ -227,7 +227,7 @@
 
                 // Complementar com itens salvos localmente (deduplicando por título)
                 try {
-                    let localItems = JSON.parse(localStorage.getItem('eliteflow_articles') || '[]');
+                    let localItems = JSON.parse(localStorage.getItem('prgilbertopenido_articles') || '[]');
 
                     // Deduplicar por título (mantém o mais recente de cada título)
                     const seenTitles = new Map();
@@ -239,7 +239,7 @@
                     });
                     localItems = Array.from(seenTitles.values());
                     // Salva versão deduplicada de volta
-                    localStorage.setItem('eliteflow_articles', JSON.stringify(localItems));
+                    localStorage.setItem('prgilbertopenido_articles', JSON.stringify(localItems));
 
                     if (localItems.length > 0) {
                         const existingIds = new Set(allArticles.map(a => String(a.id)));
@@ -333,9 +333,9 @@
 
             // Remove do localStorage
             try {
-                let local = JSON.parse(localStorage.getItem('eliteflow_articles') || '[]');
+                let local = JSON.parse(localStorage.getItem('prgilbertopenido_articles') || '[]');
                 local = local.filter(a => String(a.id) !== String(id));
-                localStorage.setItem('eliteflow_articles', JSON.stringify(local));
+                localStorage.setItem('prgilbertopenido_articles', JSON.stringify(local));
             } catch(e) {}
 
             // Remove do Supabase se disponível

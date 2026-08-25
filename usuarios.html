@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuários - EliteFlow</title>
+    <title>Usuários - PrGilbertoPenido</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -204,7 +204,7 @@
     <div class="app-shell">
         <aside class="sidebar">
             <div class="brand-block">
-                <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+                <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
             </div>
 
             <button class="mobile-back-btn" onclick="window.location.href='index.html'">
@@ -334,7 +334,7 @@
             // Carregar usuários
             async function loadUsers() {
                 try {
-                    const response = await fetch('/api/users?apiKey=eliteflow-secret-key-2024');
+                    const response = await fetch('/api/users?apiKey=prgilbertopenido-secret-key-2024');
                     const users = await response.json();
                     
                     const tbody = document.getElementById('usersTableBody');
@@ -394,7 +394,7 @@
                 if (!deleteUserId) return;
 
                 try {
-                    const response = await fetch(`/api/users/${deleteUserId}?apiKey=eliteflow-secret-key-2024`, {
+                    const response = await fetch(`/api/users/${deleteUserId}?apiKey=prgilbertopenido-secret-key-2024`, {
                         method: 'DELETE'
                     });
 
@@ -438,7 +438,7 @@
                 if (!statusUserId || !newStatus) return;
 
                 try {
-                    const response = await fetch(`/api/users/${statusUserId}?apiKey=eliteflow-secret-key-2024`, {
+                    const response = await fetch(`/api/users/${statusUserId}?apiKey=prgilbertopenido-secret-key-2024`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus })

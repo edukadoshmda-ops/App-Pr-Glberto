@@ -1,4 +1,4 @@
-# 🎨 DESIGN TOKENS - ELITEFLOW
+# 🎨 DESIGN TOKENS - PRGILBERTOPENIDO
 
 ## Documento de Referência de Design
 
@@ -555,6 +555,6 @@ Use sempre os tokens definidos, não valores hardcoded
 ---
 
 **Design Tokens v1.0**  
-**Versão**: EliteFlow 1.0 Premium  
+**Versão**: PrGilbertoPenido 1.0 Premium  
 **Data**: 14 de Agosto de 2026  
 **Status**: Completo e Aprovado

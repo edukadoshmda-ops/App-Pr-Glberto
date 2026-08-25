@@ -14,7 +14,7 @@ app.use(express.static('.'));
 
 // Autenticação simples via X-API-KEY
 function requireApiKey(req, res, next) {
-    const key = 'eliteflow-secret-key-2024';
+    const key = 'prgilbertopenido-secret-key-2024';
     const header = req.get('X-API-KEY') || req.get('x-api-key');
     if (header === key) return next();
     return res.status(401).json({ error: 'Unauthorized' });

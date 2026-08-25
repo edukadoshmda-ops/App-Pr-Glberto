@@ -1,5 +1,5 @@
 /* =========================================================
-   ELITEFLOW - JAVASCRIPT REFATORADO PROFISSIONAL
+   PRGILBERTOPENIDO - JAVASCRIPT REFATORADO PROFISSIONAL
    Validação, Tratamento de Erros, Performance
 ========================================================= */
 
@@ -9,7 +9,7 @@
 
 const CONFIG = {
   API_BASE: 'http://localhost:3000',
-  STORAGE_KEY: 'eliteflow_user',
+  STORAGE_KEY: 'prgilbertopenido_user',
   SESSION_TIMEOUT: 30 * 60 * 1000, // 30 minutos
   MAX_FILE_SIZE: 100 * 1024 * 1024, // 100MB
 };
@@ -632,4 +632,4 @@ window.formatFileSize = formatFileSize;
 window.debounce = debounce;
 window.throttle = throttle;
 
-console.log('EliteFlow App initialized - Script loaded successfully');
+console.log('PrGilbertoPenido App initialized - Script loaded successfully');

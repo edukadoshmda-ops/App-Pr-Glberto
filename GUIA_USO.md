@@ -1,4 +1,4 @@
-# 🚀 Guia de Uso - Projeto EliteFlow
+# 🚀 Guia de Uso - Projeto PrGilbertoPenido
 
 ## Como Começar
 
@@ -284,7 +284,7 @@ Se encontrar problemas:
 
 ## 🎉 Aproveite o Projeto!
 
-O projeto EliteFlow está pronto para uso. Navegue pelos módulos, explore as animações e aprecie o design premium!
+O projeto PrGilbertoPenido está pronto para uso. Navegue pelos módulos, explore as animações e aprecie o design premium!
 
 **Versão**: 1.0 Premium  
 **Data**: 14 de Agosto de 2026  

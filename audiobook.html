@@ -40,7 +40,7 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-block">
-          <img class="brand-logo" src="assets/logo.png" alt="EliteFlow logo" />
+          <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
         </div>
 
         <button class="mobile-back-btn" onclick="window.location.href='index.html'">
@@ -423,7 +423,7 @@
 
           // Complementar com itens salvos localmente
           try {
-            const localItems = JSON.parse(localStorage.getItem('eliteflow_audiobooks') || '[]');
+            const localItems = JSON.parse(localStorage.getItem('prgilbertopenido_audiobooks') || '[]');
             if (localItems.length > 0) {
               const existingIds = new Set((audiobooks || []).map(a => String(a.id)));
               const localMapped = localItems
@@ -614,9 +614,9 @@
           }
           // Remove do localStorage
           try {
-            let local = JSON.parse(localStorage.getItem('eliteflow_audiobooks') || '[]');
+            let local = JSON.parse(localStorage.getItem('prgilbertopenido_audiobooks') || '[]');
             local = local.filter(a => String(a.id) !== String(id));
-            localStorage.setItem('eliteflow_audiobooks', JSON.stringify(local));
+            localStorage.setItem('prgilbertopenido_audiobooks', JSON.stringify(local));
           } catch(e) {}
 
           // Remove o card da tela

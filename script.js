@@ -1542,7 +1542,7 @@ function initMobileSidebar() {
 
     topbar.innerHTML = `
       <div class="mobile-brand">
-        <img class="mobile-logo" src="${logoSrc}" alt="EliteFlow logo" />
+        <img class="mobile-logo" src="${logoSrc}" alt="PrGilbertoPenido logo" />
         <span class="mobile-page-title">${pageTitleText}</span>
       </div>
       <button class="mobile-menu-toggle" aria-label="Abrir Menu" type="button">

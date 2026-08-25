@@ -1,6 +1,6 @@
 /**
  * =========================================================
- * ELITEFLOW - SERVER REFATORADO PROFISSIONAL
+ * PRGILBERTOPENIDO - SERVER REFATORADO PROFISSIONAL
  * Validação, Segurança, Tratamento de Erros
  * =========================================================
  */
@@ -642,7 +642,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════╗
-║  🚀 EliteFlow Server iniciado!         ║
+║  🚀 PrGilbertoPenido Server iniciado!         ║
 ║  📍 Porta: ${PORT}
 ║  🌍 URL: http://localhost:${PORT}
 ║  ⏰ Hora: ${new Date().toLocaleString('pt-BR')}
