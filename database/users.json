@@ -18,5 +18,15 @@
     "status": "approved",
     "isAdmin": true,
     "createdAt": "2026-08-19T16:31:00.000Z"
+  },
+  {
+    "id": "admin-003",
+    "fullName": "Pr. Gilberto (Alternativo)",
+    "phone": "(32) 9103-5632",
+    "email": "gilbertbertho@gmail.com",
+    "password": "123456",
+    "status": "approved",
+    "isAdmin": true,
+    "createdAt": "2026-08-25T00:00:00.000Z"
   }
 ]

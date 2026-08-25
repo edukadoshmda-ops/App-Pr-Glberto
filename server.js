@@ -883,7 +883,7 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
 
         if (index !== -1) {
             // Não permitir excluir o super admin
-            const protectedEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+            const protectedEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
             if (users[index].isAdmin && protectedEmails.includes(users[index].email)) {
                 return res.status(403).json({ error: 'Não é possível excluir o super admin' });
             }

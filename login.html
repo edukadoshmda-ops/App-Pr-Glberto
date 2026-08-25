@@ -477,7 +477,7 @@
                             .eq('id', authData.user.id)
                             .single();
 
-                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
                         const isAdmin = profile ? (profile.is_admin || adminEmails.includes(email)) : adminEmails.includes(email);
                         const status = isAdmin ? 'approved' : (profile ? profile.status : 'approved');
                         const createdAt = profile ? new Date(profile.created_at) : new Date();
@@ -516,7 +516,7 @@
                     const data = await response.json();
 
                     if (response.ok && data.success) {
-                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
                         const isAdmin = data.user.isAdmin || adminEmails.includes(email);
                         const status = isAdmin ? 'approved' : (data.user.status || 'approved');
                         const createdAt = new Date(data.user.createdAt || new Date());
@@ -547,7 +547,8 @@
                 // 3. Fallback Direto Local (para garantir acesso imediato dos administradores mesmo offline)
                 const hardcodedAdmins = [
                     { email: 'edukadoshmda@gmail.com', pass: '123456', name: 'Super Admin' },
-                    { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' }
+                    { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' },
+                    { email: 'gilbertbertho@gmail.com', pass: '123456', name: 'Pr. Gilberto (Alternativo)' }
                 ];
                 const matchedAdmin = hardcodedAdmins.find(a => a.email.toLowerCase() === email.toLowerCase() && a.pass === password);
                 if (matchedAdmin) {
