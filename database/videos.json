@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": "1787601410639",
+    "contentType": "video",
+    "title": "A Jornada da Redenção",
+    "category": "Vida Cristã",
+    "contentUrl": "https://www.youtube.com/watch?v=SewJADw1HP0&t=62s",
+    "coverUrl": "https://img.youtube.com/vi/SewJADw1HP0/hqdefault.jpg",
+    "createdAt": "2026-08-24T19:56:50.639Z",
+    "duration": "00:00",
+    "description": ""
+  },
+  {
+    "id": "1787604856757",
+    "contentType": "video",
+    "title": "Nada Temos Até Que Tenhamos a Cristo. E tendo Cristo, temos tudo",
+    "category": "Vida Cristã",
+    "contentUrl": "https://www.youtube.com/watch?v=D_5-jkYRFYw",
+    "coverUrl": "https://img.youtube.com/vi/D_5-jkYRFYw/hqdefault.jpg",
+    "createdAt": "2026-08-24T20:54:16.757Z",
+    "duration": "00:00",
+    "description": ""
+  },
+  {
+    "id": "1787604940744",
+    "contentType": "video",
+    "title": "Projeto Igreja em Movimento",
+    "category": "Teologia",
+    "contentUrl": "https://www.youtube.com/watch?v=Ntm-hAt_Wcc",
+    "coverUrl": "https://img.youtube.com/vi/Ntm-hAt_Wcc/hqdefault.jpg",
+    "createdAt": "2026-08-24T20:55:40.744Z",
+    "duration": "00:00",
+    "description": ""
+  },
+  {
+    "id": "1787605055707",
+    "contentType": "video",
+    "title": "Igreja Virtual",
+    "category": "Discipulado",
+    "contentUrl": "https://www.youtube.com/watch?v=4JvOCgvfW-8&t=67s",
+    "coverUrl": "https://img.youtube.com/vi/4JvOCgvfW-8/hqdefault.jpg",
+    "createdAt": "2026-08-24T20:57:35.707Z",
+    "duration": "00:00",
+    "description": ""
+  }
+]

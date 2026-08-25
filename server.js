@@ -12,12 +12,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
-// Autenticação simples via X-API-KEY quando API_KEY estiver definida
+// Autenticação simples via X-API-KEY
 function requireApiKey(req, res, next) {
-    const key = process.env.API_KEY;
-    if (!key) return next();
+    const key = 'eliteflow-secret-key-2024';
     const header = req.get('X-API-KEY') || req.get('x-api-key');
-    if (header && header === key) return next();
+    if (header === key) return next();
     return res.status(401).json({ error: 'Unauthorized' });
 }
 
@@ -237,6 +236,13 @@ function saveProjects(projects) {
     fs.writeFileSync(projectsDbPath, JSON.stringify(projects, null, 2));
 }
 
+const audiobooksDbPath = path.join(__dirname, 'database', 'audiobooks.json');
+const playbooksDbPath = path.join(__dirname, 'database', 'playbooks.json');
+
+// Garante que os arquivos existam
+if (!fs.existsSync(audiobooksDbPath)) fs.writeFileSync(audiobooksDbPath, JSON.stringify([]));
+if (!fs.existsSync(playbooksDbPath)) fs.writeFileSync(playbooksDbPath, JSON.stringify([]));
+
 // Função para ler usuários do banco de dados
 function getUsers() {
     const data = fs.readFileSync(usersDbPath, 'utf8');
@@ -248,6 +254,12 @@ function saveUsers(users) {
     fs.writeFileSync(usersDbPath, JSON.stringify(users, null, 2));
 }
 
+function getAudiobooks() { return JSON.parse(fs.readFileSync(audiobooksDbPath, 'utf8')); }
+function saveAudiobooks(data) { fs.writeFileSync(audiobooksDbPath, JSON.stringify(data, null, 2)); }
+
+function getPlaybooks() { return JSON.parse(fs.readFileSync(playbooksDbPath, 'utf8')); }
+function savePlaybooks(data) { fs.writeFileSync(playbooksDbPath, JSON.stringify(data, null, 2)); }
+
 // Rota para listar todos os vídeos
 app.get('/api/videos', (req, res) => {
     try {
@@ -255,6 +267,224 @@ app.get('/api/videos', (req, res) => {
         res.json(videos);
     } catch (error) {
         res.status(500).json({ error: 'Erro ao buscar vídeos' });
+    }
+});
+
+const https = require('https');
+const http = require('http');
+
+app.get('/api/audiobooks', (req, res) => {
+    try { res.json(getAudiobooks()); } catch(e) { res.status(500).json({ error: 'Erro' }); }
+});
+
+// Proxy de Streaming para Áudios (Google Drive / Links Externos)
+app.get('/api/stream-audio', (req, res) => {
+    const rawUrl = req.query.url;
+    if (!rawUrl) return res.status(400).send('URL do áudio não informada');
+
+    let targetUrl = rawUrl;
+    const driveMatch = rawUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                       rawUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (driveMatch) {
+        targetUrl = `https://docs.google.com/uc?export=download&id=${driveMatch[1]}`;
+    }
+
+    function fetchStream(url, depth = 0) {
+        if (depth > 6) return res.status(500).send('Muitos redirecionamentos');
+        const client = url.startsWith('https') ? https : http;
+
+        const request = client.get(url, (response) => {
+            if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                let redirectUrl = response.headers.location;
+                if (!redirectUrl.startsWith('http')) {
+                    const parsed = new URL(url);
+                    redirectUrl = `${parsed.protocol}//${parsed.host}${redirectUrl}`;
+                }
+                return fetchStream(redirectUrl, depth + 1);
+            }
+
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Content-Type', response.headers['content-type'] || 'audio/mpeg');
+            res.setHeader('Accept-Ranges', 'bytes');
+            if (response.headers['content-length']) {
+                res.setHeader('Content-Length', response.headers['content-length']);
+            }
+            response.pipe(res);
+        });
+
+        request.on('error', (err) => {
+            console.error('Erro no streaming de áudio:', err.message);
+            if (!res.headersSent) res.status(500).send('Erro ao buscar áudio');
+        });
+    }
+
+    fetchStream(targetUrl);
+});
+
+// Verifica se um arquivo do Google Drive está acessível publicamente
+app.get('/api/check-drive-access', (req, res) => {
+    const fileId = req.query.id;
+    if (!fileId) return res.json({ accessible: false, error: 'ID não informado' });
+
+    const checkUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+    const opts = new URL(checkUrl);
+
+    const request = https.get({
+        hostname: opts.hostname,
+        path: opts.pathname + opts.search,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        }
+    }, (response) => {
+        let body = '';
+        response.on('data', chunk => { body += chunk; });
+        response.on('end', () => {
+            const status = response.statusCode;
+            // 200 com conteúdo de preview = acessível
+            // 403 ou redirect para accounts.google.com = não acessível
+            const location = response.headers.location || '';
+            const isBlocked =
+                status === 403 ||
+                status === 401 ||
+                location.includes('accounts.google.com') ||
+                body.includes('"errorCode":403') ||
+                body.includes('ServiceLogin');
+
+            res.json({ accessible: !isBlocked, status });
+        });
+    });
+
+    request.on('error', () => res.json({ accessible: false, error: 'network error' }));
+    request.setTimeout(8000, () => {
+        request.destroy();
+        res.json({ accessible: false, error: 'timeout' });
+    });
+});
+
+// Proxy de PDF para Google Drive / Links Externos (evita CORS e bloqueio do browser)
+app.get('/api/proxy-pdf', (req, res) => {
+    const rawUrl = req.query.url;
+    if (!rawUrl) return res.status(400).send('URL do PDF não informada');
+
+    let targetUrl = rawUrl;
+    const driveMatch = rawUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                       rawUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileId = driveMatch ? driveMatch[1] : null;
+
+    if (fileId) {
+        // Usa o usercontent.google.com que é mais confiável para download direto
+        targetUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=download&confirm=t`;
+    }
+
+    function fetchPdf(url, depth = 0) {
+        if (depth > 8) return res.status(500).send('Muitos redirecionamentos');
+        if (res.headersSent) return;
+
+        const client = url.startsWith('https') ? https : http;
+        let parsedUrl;
+        try { parsedUrl = new URL(url); } catch(e) { return res.status(400).send('URL inválida'); }
+
+        const reqOptions = {
+            hostname: parsedUrl.hostname,
+            path: parsedUrl.pathname + parsedUrl.search,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/pdf,*/*;q=0.8',
+                'Accept-Language': 'pt-BR,pt;q=0.9',
+            }
+        };
+
+        const request = client.get(reqOptions, (response) => {
+            // Segue redirecionamentos HTTP
+            if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                let redirectUrl = response.headers.location;
+                if (!redirectUrl.startsWith('http')) {
+                    redirectUrl = `${parsedUrl.protocol}//${parsedUrl.host}${redirectUrl}`;
+                }
+                response.resume(); // descarta body do redirect
+                return fetchPdf(redirectUrl, depth + 1);
+            }
+
+            const ct = response.headers['content-type'] || '';
+
+            // Drive retornou HTML (página de confirmação de vírus/antivírus)
+            if (ct.includes('text/html')) {
+                let htmlBody = '';
+                response.on('data', chunk => { htmlBody += chunk.toString(); });
+                response.on('end', () => {
+                    // Tenta extrair o link de confirmação do formulário Drive
+                    const patterns = [
+                        /href="(https:\/\/drive\.usercontent\.google\.com\/download[^"]+confirm=t[^"]+)"/,
+                        /href="(https:\/\/drive\.google\.com\/uc\?[^"]+confirm=t[^"]+)"/,
+                        /action="([^"]+download[^"]+confirm[^"]+)"/,
+                        /"downloadUrl":"([^"]+)"/,
+                    ];
+                    let nextUrl = null;
+                    for (const pat of patterns) {
+                        const m = htmlBody.match(pat);
+                        if (m) { nextUrl = m[1].replace(/&amp;/g, '&'); break; }
+                    }
+                    if (nextUrl) {
+                        return fetchPdf(nextUrl, depth + 1);
+                    }
+                    // Última tentativa: usercontent direto com confirm
+                    if (fileId && depth < 3) {
+                        return fetchPdf(`https://drive.usercontent.google.com/download?id=${fileId}&export=download&confirm=t&uuid=${Date.now()}`, depth + 1);
+                    }
+                    if (!res.headersSent) res.status(422).send('Não foi possível obter o PDF do Google Drive. Verifique se o arquivo está compartilhado publicamente.');
+                });
+                return;
+            }
+
+            // Recebeu o PDF — envia para o cliente
+            if (!res.headersSent) {
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Accept-Ranges', 'bytes');
+                res.setHeader('Content-Disposition', 'inline; filename="document.pdf"');
+                if (response.headers['content-length']) {
+                    res.setHeader('Content-Length', response.headers['content-length']);
+                }
+                response.pipe(res);
+            }
+        });
+
+        request.on('error', (err) => {
+            console.error('Erro no proxy de PDF:', err.message);
+            if (!res.headersSent) res.status(500).send('Erro ao buscar PDF: ' + err.message);
+        });
+        request.setTimeout(30000, () => {
+            request.destroy();
+            if (!res.headersSent) res.status(504).send('Timeout ao buscar PDF');
+        });
+    }
+
+    fetchPdf(targetUrl);
+});
+
+app.get('/api/playbooks', (req, res) => {
+    try { res.json(getPlaybooks()); } catch(e) { res.status(500).json({ error: 'Erro' }); }
+});
+
+app.delete('/api/playbooks/:id', (req, res) => {
+    try {
+        const playbooks = getPlaybooks();
+        const filtered = playbooks.filter(p => p.id !== req.params.id);
+        savePlaybooks(filtered);
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Erro ao deletar playbook' });
+    }
+});
+
+app.delete('/api/audiobooks/:id', (req, res) => {
+    try {
+        const audiobooks = getAudiobooks();
+        const filtered = audiobooks.filter(a => a.id !== req.params.id);
+        saveAudiobooks(filtered);
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Erro ao deletar audiobook' });
     }
 });
 
@@ -653,7 +883,8 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
 
         if (index !== -1) {
             // Não permitir excluir o super admin
-            if (users[index].isAdmin && users[index].email === 'edukadoshmda@gmail.com') {
+            const protectedEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+            if (users[index].isAdmin && protectedEmails.includes(users[index].email)) {
                 return res.status(403).json({ error: 'Não é possível excluir o super admin' });
             }
 
@@ -715,50 +946,74 @@ const contentUpload = multer({
     }
 });
 
-app.post('/api/content', contentUpload.fields([
-    { name: 'file', maxCount: 1 },
-    { name: 'cover', maxCount: 1 }
-]), async (req, res) => {
+app.post('/api/content', express.json(), async (req, res) => {
     try {
-        const { contentType, title, category } = req.body;
-        
+        let { contentType, title, category, contentUrl, coverUrl } = req.body;
+
         if (!contentType || !title || !category) {
             return res.status(400).json({ error: 'Campos obrigatórios faltando' });
+        }
+
+        if (!contentUrl) {
+            return res.status(400).json({ error: 'Link do conteúdo é obrigatório' });
+        }
+
+        // Se a capa não for fornecida, gerar uma baseada no tipo de conteúdo
+        if (!coverUrl || coverUrl.trim() === '') {
+            if (contentType === 'video' && contentUrl) {
+                const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+                const match = contentUrl.match(ytRegex);
+                if (match && match[1]) {
+                    // Extrai a capa padrão do YouTube em alta resolução
+                    coverUrl = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+                } else {
+                    coverUrl = 'assets/playbooks/capas/gilberto.jpg'; // Vídeo genérico
+                }
+            } else if (contentType === 'article') {
+                coverUrl = 'assets/playbooks/capas/eu-sou.jpg';
+            } else if (contentType === 'audiobook') {
+                coverUrl = 'assets/playbooks/capas/discipulado-pratico.png';
+            } else if (contentType === 'playbook') {
+                coverUrl = 'assets/playbooks/capas/lideranca-crista.jpg';
+            } else {
+                coverUrl = 'assets/playbooks/capas/gilberto.jpg';
+            }
         }
 
         const contentData = {
             id: Date.now().toString(),
             contentType,
-            title,
-            category,
-            filePath: req.files['file'] && req.files['file'][0] ? req.files['file'][0].path : null,
-            coverPath: req.files['cover'] && req.files['cover'][0] ? req.files['cover'][0].path : null,
+            title: title || 'Sem título',
+            category: category || 'Geral',
+            contentUrl,
+            coverUrl,
             createdAt: new Date().toISOString()
         };
 
         if (contentType === 'video') {
-            // Salvar no database/videos.json
             const videos = getVideos();
-            videos.push({
-                ...contentData,
-                duration: '00:00',
-                description: ''
-            });
+            videos.push({ ...contentData, duration: '00:00', description: '' });
             saveVideos(videos);
-        } else {
-            // Salvar no database/articles.json
+        } else if (contentType === 'article') {
             const articles = getArticles();
-            articles.push({
-                ...contentData,
-                description: ''
-            });
+            articles.push({ ...contentData, description: '' });
             saveArticles(articles);
+        } else if (contentType === 'audiobook') {
+            const audiobooks = getAudiobooks();
+            audiobooks.push({ ...contentData, duration: '00:00', description: '' });
+            saveAudiobooks(audiobooks);
+        } else if (contentType === 'playbook') {
+            const playbooks = getPlaybooks();
+            playbooks.push({ ...contentData, totalPages: 0, description: '' });
+            savePlaybooks(playbooks);
+        } else {
+            return res.status(400).json({ error: 'Tipo de conteúdo inválido' });
         }
 
         res.json({ success: true, content: contentData });
     } catch (error) {
-        console.error('Erro ao fazer upload:', error);
-        res.status(500).json({ error: 'Erro ao fazer upload do conteúdo' });
+        console.error('Erro ao salvar conteúdo:', error);
+        res.status(500).json({ error: 'Erro ao salvar conteúdo' });
     }
 });
 

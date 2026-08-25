@@ -61,6 +61,9 @@ const books = {
 async function findAvailableFile(candidates) {
   if (!Array.isArray(candidates)) return null;
   for (const p of candidates) {
+    if (p.startsWith('http') && !p.includes(window.location.hostname)) {
+      return p; // Assume external links are available
+    }
     try {
       // Try HEAD first (common for static servers)
       let resp = null;
@@ -235,17 +238,27 @@ async function openBookViewer(bookId) {
     // Cache resolved file on the currentBook for later reference
     currentBook.file = filePath;
 
+    let fetchUrl = filePath;
+    const isExternal = filePath.startsWith('http') && !filePath.includes(window.location.hostname);
+    if (isExternal) {
+        // Usar proxy local do servidor para evitar CORS e bloqueio do Google Drive
+        fetchUrl = `/api/proxy-pdf?url=${encodeURIComponent(filePath)}`;
+    }
+
     // Fetch the PDF as ArrayBuffer and pass bytes to pdf.js - more robust across servers
     try {
-      const resp = await fetch(filePath);
+      const resp = await fetch(fetchUrl);
       if (!resp.ok) throw new Error(`HTTP ${resp.status} fetching PDF`);
       const data = await resp.arrayBuffer();
       pdfDocument = await pdfjsLib.getDocument({ data }).promise;
     } catch (fetchErr) {
-      // Fallback: try direct URL with encodeURI
+      // Fallback: try direct URL with proxy
       try {
-        pdfDocument = await pdfjsLib.getDocument(encodeURI(filePath)).promise;
+        pdfDocument = await pdfjsLib.getDocument(fetchUrl).promise;
       } catch (e2) {
+        if (isExternal) {
+            throw new Error(`Não foi possível carregar o PDF. Tente fazer o download e abrir localmente.`);
+        }
         throw new Error(`Erro ao carregar PDF: ${fetchErr.message} / ${e2.message}`);
       }
     }
@@ -264,23 +277,11 @@ async function openBookViewer(bookId) {
 
 
   } catch (error) {
-
-    console.error(
-      "Erro ao carregar PDF:",
-      error
-    );
-
-
+    console.error("Erro ao carregar PDF:", error);
     clearCanvases();
-
-
-    alert(
-      "Não foi possível abrir o PDF.\n\n" +
-      "Verifique se o nome do arquivo e a pasta estão corretos."
-    );
-
+    closeBookViewer(); // Esconde o modal do leitor (para não ficar preso na tela)
+    throw error; // Lança o erro para que play-books.html e artigos.html ativem o fallback (iframe)
   }
-
 }
 
 
@@ -1145,21 +1146,76 @@ function setupAudioPlayer() {
    }
   }
 
+  const bookCovers = {
+    lideranca: 'assets/playbooks/capas/lideranca-crista.jpg',
+    habitos: 'assets/playbooks/capas/transformando-habitos.jpg',
+    jonas: 'assets/playbooks/capas/inconformado.jpg',
+    eusou: 'assets/playbooks/capas/eu-sou.jpg',
+    discipulado: 'assets/playbooks/capas/discipulado-pratico.png'
+  };
+
+  function updateCover(bookId) {
+    const coverThumb = document.getElementById("playerCoverThumb");
+    const featureCover = document.querySelector(".feature-cover");
+
+    let coverUrl = bookCovers[bookId];
+    if (!coverUrl && audioLibrary[bookId] && audioLibrary[bookId].cover) {
+      coverUrl = audioLibrary[bookId].cover;
+    }
+
+    if (coverUrl) {
+      // Tem capa — aplica normalmente
+      if (coverThumb) {
+        coverThumb.style.backgroundImage = `url('${coverUrl}')`;
+        coverThumb.style.background = `url('${coverUrl}') center/cover no-repeat`;
+        coverThumb.innerHTML = '';
+      }
+      if (featureCover) {
+        featureCover.style.backgroundImage = `url('${coverUrl}')`;
+      }
+    } else {
+      // Sem capa — placeholder com gradiente e ícone de fone
+      const title = (audioLibrary[bookId] && audioLibrary[bookId].title) || '';
+      let hash = 0;
+      for (let i = 0; i < title.length; i++) hash = title.charCodeAt(i) + ((hash << 5) - hash);
+      const hue = Math.abs(hash) % 360;
+      const gradBg = `linear-gradient(135deg, hsl(${hue},55%,18%) 0%, hsl(220,55%,14%) 100%)`;
+
+      if (coverThumb) {
+        coverThumb.style.background = gradBg;
+        coverThumb.style.backgroundImage = '';
+        coverThumb.style.display = 'flex';
+        coverThumb.style.alignItems = 'center';
+        coverThumb.style.justifyContent = 'center';
+        coverThumb.innerHTML = '<i class="fas fa-headphones" style="color:#f5b52e;font-size:18px;"></i>';
+      }
+      if (featureCover) {
+        featureCover.style.backgroundImage = gradBg;
+      }
+    }
+  }
+
   function updateMuteButton() {
    if (!muteBtn) return;
-   muteBtn.textContent = player.muted || audioState.muted ? "🔇" : "🔊";
+   muteBtn.innerHTML = (player.muted || audioState.muted) ? '<i class="fas fa-volume-xmark"></i>' : '<i class="fas fa-volume-high"></i>';
   }
 
   function updateLoopButton() {
    if (!loopBtn) return;
    loopBtn.style.opacity = audioState.loop ? "1" : "0.8";
    loopBtn.style.borderColor = audioState.loop ? "rgba(245,181,46,0.8)" : "rgba(255,255,255,0.04)";
+   loopBtn.style.color = audioState.loop ? "var(--gold)" : "var(--white)";
   }
 
   function updatePlayButton() {
    if (!playBtn) return;
-   playBtn.textContent = player.paused ? "▶" : "❚❚";
-   playBtn.setAttribute("title", player.paused ? "Reproduzir" : "Pausar");
+   if (player.paused) {
+     playBtn.innerHTML = '<i class="fas fa-play"></i>';
+     playBtn.setAttribute("title", "Reproduzir");
+   } else {
+     playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+     playBtn.setAttribute("title", "Pausar");
+   }
   }
 
   function updateTrackInfo() {
@@ -1169,6 +1225,9 @@ function setupAudioPlayer() {
    }
    if (artistEl) {
      artistEl.textContent = activeBook ? `Faixa ${audioState.trackIndex + 1}` : "Liderança";
+   }
+   if (audioState.bookId) {
+     updateCover(audioState.bookId);
    }
   }
 
@@ -1180,7 +1239,6 @@ function setupAudioPlayer() {
    if (!trackUrl) return;
 
    player.src = trackUrl;
-   player.load();
    updateTrackInfo();
    renderPlaylist();
 
@@ -1196,7 +1254,9 @@ function setupAudioPlayer() {
    }
 
    if (player.paused) {
-     player.play().catch(() => {});
+     player.play().catch((err) => {
+       console.warn('Erro ao reproduzir áudio:', err);
+     });
    } else {
      player.pause();
    }
@@ -1305,9 +1365,11 @@ function setupAudioPlayer() {
   if (volumeBar) {
    volumeBar.addEventListener("input", (event) => {
      const value = Number(event.target.value);
-     player.volume = Number.isFinite(value) ? value : 0.8;
-     player.muted = value <= 0;
-     audioState.muted = player.muted;
+     try {
+       player.volume = Number.isFinite(value) ? value : 0.8;
+       player.muted = value <= 0;
+       audioState.muted = player.muted;
+     } catch(e) {}
      updateMuteButton();
    });
   }
@@ -1325,7 +1387,7 @@ function setupAudioPlayer() {
    nextTrack();
   });
 
-  player.volume = 0.8;
+  try { player.volume = 0.8; } catch(e) {}
   updateMuteButton();
   updateLoopButton();
   updatePlayButton();
@@ -1349,8 +1411,10 @@ function playAudiobook(bookId) {
   audioState.trackIndex = 0;
   audioState.tracks = audioLibrary[bookId].tracks;
   player.src = audioState.tracks[0];
-  player.load();
-  player.volume = 0.8;
+  try { player.volume = 0.8; } catch(e) {}
+
+  // Usa a função centralizada que trata capa ausente com placeholder
+  updateCover(bookId);
 
   const titleEl = document.getElementById("currentTrackTitle");
   const artistEl = document.getElementById("currentTrackArtist");
@@ -1358,7 +1422,6 @@ function playAudiobook(bookId) {
   if (artistEl) artistEl.textContent = "Faixa 1";
 
   const playlistList = document.getElementById("playlistList");
-  // Ensure the container has the expected class so CSS rules apply
   if (playlistList && !playlistList.classList.contains('playlist-list')) {
     playlistList.classList.add('playlist-list');
   }
@@ -1375,7 +1438,6 @@ function playAudiobook(bookId) {
      button.addEventListener("click", () => {
        audioState.trackIndex = index;
        player.src = audioLibrary[bookId].tracks[index];
-       player.load();
        player.play().catch(() => {});
        playlistList.querySelectorAll(".track-item").forEach((btn) => btn.classList.remove("active"));
        button.classList.add("active");
@@ -1389,7 +1451,9 @@ function playAudiobook(bookId) {
    playlistCount.textContent = `${audioLibrary[bookId].tracks.length} faixa${audioLibrary[bookId].tracks.length === 1 ? "" : "s"}`;
   }
 
-  player.play().catch(() => {});
+  player.play().catch((err) => {
+    console.warn("Autoplay bloqueado pelo navegador móvel, aguardando interação do usuário:", err);
+  });
 }
 
 /* =========================================================

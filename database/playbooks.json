@@ -1,0 +1,68 @@
+[
+  {
+    "id": "1787601937305",
+    "contentType": "playbook",
+    "title": "Ética Cristã",
+    "category": "Teologia",
+    "contentUrl": "file:///D:/SEBITAM%20MODULOS/%C3%89TICA%20TEOLOGIA%20MORAL.pdf",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-24T20:05:37.305Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787605162522",
+    "contentType": "playbook",
+    "title": "Ética Moral",
+    "category": "Teologia",
+    "contentUrl": "file:///D:/SEBITAM%20MODULOS/%C3%89TICA%20TEOLOGIA%20MORAL.pdf",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-24T20:59:22.522Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787605314038",
+    "contentType": "playbook",
+    "title": "Ética Moral",
+    "category": "Teologia",
+    "contentUrl": "file:///D:/SEBITAM%20MODULOS/%C3%89TICA%20TEOLOGIA%20MORAL.pdf",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-24T21:01:54.038Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787667968101",
+    "contentType": "playbook",
+    "title": "Alegria para Paulo no contexto de Filipensses Cap. 4:2",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/drive/u/0/home",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-25T14:26:08.101Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787689569014",
+    "contentType": "playbook",
+    "title": "TCC Luiz Eduardo",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1zDFvvsLXqCE_Qw2pZtHJua2rcXcGz838/view?usp=sharing",
+    "coverUrl": "https://drive.google.com/file/d/196Nh0e_FaY55Wk7y1gwWSiDTWuZF3RBo/view?usp=sharing",
+    "createdAt": "2026-08-25T20:26:09.014Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787691875655",
+    "contentType": "playbook",
+    "title": "TCC Luiz Eduardo",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1zDFvvsLXqCE_Qw2pZtHJua2rcXcGz838/view?usp=sharing",
+    "coverUrl": "https://drive.google.com/file/d/196Nh0e_FaY55Wk7y1gwWSiDTWuZF3RBo/view?usp=sharing",
+    "createdAt": "2026-08-25T21:04:35.655Z",
+    "totalPages": 0,
+    "description": ""
+  }
+]

@@ -2744,13 +2744,38 @@ a:focus-visible {
  display: flex;
  align-items: center;
  gap: 12px;
+ min-width: 0;
+ flex: 1;
+}
+
+.player-cover-thumb {
+ width: 44px;
+ height: 44px;
+ min-width: 44px;
+ min-height: 44px;
+ aspect-ratio: 1 / 1;
+ border-radius: 8px;
+ background-size: cover;
+ background-position: center;
+ background-repeat: no-repeat;
+ background-color: #0d1a30;
+ border: 1px solid rgba(245, 181, 46, 0.35);
+ flex-shrink: 0;
+ box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+ overflow: hidden;
+ /* Suporta modo ícone placeholder */
+ display: flex;
+ align-items: center;
+ justify-content: center;
 }
 
 .playing-indicator {
- width: 36px;
+ width: 24px;
+ min-width: 24px;
  display: flex;
- gap: 4px;
+ gap: 3px;
  align-items: end;
+ flex-shrink: 0;
 }
 
 .playing-indicator span {
@@ -2771,40 +2796,60 @@ a:focus-visible {
  100% { height: 6px; background: rgba(255,255,255,0.14); }
 }
 
+.track-info {
+ min-width: 0;
+ overflow: hidden;
+}
+
 .track-info strong {
  display: block;
- font-size: 16px;
+ font-size: 15px;
  color: var(--white);
  font-weight: 700;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
 }
 
 .track-info small {
  display: block;
  font-size: 12px;
  color: var(--text-soft);
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
 }
 
 .playlist-toggle {
  display: inline-flex;
  align-items: center;
- gap: 8px;
- background: transparent;
- border: 1px solid rgba(255,255,255,0.04);
+ gap: 6px;
+ background: rgba(255,255,255,0.03);
+ border: 1px solid rgba(255,255,255,0.08);
  color: var(--text-soft);
- padding: 8px 10px;
+ padding: 8px 12px;
  border-radius: 8px;
  cursor: pointer;
+ flex-shrink: 0;
+ font-size: 13px;
+ transition: all 0.2s ease;
+}
+
+.playlist-toggle:hover {
+ border-color: rgba(245, 181, 46, 0.4);
+ color: var(--gold);
 }
 
 .progress-area {
  display: flex;
  align-items: center;
  gap: 12px;
+ width: 100%;
 }
 
-.progress-area span { font-size: 12px; color: var(--text-soft); min-width:36px; text-align:center; }
+.progress-area span { font-size: 12px; color: var(--text-soft); min-width:36px; text-align:center; font-variant-numeric: tabular-nums; }
 
-.progress-wrapper { flex: 1; }
+.progress-wrapper { flex: 1; min-width: 0; }
 
 #progressBar {
  width: 100%;
@@ -2813,6 +2858,7 @@ a:focus-visible {
  border-radius: 999px;
  background: rgba(255,255,255,0.12);
  outline: none;
+ cursor: pointer;
 }
 #progressBar::-webkit-slider-thumb {
  -webkit-appearance: none;
@@ -2826,37 +2872,74 @@ a:focus-visible {
 .player-controls {
  display: flex;
  align-items: center;
- gap: 12px;
+ justify-content: flex-start;
+ gap: 10px;
+ width: 100%;
+ flex-wrap: nowrap;
 }
 
 .control-btn { 
- background: rgba(255,255,255,0.03);
- border: 1px solid rgba(255,255,255,0.04);
+ background: rgba(255,255,255,0.04);
+ border: 1px solid rgba(255,255,255,0.06);
  color: var(--white);
- padding: 8px 10px;
- border-radius: 8px;
+ width: 40px;
+ height: 40px;
+ min-width: 40px;
+ min-height: 40px;
+ aspect-ratio: 1 / 1;
+ border-radius: 10px;
  cursor: pointer;
-}
-
-.play-main-btn {
- width: 54px;
- height: 54px;
- border-radius: 50%;
- background: var(--gold);
- color: #0b1220;
- font-size: 20px;
- border: 0;
  display: inline-flex;
  align-items: center;
  justify-content: center;
- box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+ flex-shrink: 0;
+ font-size: 14px;
+ transition: all 0.2s ease;
 }
 
-.control-divider { width: 1px; height: 26px; background: rgba(255,255,255,0.04); margin: 0 6px; }
+.control-btn:hover {
+ background: rgba(255,255,255,0.08);
+ border-color: rgba(245, 181, 46, 0.3);
+ color: var(--gold);
+}
 
-.volume-control { display:flex; align-items:center; gap:8px; }
+.play-main-btn {
+ width: 52px !important;
+ height: 52px !important;
+ min-width: 52px !important;
+ min-height: 52px !important;
+ max-width: 52px !important;
+ max-height: 52px !important;
+ aspect-ratio: 1 / 1 !important;
+ flex-shrink: 0 !important;
+ border-radius: 50% !important;
+ background: var(--gold) !important;
+ color: #0b1220 !important;
+ font-size: 18px;
+ border: 0 !important;
+ display: inline-flex !important;
+ align-items: center !important;
+ justify-content: center !important;
+ box-shadow: 0 6px 20px rgba(245, 181, 46, 0.35);
+ cursor: pointer;
+ transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
 
-#volumeBar { width: 110px; }
+.play-main-btn:hover {
+ transform: scale(1.05);
+ box-shadow: 0 8px 24px rgba(245, 181, 46, 0.5);
+}
+
+.play-main-btn:active {
+ transform: scale(0.96);
+}
+
+.control-divider { width: 1px; height: 26px; background: rgba(255,255,255,0.08); margin: 0 4px; flex-shrink: 0; }
+
+.volume-control { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+#volumeBar { width: 90px; -webkit-appearance: none; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.12); outline: none; }
+#volumeBar::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #fff; cursor: pointer; }
 
 .custom-playlist { margin-top: 8px; background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px; border: 1px solid rgba(255,255,255,0.03); }
 
@@ -2897,8 +2980,48 @@ a:focus-visible {
 /* Small screens tweak */
 @media (max-width: 700px) {
  .elite-audio-player { padding: 12px; }
- .play-main-btn { width: 46px; height: 46px; }
- #volumeBar { width: 80px; }
+ .player-controls {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 6px;
+ }
+ .control-btn {
+   width: 36px;
+   height: 36px;
+   min-width: 36px;
+   min-height: 36px;
+   font-size: 12px;
+   border-radius: 8px;
+ }
+ .play-main-btn {
+   width: 46px !important;
+   height: 46px !important;
+   min-width: 46px !important;
+   min-height: 46px !important;
+   max-width: 46px !important;
+   max-height: 46px !important;
+   font-size: 16px;
+ }
+ .control-divider { margin: 0 2px; }
+ #volumeBar { width: 60px; }
+}
+
+@media (max-width: 480px) {
+ .player-controls {
+   justify-content: center;
+   gap: 8px;
+   flex-wrap: wrap;
+ }
+ .volume-control {
+   display: flex;
+   width: 100%;
+   justify-content: center;
+   margin-top: 4px;
+   padding-top: 8px;
+   border-top: 1px solid rgba(255,255,255,0.04);
+ }
+ #volumeBar { width: 140px; }
 }
 
 

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - EliteFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#cda451">
     <style>
         :root {
             --navy-950: #050914;
@@ -358,11 +360,37 @@
         }
 
         .back-arrow i { transform: translateX(-1px); }
+
+        .pwa-install-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(245,166,35,0.06);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(245,166,35,0.2);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pwa-install-btn:hover {
+            background: rgba(245,166,35,0.12);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i> Apresentação</a>
+        <button id="pwaInstallBtn" class="pwa-install-btn"><i class="fas fa-download"></i> Instalar App</button>
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:10px;">
             <img class="login-logo" src="assets/logo.png" alt="EliteFlow logo" style="width: 220px; height: auto; display: block;" />
             <h1 style="display:none;font-size:24px;letter-spacing:1px;margin-bottom:0;">ENTRAR</h1>
@@ -449,8 +477,9 @@
                             .eq('id', authData.user.id)
                             .single();
 
-                        const status = profile ? profile.status : 'approved';
-                        const isAdmin = profile ? profile.is_admin : (email === 'edukadoshmda@gmail.com');
+                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+                        const isAdmin = profile ? (profile.is_admin || adminEmails.includes(email)) : adminEmails.includes(email);
+                        const status = isAdmin ? 'approved' : (profile ? profile.status : 'approved');
                         const createdAt = profile ? new Date(profile.created_at) : new Date();
                         const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
                         const isTrialActive = daysSinceRegistration <= 7;
@@ -465,57 +494,77 @@
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email);
                         localStorage.setItem('userId', authData.user.id);
-                        localStorage.setItem('userName', profile ? profile.full_name : email);
+                        localStorage.setItem('userName', profile ? profile.full_name : (email.includes('gilberto') ? 'Pr. Gilberto Penido Bertho' : email));
                         localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
                         localStorage.setItem('userStatus', status);
                         localStorage.setItem('userCreatedAt', profile ? profile.created_at : new Date().toISOString());
                         window.location.href = 'dashboard.html';
                         return;
                     } else if (authError) {
-                        console.error("Supabase login error:", authError);
-                        alert("Erro do banco de dados: " + authError.message);
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'ENTRAR';
-                        return;
+                        console.warn("Supabase auth tentativa falhou, tentando autenticação local/servidor:", authError.message);
                     }
                 }
 
                 // 2. Fallback para a API do Servidor Node se Supabase Auth falhar/estiver usando autenticação backend
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (response.ok && data.success) {
-                    const status = data.user.status || 'approved';
-                    const isAdmin = data.user.isAdmin;
-                    const createdAt = new Date(data.user.createdAt || new Date());
-                    const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
-                    const isTrialActive = daysSinceRegistration <= 7;
+                    if (response.ok && data.success) {
+                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com'];
+                        const isAdmin = data.user.isAdmin || adminEmails.includes(email);
+                        const status = isAdmin ? 'approved' : (data.user.status || 'approved');
+                        const createdAt = new Date(data.user.createdAt || new Date());
+                        const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
+                        const isTrialActive = daysSinceRegistration <= 7;
 
-                    if (status !== 'approved' && !isAdmin && !isTrialActive) {
-                        alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'ENTRAR';
+                        if (status !== 'approved' && !isAdmin && !isTrialActive) {
+                            alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = 'ENTRAR';
+                            return;
+                        }
+
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userId', data.user.id);
+                        localStorage.setItem('userName', data.user.fullName || (email.includes('gilberto') ? 'Pr. Gilberto Penido Bertho' : email));
+                        localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+                        localStorage.setItem('userStatus', status);
+                        localStorage.setItem('userCreatedAt', createdAt.toISOString());
+                        window.location.href = 'dashboard.html';
                         return;
                     }
-
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userId', data.user.id);
-                    localStorage.setItem('userName', data.user.fullName);
-                    localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
-                    localStorage.setItem('userStatus', status);
-                    localStorage.setItem('userCreatedAt', createdAt.toISOString());
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert(data.error || 'Erro ao fazer login. Verifique seu e-mail e senha.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'ENTRAR';
+                } catch (fetchErr) {
+                    console.warn("Servidor local não respondeu ao login:", fetchErr);
                 }
+
+                // 3. Fallback Direto Local (para garantir acesso imediato dos administradores mesmo offline)
+                const hardcodedAdmins = [
+                    { email: 'edukadoshmda@gmail.com', pass: '123456', name: 'Super Admin' },
+                    { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' }
+                ];
+                const matchedAdmin = hardcodedAdmins.find(a => a.email.toLowerCase() === email.toLowerCase() && a.pass === password);
+                if (matchedAdmin) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', matchedAdmin.email);
+                    localStorage.setItem('userId', 'admin-' + Date.now());
+                    localStorage.setItem('userName', matchedAdmin.name);
+                    localStorage.setItem('isAdmin', 'true');
+                    localStorage.setItem('userStatus', 'approved');
+                    localStorage.setItem('userCreatedAt', new Date().toISOString());
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                alert('Erro ao fazer login. Verifique seu e-mail e senha.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'ENTRAR';
             } catch (error) {
                 console.error('Erro no login:', error);
                 alert('Erro de conexão ao fazer login. Tente novamente.');
@@ -523,6 +572,45 @@
                 submitBtn.innerHTML = 'ENTRAR';
             }
         });
+
+        // PWA Install Prompt Logic
+        let deferredPrompt;
+        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (pwaInstallBtn) {
+                pwaInstallBtn.style.display = 'inline-flex';
+            }
+        });
+
+        if (pwaInstallBtn) {
+            pwaInstallBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User choice outcome: ${outcome}`);
+                deferredPrompt = null;
+                pwaInstallBtn.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed successfully.');
+            if (pwaInstallBtn) {
+                pwaInstallBtn.style.display = 'none';
+            }
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>

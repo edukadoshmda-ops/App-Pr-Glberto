@@ -1,0 +1,31 @@
+{
+  "name": "Plataforma Premium - Pr. Gilberto",
+  "short_name": "Pr. Gilberto",
+  "description": "Plataforma Premium do Pastor Gilberto Penido Bertho - Audiobooks, Playbooks, Vídeos e Artigos.",
+  "start_url": "/login.html",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#cda451",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "assets/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa-icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

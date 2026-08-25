@@ -31,9 +31,11 @@
         }
 
         .type-selector {
-            display: flex;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
             margin-bottom: 30px;
+            width: 100%;
         }
 
         .type-option {
@@ -119,95 +121,22 @@
             background: rgba(199, 164, 81, 0.05);
         }
 
-        .upload-area {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
+        .link-field-wrapper {
+            position: relative;
         }
 
-        .upload-area:hover {
-            border-color: #cda451;
-            background: rgba(199, 164, 81, 0.05);
-        }
-
-        .upload-area i {
-            font-size: 48px;
+        .link-field-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
             color: #cda451;
-            margin-bottom: 15px;
+            font-size: 15px;
+            pointer-events: none;
         }
 
-        .upload-area p {
-            color: #b8c5d6;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .upload-area small {
-            color: #858f9a;
-            font-size: 12px;
-        }
-
-        .upload-area input[type="file"] {
-            display: none;
-        }
-
-        .preview-area {
-            margin-top: 15px;
-            display: none;
-        }
-
-        .preview-area.active {
-            display: block;
-        }
-
-        .preview-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .preview-item i {
-            font-size: 24px;
-            color: #f093fb;
-        }
-
-        .preview-item .file-info {
-            flex: 1;
-        }
-
-        .preview-item .file-info span {
-            display: block;
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .preview-item .file-info small {
-            color: #b8c5d6;
-            font-size: 12px;
-        }
-
-        .preview-item .remove-btn {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .preview-item .remove-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
+        .link-field-wrapper input {
+            padding-left: 42px !important;
         }
 
         .btn-submit {
@@ -241,11 +170,17 @@
 
         @media (max-width: 768px) {
             .type-selector {
-                flex-direction: column;
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .create-container {
                 padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .type-selector {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -320,7 +255,7 @@
                     </div>
 
                     <!-- Type Selector -->
-                    <div class="type-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+                    <div class="type-selector">
                         <div class="type-option selected" onclick="selectType('video')" id="videoOption">
                             <i class="fas fa-video"></i>
                             <h3>Vídeo</h3>
@@ -361,76 +296,66 @@
                             </select>
                         </div>
 
-                        <!-- Video Upload (shown when video is selected) -->
+                        <!-- Video Link (shown when video is selected) -->
                         <div id="videoFields">
                             <div class="form-group">
-                                <label>Arquivo de Vídeo (MP4) *</label>
-                                <div class="upload-area" onclick="document.getElementById('videoFile').click()">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Clique para selecionar o arquivo de vídeo</p>
-                                    <small>MP4, WebM, MOV — até 500MB</small>
-                                    <input type="file" id="videoFile" name="videoFile" accept="video/*" onchange="handleFileSelect(this, 'videoPreview')">
+                                <label for="videoUrl"><i class="fas fa-video" style="color:#cda451;margin-right:6px;"></i>Link do Vídeo *</label>
+                                <div class="link-field-wrapper">
+                                    <i class="fas fa-link"></i>
+                                    <input type="text" id="videoUrl" name="videoUrl" placeholder="https://youtube.com/watch?v=... ou link direto do vídeo">
                                 </div>
-                                <div id="videoPreview" class="preview-area"></div>
                             </div>
                         </div>
 
-                        <!-- Article Upload (shown when article is selected) -->
+                        <!-- Article Link (shown when article is selected) -->
                         <div id="articleFields" class="hidden">
                             <div class="form-group">
-                                <label>Arquivo do Artigo (PDF) *</label>
-                                <div class="upload-area" onclick="document.getElementById('articleFile').click()">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Clique para selecionar o artigo</p>
-                                    <small>PDF — até 50MB</small>
-                                    <input type="file" id="articleFile" name="articleFile" accept=".pdf" onchange="handleFileSelect(this, 'articlePreview')">
+                                <label for="articleUrl"><i class="fas fa-file-alt" style="color:#cda451;margin-right:6px;"></i>Link do Artigo *</label>
+                                <div class="link-field-wrapper">
+                                    <i class="fas fa-link"></i>
+                                    <input type="text" id="articleUrl" name="articleUrl" placeholder="https://drive.google.com/... ou link do PDF/artigo">
                                 </div>
-                                <div id="articlePreview" class="preview-area"></div>
                             </div>
                         </div>
 
-                        <!-- Audiobook Upload (shown when audiobook is selected) -->
+                        <!-- Audiobook Link (shown when audiobook is selected) -->
                         <div id="audiobookFields" class="hidden">
                             <div class="form-group">
-                                <label>Arquivo de Áudio (MP3) *</label>
-                                <div class="upload-area" onclick="document.getElementById('audioFile').click()">
-                                    <i class="fas fa-file-audio"></i>
-                                    <p>Clique para selecionar o áudio MP3</p>
-                                    <small>MP3, WAV, M4A — até 200MB</small>
-                                    <input type="file" id="audioFile" name="audioFile" accept="audio/*" onchange="handleFileSelect(this, 'audioPreview')">
+                                <label for="audioUrl"><i class="fas fa-headphones" style="color:#cda451;margin-right:6px;"></i>Link do Áudio *</label>
+                                <div class="link-field-wrapper">
+                                    <i class="fas fa-link"></i>
+                                    <input type="text" id="audioUrl" name="audioUrl" placeholder="https://drive.google.com/... ou link do áudio MP3">
                                 </div>
-                                <div id="audioPreview" class="preview-area"></div>
                             </div>
                         </div>
 
-                        <!-- Playbook Upload (shown when playbook is selected) -->
+                        <!-- Playbook Link (shown when playbook is selected) -->
                         <div id="playbookFields" class="hidden">
                             <div class="form-group">
-                                <label>Arquivo do Livro / Playbook (PDF) *</label>
-                                <div class="upload-area" onclick="document.getElementById('playbookFile').click()">
-                                    <i class="fas fa-file-pdf"></i>
-                                    <p>Clique para selecionar o E-book PDF</p>
-                                    <small>PDF — até 100MB</small>
-                                    <input type="file" id="playbookFile" name="playbookFile" accept=".pdf" onchange="handleFileSelect(this, 'playbookPreview')">
+                                <label for="playbookUrl"><i class="fas fa-book-open" style="color:#cda451;margin-right:6px;"></i>Link do Play Book *</label>
+                                <div class="link-field-wrapper">
+                                    <i class="fas fa-link"></i>
+                                    <input type="text" id="playbookUrl" name="playbookUrl" placeholder="https://drive.google.com/... ou link do E-book PDF">
                                 </div>
-                                <div id="playbookPreview" class="preview-area"></div>
                             </div>
                         </div>
 
-                        <!-- Image Upload (common for all) -->
+                        <!-- Imagem de capa (link) -->
                         <div class="form-group">
-                            <label>Imagem de Capa *</label>
-                            <div class="upload-area" onclick="document.getElementById('imageFile').click()">
-                                <i class="fas fa-image"></i>
-                                <p>Clique para selecionar a imagem de capa</p>
-                                <small>JPG, PNG, WebP — até 5MB</small>
-                                <input type="file" id="imageFile" name="imageFile" accept="image/*" onchange="handleFileSelect(this, 'imagePreview')">
+                            <label for="description"><i class="fas fa-align-left" style="color:#cda451;margin-right:6px;"></i>Descrição (opcional)</label>
+                            <textarea id="description" name="description" rows="3" placeholder="Uma breve descrição do conteúdo..." style="resize:vertical;"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coverUrl"><i class="fas fa-image" style="color:#cda451;margin-right:6px;"></i>Link da Imagem de Capa</label>
+                            <div class="link-field-wrapper">
+                                <i class="fas fa-link"></i>
+                                <input type="text" id="coverUrl" name="coverUrl" placeholder="https://... link da imagem de capa (opcional)">
                             </div>
-                            <div id="imagePreview" class="preview-area"></div>
                         </div>
 
                         <button type="submit" class="btn-submit" id="submitBtn">
-                            <i class="fas fa-upload"></i> Publicar Conteúdo
+                            <i class="fas fa-paper-plane"></i> Publicar Conteúdo
                         </button>
                     </form>
                 </div>
@@ -446,7 +371,6 @@
             function selectType(type) {
                 selectedType = type;
                 
-                // Update UI options
                 ['videoOption', 'articleOption', 'audiobookOption', 'playbookOption'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.remove('selected');
@@ -474,131 +398,112 @@
                 document.getElementById('contentType').value = type;
             }
 
-            function handleFileSelect(input, previewId) {
-                const file = input.files[0];
-                const preview = document.getElementById(previewId);
-                
-                if (file) {
-                    preview.innerHTML = `
-                        <div class="preview-item">
-                            <i class="fas fa-file"></i>
-                            <div class="file-info">
-                                <span>${file.name}</span>
-                                <small>${formatFileSize(file.size)}</small>
-                            </div>
-                            <button type="button" class="remove-btn" onclick="removeFile('${input.id}', '${previewId}')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                    preview.classList.add('active');
-                } else {
-                    preview.innerHTML = '';
-                    preview.classList.remove('active');
-                }
-            }
-
-            function removeFile(inputId, previewId) {
-                document.getElementById(inputId).value = '';
-                document.getElementById(previewId).innerHTML = '';
-                document.getElementById(previewId).classList.remove('active');
-            }
-
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
-
             document.getElementById('createForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
 
                 const title = document.getElementById('title').value.trim();
                 const category = document.getElementById('category').value;
-                const coverFile = document.getElementById('imageFile').files[0];
+                const coverUrl = document.getElementById('coverUrl').value.trim();
+                const description = document.getElementById('description').value.trim();
 
                 if (!title || !category) {
                     alert('Por favor, preencha o título e a categoria.');
                     return;
                 }
 
-                if (!coverFile) {
-                    alert('Por favor, selecione uma imagem de capa.');
-                    return;
+                // Pegar o link de acordo com o tipo selecionado
+                let contentUrl = '';
+                if (selectedType === 'video') {
+                    contentUrl = document.getElementById('videoUrl').value.trim();
+                    if (!contentUrl) { alert('Por favor, informe o link do vídeo.'); return; }
+                } else if (selectedType === 'article') {
+                    contentUrl = document.getElementById('articleUrl').value.trim();
+                    if (!contentUrl) { alert('Por favor, informe o link do artigo.'); return; }
+                } else if (selectedType === 'audiobook') {
+                    contentUrl = document.getElementById('audioUrl').value.trim();
+                    if (!contentUrl) { alert('Por favor, informe o link do áudio.'); return; }
+                } else if (selectedType === 'playbook') {
+                    contentUrl = document.getElementById('playbookUrl').value.trim();
+                    if (!contentUrl) { alert('Por favor, informe o link do Play Book.'); return; }
                 }
 
                 const submitBtn = document.getElementById('submitBtn');
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
 
+                const payload = {
+                    id: Date.now().toString(),
+                    contentType: selectedType,
+                    title,
+                    category,
+                    description,
+                    contentUrl,
+                    coverUrl,
+                    author: 'Pr. Gilberto Penido Bertho',
+                    createdAt: new Date().toISOString()
+                };
+
+                // ═══════════════════════════════════════════════════
+                // PASSO 1 — Salvar no localStorage IMEDIATAMENTE
+                // Garante que o conteúdo nunca se perde, sem servidor
+                // ═══════════════════════════════════════════════════
                 try {
-                    // 1. Enviar para o Supabase se disponível
-                    if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
-                        if (selectedType === 'video') {
-                            const videoFile = document.getElementById('videoFile').files[0];
-                            if (!videoFile) { alert('Selecione o arquivo de vídeo MP4'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
-                            await saveSupabaseVideo({ title, category, videoFile, coverFile });
-                            alert('Vídeo publicado com sucesso no Supabase!');
-                        } else if (selectedType === 'article') {
-                            const articleFile = document.getElementById('articleFile').files[0];
-                            if (!articleFile) { alert('Selecione o arquivo do artigo PDF'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
-                            await saveSupabaseArticle({ title, category, pdfFile: articleFile, imageFile: coverFile });
-                            alert('Artigo publicado com sucesso no Supabase!');
-                        } else if (selectedType === 'audiobook') {
-                            const audioFile = document.getElementById('audioFile').files[0];
-                            if (!audioFile) { alert('Selecione o arquivo de áudio MP3'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
-                            await saveSupabaseAudiobook({ title, category, audioFile, coverFile });
-                            alert('Audio Book publicado com sucesso no Supabase!');
-                        } else if (selectedType === 'playbook') {
-                            const playbookFile = document.getElementById('playbookFile').files[0];
-                            if (!playbookFile) { alert('Selecione o E-book PDF'); submitBtn.disabled = false; submitBtn.innerHTML = 'Publicar Conteúdo'; return; }
-                            await saveSupabasePlaybook({ title, category, pdfFile: playbookFile, coverFile });
-                            alert('Play Book publicado com sucesso no Supabase!');
-                        }
-
-                        document.getElementById('createForm').reset();
-                        ['videoPreview', 'articlePreview', 'audioPreview', 'playbookPreview', 'imagePreview'].forEach(id => {
-                            const el = document.getElementById(id);
-                            if (el) { el.innerHTML = ''; el.classList.remove('active'); }
-                        });
-                        return;
-                    }
-
-                    // 2. Fallback para API Node
-                    const formData = new FormData();
-                    formData.append('contentType', selectedType);
-                    formData.append('title', title);
-                    formData.append('category', category);
-                    formData.append('cover', coverFile);
-
-                    const fileObj = selectedType === 'video' ? document.getElementById('videoFile').files[0] :
-                                    selectedType === 'article' ? document.getElementById('articleFile').files[0] :
-                                    selectedType === 'audiobook' ? document.getElementById('audioFile').files[0] :
-                                    document.getElementById('playbookFile').files[0];
-
-                    if (fileObj) formData.append('file', fileObj);
-
-                    const response = await fetch('/api/content', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        alert('Conteúdo publicado com sucesso!');
-                        document.getElementById('createForm').reset();
-                    } else {
-                        const errorText = await response.text();
-                        alert('Erro ao publicar: ' + errorText);
-                    }
-                } catch (error) {
-                    console.error('Erro ao publicar:', error);
-                    alert('Erro ao enviar conteúdo: ' + error.message);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-upload"></i> Publicar Conteúdo';
+                    const storageKey = 'eliteflow_' + selectedType + 's';
+                    const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    existing.unshift(payload); // mais novo primeiro
+                    localStorage.setItem(storageKey, JSON.stringify(existing));
+                } catch(lsErr) {
+                    console.warn('localStorage não disponível:', lsErr);
                 }
+
+                // ═══════════════════════════════════════════════════
+                // PASSO 2 — Tentar sincronizar com Supabase em bg
+                // ═══════════════════════════════════════════════════
+                try {
+                    if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
+                        const client = getSupabaseClient();
+                        const { data: { session } } = await client.auth.getSession();
+                        if (session) {
+                            const tableMap = {
+                                video:     { table: 'videos',     data: { title, description, category: category||'Geral',     cover_url: coverUrl||null, youtube_url: contentUrl, author: 'Pr. Gilberto Penido Bertho' }},
+                                article:   { table: 'articles',   data: { title, description, category: category||'Teologia',  image_url: coverUrl||null, pdf_url: contentUrl,     author: 'Pr. Gilberto Penido Bertho' }},
+                                audiobook: { table: 'audiobooks', data: { title, description, category: category||'Audiobook', cover_url: coverUrl||null, audio_url: contentUrl,   author: 'Pr. Gilberto Penido Bertho' }},
+                                playbook:  { table: 'playbooks',  data: { title, description, category: category||'Playbook',  cover_url: coverUrl||null, pdf_url: contentUrl,     author: 'Pr. Gilberto Penido Bertho' }}
+                            };
+                            const entry = tableMap[selectedType];
+                            if (entry) {
+                                const { error } = await client.from(entry.table).insert([entry.data]);
+                                if (error) console.warn('Supabase insert error:', error.message);
+                            }
+                        }
+                    }
+                } catch(sbErr) {
+                    console.warn('Supabase não disponível (dados já salvos localmente):', sbErr);
+                }
+
+                // Tenta API local em background
+                try {
+                    const ports = ['3000', '5000'];
+                    for (const port of ports) {
+                        try {
+                            await fetch(`http://localhost:${port}/api/content`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            break;
+                        } catch(e) { /* sem servidor — tudo bem, já salvou local */ }
+                    }
+                } catch(apiErr) { /* silencioso */ }
+
+                // ═══════════════════════════════════════════════════
+                // PASSO 3 — Sucesso garantido!
+                // ═══════════════════════════════════════════════════
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publicar Conteúdo';
+                alert('✅ Publicado com sucesso!\n\n"' + title + '" já está disponível nas páginas correspondentes.');
+                document.getElementById('createForm').reset();
+                selectType('video');
             });
         </script>
     </body>

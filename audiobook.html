@@ -10,7 +10,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Inline page styles intentionally left minimal — overlays handled globally in style.css */
+      .delete-audiobook-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(220, 53, 69, 0.9);
+        border: none;
+        color: white;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      }
+      .delete-audiobook-btn:hover {
+        background: rgb(220, 53, 69);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.5);
+      }
     </style>
   </head>
   <body>
@@ -104,6 +127,7 @@
                 <div class="player-top">
 
                     <div class="now-playing">
+                        <div class="player-cover-thumb" id="playerCoverThumb" style="background-image: url('assets/playbooks/capas/lideranca-crista.jpg');"></div>
 
                         <div class="playing-indicator" id="playingIndicator">
                             <span></span>
@@ -128,7 +152,7 @@
                         id="playlistToggle"
                         type="button"
                     >
-                        <span>☷</span>
+                        <i class="fas fa-list"></i>
                         <span>Faixas</span>
                     </button>
 
@@ -167,7 +191,7 @@
                         id="previousBtn"
                         title="Faixa anterior"
                     >
-                        ⏮
+                        <i class="fas fa-backward-step"></i>
                     </button>
 
                     <button
@@ -175,7 +199,7 @@
                         id="playBtn"
                         title="Reproduzir"
                     >
-                        ▶
+                        <i class="fas fa-play"></i>
                     </button>
 
                     <button
@@ -183,7 +207,7 @@
                         id="nextBtn"
                         title="Próxima faixa"
                     >
-                        ⏭
+                        <i class="fas fa-forward-step"></i>
                     </button>
 
                     <div class="control-divider"></div>
@@ -194,7 +218,7 @@
                         id="loopBtn"
                         title="Repetir faixa"
                     >
-                        ↻
+                        <i class="fas fa-rotate-right"></i>
                     </button>
 
                     <!-- VOLUME -->
@@ -205,7 +229,7 @@
                             id="muteBtn"
                             title="Volume"
                         >
-                            🔊
+                            <i class="fas fa-volume-high"></i>
                         </button>
 
                         <input
@@ -307,7 +331,7 @@
                 <h3>🎧 Discipulado</h3>
                 <span class="tag tag-gold">Áudio</span>
               </div>
-              <p>Discipulado na Prática — Manual completo em áudio narrado com voz natural Thalita. Métodos de evangelismo e multiplicação.</p>
+              <p>Manual prático e inspirador para formação e acompanhamento de discípulos.</p>
               <button class="secondary-btn" onclick="playAudiobook('discipulado')">Reproduzir</button>
             </div>
           </article>
@@ -332,29 +356,131 @@
     <script src="supabaseClient.js"></script>
     <script src="script.js"></script>
     <script>
-      // Buscar audiobooks cadastrados no Supabase
-      async function loadSupabaseAudiobooks() {
-        if (typeof getSupabaseClient !== 'function') return;
-        const supabase = getSupabaseClient();
-        if (!supabase) return;
+      // Converte links Google Drive para imagem
+      function toImageUrl(url) {
+        if (!url) return null;
+        url = url.trim();
+        const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                           url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (driveMatch && !url.includes('/folders/')) {
+          return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
+        }
+        return url;
+      }
 
+      // Converte links Google Drive para streaming direto (via servidor ou docs)
+      function toAudioUrl(url) {
+        if (!url) return null;
+        url = url.trim();
+        const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                           url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (driveMatch) {
+          // Rota de proxy do servidor local
+          return `/api/stream-audio?url=${encodeURIComponent(url)}`;
+        }
+        return url;
+      }
+
+      // Buscar audiobooks da API e do Supabase
+      async function loadAudiobooks() {
         try {
-          const { data: audiobooks, error } = await supabase.from('audiobooks').select('*').order('created_at', { ascending: false });
-          if (error) {
-            console.warn('Erro ao carregar audiobooks do Supabase:', error);
-            return;
+          let audiobooks = [];
+          const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+
+          if (supabase) {
+            const { data, error } = await supabase
+              .from('audiobooks')
+              .select('*')
+              .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            audiobooks = data.map(ab => ({
+              id: ab.id,
+              title: ab.title,
+              description: ab.description,
+              contentUrl: ab.audio_url,
+              coverUrl: ab.cover_url,
+              author: ab.author,
+              duration: ab.duration,
+              source: 'supabase'
+            }));
+          } else {
+            try {
+              const res = await fetch('/api/audiobooks');
+              if (res.ok) { audiobooks = (await res.json()).map(a => ({...a, source:'api'})); }
+            } catch(e) {
+              try {
+                const res2 = await fetch('http://localhost:5000/api/audiobooks');
+                if (res2.ok) { audiobooks = (await res2.json()).map(a => ({...a, source:'api'})); }
+              } catch(e2) {
+                try {
+                  const res3 = await fetch('http://localhost:3000/api/audiobooks');
+                  if (res3.ok) { audiobooks = (await res3.json()).map(a => ({...a, source:'api'})); }
+                } catch(e3) {}
+              }
+            }
           }
+
+          // Complementar com itens salvos localmente
+          try {
+            const localItems = JSON.parse(localStorage.getItem('eliteflow_audiobooks') || '[]');
+            if (localItems.length > 0) {
+              const existingIds = new Set((audiobooks || []).map(a => String(a.id)));
+              const localMapped = localItems
+                .filter(item => !existingIds.has(String(item.id)))
+                .map(item => ({
+                  id: item.id,
+                  title: item.title,
+                  description: item.description || 'Audiobook adicionado.',
+                  contentUrl: item.contentUrl,
+                  coverUrl: item.coverUrl,
+                  author: item.author || 'Pr. Gilberto Penido Bertho',
+                  duration: item.duration || 'Áudio',
+                  source: 'local'
+                }));
+              audiobooks = [...(audiobooks || []), ...localMapped];
+            }
+          } catch(e) {}
 
           if (audiobooks && audiobooks.length > 0) {
             const playlistContainer = document.getElementById('playlistTracks');
+            const grid = document.querySelector('.cards-grid');
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+            const getCorrectCover = (title, originalCover) => {
+              if (originalCover && originalCover.trim() !== '') {
+                return toImageUrl(originalCover);
+              }
+              const t = (title || '').toLowerCase();
+              if (t.includes('hábito') || t.includes('habito')) return 'assets/playbooks/capas/transformando-habitos.jpg';
+              if (t.includes('jonas') || t.includes('inconformado')) return 'assets/playbooks/capas/inconformado.jpg';
+              if (t.includes('liderança') || t.includes('lideranca')) return 'assets/playbooks/capas/lideranca-crista.jpg';
+              if (t.includes('eu sou')) return 'assets/playbooks/capas/eu-sou.jpg';
+              if (t.includes('discipulado')) return 'assets/playbooks/capas/discipulado-pratico.png';
+              return null; // sem capa local — vai usar placeholder gerado
+            };
+
+            // Gera cor de fundo baseada no título (determinística)
+            const getTitleColor = (title) => {
+              let hash = 0;
+              for (let i = 0; i < title.length; i++) hash = title.charCodeAt(i) + ((hash << 5) - hash);
+              const h = Math.abs(hash) % 360;
+              return `hsl(${h}, 55%, 22%)`;
+            };
+
             if (playlistContainer) {
               audiobooks.forEach(ab => {
                 const trackItem = document.createElement('div');
                 trackItem.className = 'track-item';
                 trackItem.style.cursor = 'pointer';
+                const coverForTrack = getCorrectCover(ab.title, ab.coverUrl);
+                const coverThumbStyle = coverForTrack
+                  ? `width:40px;height:40px;border-radius:8px;background:url('${coverForTrack}') center/cover no-repeat;flex-shrink:0;`
+                  : `width:40px;height:40px;border-radius:8px;background:${getTitleColor(ab.title)};flex-shrink:0;display:flex;align-items:center;justify-content:center;`;
+                const coverThumbContent = coverForTrack ? '' : `<i class="fas fa-headphones" style="color:#f5b52e;font-size:16px;"></i>`;
                 trackItem.innerHTML = `
                   <div style="display:flex;align-items:center;gap:12px;">
-                    <i class="fas fa-play" style="color:var(--gold);"></i>
+                    <div style="${coverThumbStyle}">${coverThumbContent}</div>
                     <div>
                       <strong>${ab.title}</strong>
                       <small style="display:block;">${ab.author || 'Pr. Gilberto'}</small>
@@ -362,26 +488,151 @@
                   </div>
                   <span>${ab.duration || 'Áudio'}</span>
                 `;
-                trackItem.addEventListener('click', () => {
-                  const audioElem = document.getElementById('audioPlayer') || document.querySelector('audio');
-                  if (audioElem && ab.audio_url) {
-                    audioElem.src = ab.audio_url;
-                    audioElem.play();
+                
+                const audioUrl = toAudioUrl(ab.contentUrl);
+                const finalCover = getCorrectCover(ab.title, ab.coverUrl);
+                
+                // Integração com o player global do script.js
+                if (typeof audioLibrary !== 'undefined') {
+                  audioLibrary[ab.id] = {
+                    title: ab.title,
+                    tracks: [audioUrl || ab.contentUrl],
+                    cover: finalCover
+                  };
+                }
+
+                const playAudio = () => {
+                  if (!audioUrl) {
+                    alert('Link de áudio não disponível para: ' + ab.title);
+                    return;
                   }
-                });
+
+                  if (typeof playAudiobook === 'function') {
+                    playAudiobook(ab.id);
+                  }
+
+                  const player = document.getElementById("mainPlayer");
+                  if (player) {
+                    player.src = audioUrl;
+                    player.play().catch(async (err) => {
+                      console.warn('Tentando fallback de reprodução...', err);
+                      // Fallback direto via Google Drive
+                      const driveMatch = (ab.contentUrl || '').match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+                                         (ab.contentUrl || '').match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                      if (driveMatch) {
+                        player.src = `https://docs.google.com/uc?export=download&id=${driveMatch[1]}`;
+                        try {
+                          await player.play();
+                          return;
+                        } catch (e2) {}
+                      }
+                      
+                      const openDirect = confirm(
+                        "Não foi possível reproduzir este áudio diretamente no player.\n\n" +
+                        "Deseja abrir o áudio em uma nova aba do navegador?"
+                      );
+                      if (openDirect) {
+                        window.open(ab.contentUrl, '_blank');
+                      }
+                    });
+                  }
+                };
+
+                trackItem.addEventListener('click', playAudio);
                 playlistContainer.appendChild(trackItem);
+
+                // Create and insert media card
+                if (grid) {
+                  const card = document.createElement('article');
+                  card.className = 'media-card';
+                  card.style.position = 'relative';
+                  const cardCover = getCorrectCover(ab.title, ab.coverUrl);
+                  const titleInitial = (ab.title || 'A').charAt(0).toUpperCase();
+                  const bgColor = getTitleColor(ab.title);
+
+                  let thumbHtml;
+                  if (cardCover) {
+                    // Tem URL de capa — renderiza como img com fallback
+                    thumbHtml = `
+                      <div class="media-thumb" style="position:relative; overflow:hidden; background:${bgColor};">
+                        <img src="${cardCover}" alt="${ab.title}"
+                             style="width:100%; height:100%; object-fit:cover; display:block;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <div style="display:none; position:absolute; inset:0; align-items:center; justify-content:center;
+                                    flex-direction:column; gap:8px; background:${bgColor};">
+                          <i class="fas fa-headphones" style="font-size:40px; color:#f5b52e; opacity:0.9;"></i>
+                          <span style="color:rgba(255,255,255,0.7); font-size:13px; font-weight:600; text-align:center; padding:0 12px;">${ab.title}</span>
+                        </div>
+                        ${isAdmin ? `<button class="delete-audiobook-btn" onclick="deleteAudiobook('${ab.id}','${ab.source}',this)" title="Excluir Audiobook"><i class="fas fa-trash-alt"></i></button>` : ''}
+                      </div>`;
+                  } else {
+                    // Sem capa — placeholder com ícone e letra inicial
+                    thumbHtml = `
+                      <div class="media-thumb" style="position:relative; background:linear-gradient(135deg, ${bgColor} 0%, hsl(220,55%,18%) 100%);
+                           display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:rgba(245,181,46,0.15);
+                             display:flex; align-items:center; justify-content:center; border:2px solid rgba(245,181,46,0.3);">
+                          <i class="fas fa-headphones" style="font-size:28px; color:#f5b52e;"></i>
+                        </div>
+                        <span style="color:rgba(255,255,255,0.75); font-size:12px; font-weight:700; text-transform:uppercase;
+                              letter-spacing:1px; text-align:center; padding:0 16px; line-height:1.3;">${titleInitial}</span>
+                        ${isAdmin ? `<button class="delete-audiobook-btn" onclick="deleteAudiobook('${ab.id}','${ab.source}',this)" title="Excluir Audiobook"><i class="fas fa-trash-alt"></i></button>` : ''}
+                      </div>`;
+                  }
+
+                  card.innerHTML = `
+                    ${thumbHtml}
+                    <div class="media-body">
+                      <div class="title-row">
+                        <h3>🎧 ${ab.title}</h3>
+                        <span class="tag tag-gold">Áudio</span>
+                      </div>
+                      <p>${ab.description || 'Novo audiobook adicionado.'}</p>
+                      <button class="secondary-btn">Reproduzir</button>
+                    </div>
+                  `;
+                  card.querySelector('button.secondary-btn').addEventListener('click', playAudio);
+                  grid.prepend(card);
+                }
               });
             }
           }
         } catch (err) {
-          console.error('Erro na integração com Supabase:', err);
+          console.error('Erro ao carregar audiobooks:', err);
+        }
+      }
+
+      async function deleteAudiobook(id, source, btnEl) {
+        if (!confirm('Deseja realmente excluir este Audiobook?')) return;
+        if (btnEl) { btnEl.disabled = true; btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+
+        try {
+          const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (supabase && (source === 'supabase' || source === 'api')) {
+            const { error } = await supabase.from('audiobooks').delete().eq('id', id);
+            if (error) console.warn('Supabase delete error:', error.message);
+          }
+          // Remove do localStorage
+          try {
+            let local = JSON.parse(localStorage.getItem('eliteflow_audiobooks') || '[]');
+            local = local.filter(a => String(a.id) !== String(id));
+            localStorage.setItem('eliteflow_audiobooks', JSON.stringify(local));
+          } catch(e) {}
+
+          // Remove o card da tela
+          const card = btnEl ? btnEl.closest('.media-card') : null;
+          if (card) card.remove();
+        } catch (err) {
+          console.error('Erro ao excluir audiobook:', err);
+          alert('Erro ao excluir: ' + err.message);
+          if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="fas fa-trash-alt"></i>'; }
         }
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadSupabaseAudiobooks);
+        document.addEventListener('DOMContentLoaded', loadAudiobooks);
       } else {
-        loadSupabaseAudiobooks();
+        loadAudiobooks();
       }
     </script>
   </body>

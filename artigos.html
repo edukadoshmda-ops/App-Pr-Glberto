@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
       /* Page-specific overrides: reduce visual scale on Artigos page */
       .stats-grid .stat-card {
@@ -26,10 +27,36 @@
       .stats-grid .stat-card strong { font-size: clamp(20px, 2.2vw, 28px); margin-bottom: 6px; }
 
       /* Slightly smaller article cards and thumbnails */
-      .cards-grid .media-card { padding: 12px; border-radius: 12px; }
+      .cards-grid .media-card { padding: 12px; border-radius: 12px; position: relative; }
       .cards-grid .media-thumb { height: 96px; background-size: contain !important; background-position: center center !important; }
       .cards-grid .media-body h3 { font-size: 16px; }
       .cards-grid .media-body p { font-size: 13px; }
+
+      /* Delete button */
+      .delete-article-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(220, 53, 69, 0.92);
+        border: none;
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      }
+      .delete-article-btn:hover {
+        background: rgb(200, 35, 51);
+        transform: scale(1.12);
+        box-shadow: 0 4px 12px rgba(220,53,69,0.5);
+      }
 
       @media (max-width: 980px) {
         .stats-grid .stat-card { min-height: 72px; padding: 10px; }
@@ -111,6 +138,45 @@
                 <!-- Artigos serão carregados dinamicamente -->
             </section>
         </main>
+
+        <!-- Book Viewer Modal (PDF.js com efeito de virar páginas) -->
+        <div class="book-viewer-modal" id="bookViewerModal" aria-hidden="true">
+          <div class="book-viewer-content">
+            <button class="close-book-btn" type="button" onclick="closeBookViewer()" aria-label="Fechar leitor">
+              <i class="fas fa-times"></i>
+            </button>
+            <div class="book-viewer">
+              <div class="book-container" id="bookContainer">
+                <div class="book-page book-page-left" id="leftPage">
+                  <canvas id="leftCanvas"></canvas>
+                </div>
+                <div class="book-page book-page-right" id="rightPage">
+                  <canvas id="rightCanvas"></canvas>
+                </div>
+              </div>
+              <div class="book-navigation">
+                <button class="book-nav-btn" id="prevBtn" type="button" onclick="prevPage()">
+                  <i class="fas fa-chevron-left"></i>
+                  Anterior
+                </button>
+                <div class="book-page-indicator">
+                  <span id="currentPage">1</span>
+                  <span>/</span>
+                  <span id="totalPages">1</span>
+                </div>
+                <button class="book-nav-btn" id="nextBtn" type="button" onclick="nextPage()">
+                  Próxima
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="book-zoom-controls" id="zoomControls">
+                <button type="button" id="zoomOutBtn" aria-label="Diminuir zoom">−</button>
+                <span id="zoomValue">100%</span>
+                <button type="button" id="zoomInBtn" aria-label="Aumentar zoom">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -133,17 +199,68 @@
                         category: a.category,
                         author: a.author,
                         createdAt: a.created_at,
-                        imagePath: a.image_url || 'https://via.placeholder.com/800x400',
+                        imagePath: a.image_url || null,
+                        coverUrl: a.image_url || null,
                         pdfPath: a.pdf_url,
+                        contentUrl: a.pdf_url,
                         description: a.description,
                         content: a.content,
                         views: a.views_count
                     }));
                 } else {
-                    const res = await fetch('/api/articles');
-                    if (!res.ok) return;
-                    allArticles = await res.json();
+                    try {
+                        const res = await fetch('/api/articles');
+                        if (res.ok) allArticles = await res.json();
+                    } catch(e) {
+                        // tenta outras portas
+                        try {
+                            const res2 = await fetch('http://localhost:5000/api/articles');
+                            if (res2.ok) allArticles = await res2.json();
+                        } catch(e2) {
+                            try {
+                                const res3 = await fetch('http://localhost:3000/api/articles');
+                                if (res3.ok) allArticles = await res3.json();
+                            } catch(e3) { /* sem servidor */ }
+                        }
+                    }
                 }
+
+                // Complementar com itens salvos localmente (deduplicando por título)
+                try {
+                    let localItems = JSON.parse(localStorage.getItem('eliteflow_articles') || '[]');
+
+                    // Deduplicar por título (mantém o mais recente de cada título)
+                    const seenTitles = new Map();
+                    localItems.forEach(item => {
+                        const key = (item.title || '').toLowerCase().trim();
+                        if (!seenTitles.has(key) || item.id > seenTitles.get(key).id) {
+                            seenTitles.set(key, item);
+                        }
+                    });
+                    localItems = Array.from(seenTitles.values());
+                    // Salva versão deduplicada de volta
+                    localStorage.setItem('eliteflow_articles', JSON.stringify(localItems));
+
+                    if (localItems.length > 0) {
+                        const existingIds = new Set(allArticles.map(a => String(a.id)));
+                        const existingTitles = new Set(allArticles.map(a => (a.title || '').toLowerCase().trim()));
+                        const localMapped = localItems
+                            .filter(item => !existingIds.has(String(item.id)) && !existingTitles.has((item.title || '').toLowerCase().trim()))
+                            .map(item => ({
+                                id: item.id,
+                                title: item.title,
+                                category: item.category,
+                                author: item.author || 'Pr. Gilberto Penido Bertho',
+                                createdAt: item.createdAt,
+                                pdfPath: item.contentUrl,
+                                contentUrl: item.contentUrl,
+                                coverUrl: item.coverUrl,
+                                description: item.description || 'Artigo disponível para leitura'
+                            }));
+                        allArticles = [...allArticles, ...localMapped];
+                    }
+                } catch(e) {}
+
                 displayArticles(allArticles);
             } catch (err) {
                 console.error('Erro ao carregar artigos:', err);
@@ -163,9 +280,40 @@
                 return;
             }
 
-            grid.innerHTML = articles.map(article => `
+            function getDriveThumbnail(url) {
+                if (!url) return null;
+                const match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+                // Não retorna thumbnail para pastas, apenas arquivos
+                if (match && !url.includes('/folders/')) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+                }
+                return null;
+            }
+
+            grid.innerHTML = articles.map(article => {
+                const pdfUrl = article.pdfPath || article.contentUrl || '';
+                
+                // Tenta usar a capa definida. Se não tiver, tenta extrair a miniatura do PDF no Drive
+                let finalCover = article.coverUrl;
+                if (!finalCover || (!finalCover.startsWith('http') && !finalCover.startsWith('data:'))) {
+                    finalCover = getDriveThumbnail(pdfUrl);
+                }
+
+                const hasValidCover = finalCover && (finalCover.startsWith('http') || finalCover.startsWith('data:'));
+                const isFolder = pdfUrl.includes('/folders/');
+                const fallbackIcon = isFolder ? 'fa-folder-open' : 'fa-file-pdf';
+                
+                const thumbStyle = hasValidCover
+                    ? `background: url('${escapeHtml(finalCover)}') center/cover no-repeat;`
+                    : `background: linear-gradient(135deg, rgba(13,24,52,0.8) 0%, rgba(30,50,90,0.8) 100%); display:flex; align-items:center; justify-content:center;`;
+                const thumbContent = hasValidCover ? '' : `<i class="fas ${fallbackIcon}" style="font-size:42px; color:var(--gold); opacity:0.8;"></i>`;
+
+                return `
                 <article class="media-card" style="cursor:pointer;" onclick="openArticle('${article.id}')">
-                    <div class="media-thumb" style="background: url('${escapeHtml(article.coverPath || 'assets/playbooks/capas/lideranca-crista.jpg')}') center/contain no-repeat;"></div>
+                    <button class="delete-article-btn" onclick="event.stopPropagation(); deleteArticle('${article.id}')" title="Remover artigo">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <div class="media-thumb" style="${thumbStyle}">${thumbContent}</div>
                     <div class="media-body">
                         <div class="title-row">
                             <h3>${escapeHtml(article.title || 'Sem título')}</h3>
@@ -176,8 +324,29 @@
                             <i class="fas fa-book-open" style="margin-right:6px;"></i>Ler Artigo
                         </button>
                     </div>
-                </article>
-            `).join('');
+                </article>`;
+            }).join('');
+        }
+
+        function deleteArticle(id) {
+            if (!confirm('Deseja remover este artigo?')) return;
+
+            // Remove do localStorage
+            try {
+                let local = JSON.parse(localStorage.getItem('eliteflow_articles') || '[]');
+                local = local.filter(a => String(a.id) !== String(id));
+                localStorage.setItem('eliteflow_articles', JSON.stringify(local));
+            } catch(e) {}
+
+            // Remove do Supabase se disponível
+            try {
+                const client = (typeof getSupabaseClient === 'function') ? getSupabaseClient() : null;
+                if (client) client.from('articles').delete().eq('id', id).then(() => {});
+            } catch(e) {}
+
+            // Atualiza lista em memória e re-renderiza
+            allArticles = allArticles.filter(a => String(a.id) !== String(id));
+            displayArticles(allArticles);
         }
 
         function escapeHtml(str) {
@@ -211,6 +380,28 @@
         });
 
         // ── Modal de leitura ──────────────────────────────────────
+        function convertToEmbedUrl(url) {
+            if (!url) return null;
+            
+            // Google Drive Folders: /folders/{id}
+            const folderMatch = url.match(/drive\.google\.com\/.*folders\/([a-zA-Z0-9_-]+)/);
+            if (folderMatch) return `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+
+            // Google Drive: /file/d/{id}/view ou /file/d/{id}/edit → /file/d/{id}/preview
+            const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+            
+            // Google Drive por parâmetro id=...
+            const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (idMatch && url.includes('drive.google.com')) return `https://drive.google.com/file/d/${idMatch[1]}/preview`;
+
+            // Google Docs
+            const docsMatch = url.match(/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/([a-zA-Z0-9_-]+)/);
+            if (docsMatch) return url.replace(/\/(edit|view|pub).*$/, '/preview');
+            
+            return url;
+        }
+
         async function openArticle(articleId) {
             const article = allArticles.find(a => String(a.id) === String(articleId));
             if (!article) return;
@@ -225,16 +416,55 @@
             const body = document.getElementById('modalBody');
             body.innerHTML = '';
 
-            if (article.pdfPath) {
-                // Exibe PDF embutido
-                body.innerHTML = `
-                    <iframe
-                        src="${escapeHtml(article.pdfPath)}"
-                        style="width:100%;height:72vh;border:none;border-radius:10px;"
-                        title="${escapeHtml(article.title)}">
-                    </iframe>`;
+            const rawUrl = article.pdfPath || article.contentUrl;
+            
+            // Se for PDF ou URL externa, tenta usar o leitor do PDF.js primeiro
+            if (rawUrl && (rawUrl.toLowerCase().endsWith('.pdf') || rawUrl.startsWith('http'))) {
+                const isGoogleDrive = rawUrl.includes('drive.google.com');
+                const pdfUrl = convertToEmbedUrl(rawUrl);
+
+                if (typeof books !== 'undefined' && typeof openBookViewer === 'function') {
+                    const bookId = 'dynamic_art_' + Date.now();
+                    books[bookId] = { title: article.title, files: [rawUrl] };
+                    try {
+                        await openBookViewer(bookId);
+                        return; // Abriu com sucesso no PDF.js (tela cheia), não precisa do modal
+                    } catch (err) {
+                        console.warn('PDF.js falhou, abrindo via iframe:', err.message || err);
+                    }
+                }
+
+                // Fallback: abre no Iframe do modal
+                const isLocal = rawUrl.startsWith('file://');
+                if (isLocal) {
+                    body.innerHTML = `
+                        <div style="text-align:center; padding:48px 20px;">
+                            <i class="fas fa-file-pdf" style="font-size:56px; color:var(--gold); display:block; margin-bottom:20px; opacity:0.85;"></i>
+                            <h3 style="color:#fff; margin-bottom:8px;">${escapeHtml(article.title)}</h3>
+                            <p style="color:#b8c5d6; margin-bottom:24px; font-size:14px;">Arquivo local — clique abaixo para abrir no seu leitor de PDF.</p>
+                            <a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener"
+                               style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--gold);color:#0d1834;border-radius:10px;font-weight:700;text-decoration:none;font-size:15px;">
+                                <i class="fas fa-external-link-alt"></i> Abrir PDF
+                            </a>
+                        </div>`;
+                } else {
+                    body.innerHTML = `
+                        <div style="position:relative;width:100%;height:72vh;">
+                            <iframe id="articleIframe"
+                                src="${escapeHtml(pdfUrl)}"
+                                style="width:100%;height:100%;border:none;border-radius:10px;background:#fff;"
+                                title="${escapeHtml(article.title)}"
+                                allow="autoplay">
+                            </iframe>
+                            <div style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:12px;">
+                                <a href="${escapeHtml(isGoogleDrive ? rawUrl.replace('/preview', '/view') : rawUrl)}" target="_blank" rel="noopener"
+                                   style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);color:var(--gold);border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
+                                    <i class="fas fa-external-link-alt"></i> Abrir em nova aba
+                                </a>
+                            </div>
+                        </div>`;
+                }
             } else if (article.content) {
-                // Exibe conteúdo HTML/texto
                 body.innerHTML = `<div class="article-reader-body">${article.content}</div>`;
             } else {
                 body.innerHTML = `

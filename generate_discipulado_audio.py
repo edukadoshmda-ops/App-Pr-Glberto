@@ -3,7 +3,7 @@ import asyncio
 import os
 import edge_tts
 
-VOICE = "pt-BR-ThalitaMultilingualNeural"
+VOICE = "pt-BR-AntonioNeural"
 OUTPUT_DIR = os.path.join("assets", "audiobooks", "discipulado")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
