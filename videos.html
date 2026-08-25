@@ -226,22 +226,54 @@
             if (event) event.stopPropagation();
             if (!confirm('Tem certeza que deseja excluir este vídeo?')) return;
             
+            // Delete from local storage
+            try {
+                let local = JSON.parse(localStorage.getItem('prgilbertopenido_videos') || '[]');
+                const initialLength = local.length;
+                local = local.filter(item => String(item.id) !== String(id));
+                if (local.length !== initialLength) {
+                    localStorage.setItem('prgilbertopenido_videos', JSON.stringify(local));
+                }
+            } catch(e) {}
+
             try {
                 const res = await fetch(`/api/videos/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'x-api-key': 'prgilbertopenido-secret-key-2024' // O valor que estiver configurado no backend (hardcoded temporário para garantir auth, já que não sabemos se tem dotenv)
+                        'x-api-key': 'prgilbertopenido-secret-key-2024'
                     }
                 });
                 if (res.ok) {
                     loadVideos(); // Recarrega a lista
                 } else {
-                    alert('Erro ao excluir vídeo');
+                    // Try to reload anyway as it might have been deleted from local storage
+                    loadVideos();
                 }
             } catch (err) {
-                console.error('Erro ao excluir:', err);
-                alert('Erro ao excluir vídeo');
+                console.error('Erro ao excluir do servidor:', err);
+                // Reload list for local storage deletion
+                loadVideos();
             }
+        }
+
+        function getYoutubeThumbnail(url) {
+            if (!url) return '';
+            const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(ytRegex);
+            if (match && match[1]) {
+                return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+            }
+            return '';
+        }
+
+        function getFallbackGradient(title) {
+            if (!title) return 'linear-gradient(135deg, #1f2937 0%, #111827 100%)';
+            let hash = 0;
+            for (let i = 0; i < title.length; i++) {
+                hash = title.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash % 360);
+            return `linear-gradient(135deg, hsl(${hue}, 60%, 20%) 0%, hsl(${hue}, 80%, 10%) 100%)`;
         }
 
         function displayVideos(videos) {
@@ -257,9 +289,26 @@
                 const item = document.createElement('div');
                 item.className = 'recent-item';
                 item.style.position = 'relative';
-                const cover = video.coverUrl || video.coverPath || 'assets/playbooks/capas/gilberto.jpg';
+                
+                const videoUrl = video.contentUrl || video.videoPath || video.youtubeUrl || video.youtube_url;
+                let cover = video.coverUrl || video.coverPath;
+                
+                if (!cover && videoUrl) {
+                    cover = getYoutubeThumbnail(videoUrl);
+                }
+                
+                // Set inline style for thumbnail (image or gradient fallback)
+                let thumbStyle = '';
+                if (cover) {
+                    thumbStyle = `background-image:url('${cover}'); background-size: cover; background-position: center;`;
+                } else {
+                    thumbStyle = `background: ${getFallbackGradient(video.title)}; display: flex; align-items: center; justify-content: center;`;
+                }
+
                 item.innerHTML = `
-                    <div class="thumb" style="background-image:url('${cover}'); cursor:pointer;"></div>
+                    <div class="thumb" style="${thumbStyle} cursor:pointer;">
+                        ${!cover ? '<i class="fas fa-play" style="color: rgba(255,255,255,0.3); font-size: 24px;"></i>' : ''}
+                    </div>
                     <div class="info" style="cursor:pointer; flex: 1;">
                         <h4>${escapeHtml(video.title || 'Untitled')}</h4>
                         <p>${escapeHtml((video.category || '') + ' • ' + (new Date(video.createdAt || Date.now())).toLocaleDateString('pt-BR'))}</p>
