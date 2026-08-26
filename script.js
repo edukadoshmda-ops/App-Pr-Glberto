@@ -1172,7 +1172,7 @@ function setupAudioPlayer() {
     discipulado: 'assets/playbooks/capas/discipulado-pratico.png'
   };
 
-  function updateCover(bookId) {
+  window.updateCover = function(bookId) {
     const coverThumb = document.getElementById("playerCoverThumb");
     const featureCover = document.querySelector(".feature-cover");
 

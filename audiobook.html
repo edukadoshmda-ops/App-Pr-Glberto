@@ -368,15 +368,15 @@
         return url;
       }
 
-      // Converte links Google Drive para streaming direto (via servidor ou docs)
+      // Converte links Google Drive para streaming direto (bypassa limite da Vercel)
       function toAudioUrl(url) {
         if (!url) return null;
         url = url.trim();
         const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
                            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         if (driveMatch) {
-          // Rota de proxy do servidor local
-          return `/api/stream-audio?url=${encodeURIComponent(url)}`;
+          // Usa link direto do Drive que ignora verificação de vírus (funciona direto na tag <audio>)
+          return `https://drive.usercontent.google.com/download?id=${driveMatch[1]}&export=download&confirm=t`;
         }
         return url;
       }
@@ -525,19 +525,22 @@
                     player.src = audioUrl;
                     player.play().catch(async (err) => {
                       console.warn('Tentando fallback de reprodução...', err);
-                      // Fallback direto via Google Drive
+                      // Fallback usando corsproxy.io
                       const driveMatch = (ab.contentUrl || '').match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
                                          (ab.contentUrl || '').match(/[?&]id=([a-zA-Z0-9_-]+)/);
                       if (driveMatch) {
-                        player.src = `https://docs.google.com/uc?export=download&id=${driveMatch[1]}`;
+                        const directUrl = `https://drive.usercontent.google.com/download?id=${driveMatch[1]}&export=download&confirm=t`;
+                        player.src = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
                         try {
                           await player.play();
                           return;
-                        } catch (e2) {}
+                        } catch (e2) {
+                          console.warn('Proxy também falhou, abrindo aba...', e2);
+                        }
                       }
                       
                       const openDirect = confirm(
-                        "Não foi possível reproduzir este áudio diretamente no player.\n\n" +
+                        "Não foi possível reproduzir este áudio silenciosamente devido a bloqueios do Google Drive.\n\n" +
                         "Deseja abrir o áudio em uma nova aba do navegador?"
                       );
                       if (openDirect) {
