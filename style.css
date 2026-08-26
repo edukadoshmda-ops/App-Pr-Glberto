@@ -3298,6 +3298,13 @@ input:focus, textarea:focus, select:focus { border-color: var(--gold-light); box
     transform: translateX(0) !important;
   }
 
+  .sidebar-footer {
+    display: block !important;
+    margin-top: auto !important;
+    padding-top: 24px !important;
+  }
+
+
   .sidebar-close-btn {
     display: flex !important;
   }
