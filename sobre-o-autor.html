@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobre o Autor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
+        </div>
+
+        <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Painel</span>
+          </a>
+          <a href="audiobook.html" class="menu-item">
+            <i class="fas fa-headphones"></i>
+            <span>Audio Book</span>
+          </a>
+          <a href="play-books.html" class="menu-item">
+            <i class="fas fa-book-open"></i>
+            <span>Play Books</span>
+          </a>
+          <a href="videos.html" class="menu-item">
+            <i class="fas fa-video"></i>
+            <span>Vídeos</span>
+          </a>
+          <a href="artigos.html" class="menu-item">
+            <i class="fas fa-file-alt"></i>
+            <span>Artigos</span>
+          </a>
+          <a href="sobre-o-autor.html" class="menu-item active">
+            <i class="fas fa-user-tie"></i>
+            <span>Sobre o Autor</span>
+          </a>
+          <a href="relatorios.html" class="menu-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
+          </a>
+          <a href="usuarios.html" class="menu-item">
+            <i class="fas fa-users"></i>
+            <span>Usuários</span>
+          </a>
+          <a href="criar.html" class="menu-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Criar</span>
+          </a>
+          <a href="apoio.html" "menu-item">
+            <i "fas fa-handshake"></i>
+            <span>Apoio</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-block">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <strong>Admin</strong>
+              <span>admin@mail.com</span>
+            </div>
+          </div>
+          <button class="logout-btn" onclick="window.location.href='login.html'">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="sidebar-toggle-btn" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2>Sobre o Autor</h2>
+          <div class="topbar-actions">
+            <button class="icon-btn" aria-label="Notificações">
+              <i class="fas fa-bell"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Sidebar Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <section class="dashboard-content" style="padding: 24px; max-width: 900px; margin: 0 auto;">
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; md:flex-direction: row; gap: 32px; padding: 32px;">
+            
+            <div style="flex-shrink: 0; max-width: 350px; margin: 0 auto;">
+              <img src="assets/autor.jpg" alt="Pr. Gilberto Penido Bertho" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); object-fit: cover; border: 4px solid var(--border-color);">
+            </div>
+            
+            <div style="flex: 1; color: var(--text-color);">
+              <span style="color: var(--gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Biografia</span>
+              <h3 style="font-size: 28px; font-family: 'Cormorant Garamond', serif; color: var(--text-light); margin-bottom: 24px;">Pr. Gilberto Penido Bertho</h3>
+              
+              <div style="font-size: 16px; line-height: 1.7; color: var(--text-muted); display: flex; flex-direction: column; gap: 16px;">
+                <p>Gilberto Penido Bertho, filho de Arnaldo dos Santos Bertho e Ruth Penido Bertho, nasceu em Paracambi - RJ, no dia 29/06/1959. Tem cinco irmãos: Reinaldo, Aloizio, Reginaldo, Lea Consuelo e Roberto. Desses cinco irmãos, dois são Pastores, Aloizio e Reginaldo.</p>
+                <p>Por muitos anos tem percorrido o Brasil como discipulador, treinando pastores e igrejas dentro deste empolgante método de evangelismo e discipulado.</p>
+                <p>Possui os graus de Bacharel em Teologia, Educação Religiosa e Pós-Graduado em Psicanálise Clínica.</p>
+                <p>Em mais de quatro décadas de ministério, pastoreou diversas igrejas em Minas Gerais, trabalhou como missionário da CBM em parceria com a JMN. Durante seu ministério organizou a Igreja Batista Central de Três Corações, a Segunda Igreja Batista de Varginha e a Terceira Igreja Batista de Varginha. Coordenou projetos especiais de evangelização, como a Trans-Uberlândia, a Trans-Triângulo e coordenou a Campanha "Minha Esperança Brasil", da Associação Evangelística Billy Graham, em MG.</p>
+                <p>Foi diretor e professor do Seminário Teológico Batista do Triângulo Mineiro. Em 2006 foi o relator do comitê de evangelismo e missões da Convenção Batista Mineira.</p>
+                <p>Casou-se com Mara Raquel, no dia 5 de fevereiro de 1985, e desta abençoada e feliz união, nasceu seu único filho Jônatas.</p>
+                <p>Pr. Gilberto também é docente do Instituto Haggai do Brasil.</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+

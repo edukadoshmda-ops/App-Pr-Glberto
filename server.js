@@ -1011,6 +1011,46 @@ app.post('/api/content', express.json(), async (req, res) => {
     }
 });
 
+// Rota do Estúdio de Áudio
+const { exec } = require('child_process');
+app.post('/api/generate-audio', requireApiKey, (req, res) => {
+    const { text, voice, bookId, trackName } = req.body;
+    if (!text || !voice || !bookId || !trackName) {
+        return res.status(400).json({ error: 'Dados incompletos' });
+    }
+
+    let isFemale = voice.includes('Francisca') || voice.includes('Thalita');
+    let targetBookId = isFemale ? `${bookId}-fem` : bookId;
+
+    const outputFolder = path.join(__dirname, 'assets', 'audiobooks', targetBookId);
+    if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder, { recursive: true });
+    }
+
+    // Usar trackName.mp3 caso o usuario não passe a extensão, senão usar do jeito que vier
+    const fileName = trackName.endsWith('.mp3') ? trackName : `${trackName}.mp3`;
+    const outputPath = path.join(outputFolder, fileName);
+    const tempTextPath = path.join(__dirname, `temp_${Date.now()}.txt`);
+
+    fs.writeFileSync(tempTextPath, text, 'utf-8');
+
+    const pythonScript = path.join(__dirname, 'tts_generator.py');
+    const command = `python "${pythonScript}" "${tempTextPath}" "${voice}" "${outputPath}"`;
+
+    exec(command, (error, stdout, stderr) => {
+        if (fs.existsSync(tempTextPath)) {
+            fs.unlinkSync(tempTextPath);
+        }
+
+        if (error) {
+            console.error(`Erro ao gerar áudio: ${error.message}`);
+            return res.status(500).json({ error: 'Falha ao gerar o áudio' });
+        }
+        
+        res.json({ success: true, file: `/assets/audiobooks/${targetBookId}/${fileName}` });
+    });
+});
+
 // Servir arquivos estáticos da pasta assets
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 

@@ -1636,3 +1636,55 @@ if (document.readyState === 'loading') {
   initMobileSidebar();
 }
 
+// Voice Toggle Logic for Audiobook
+let isFemaleVoice = false;
+document.addEventListener('DOMContentLoaded', () => {
+    const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+    const voiceIcon = document.getElementById('voiceIcon');
+    const voiceLabel = document.getElementById('voiceLabel');
+    
+    if(voiceToggleBtn) {
+        voiceToggleBtn.addEventListener('click', () => {
+            isFemaleVoice = !isFemaleVoice;
+            const currentBookId = audioState.bookId;
+            
+            if (isFemaleVoice) {
+                if(voiceIcon) { voiceIcon.classList.remove('fa-user-tie'); voiceIcon.classList.add('fa-user'); }
+                if(voiceLabel) voiceLabel.textContent = 'FEM';
+                voiceToggleBtn.style.color = '#ec4899'; // pink color
+                
+                // Update tracks in library for current book
+                if (currentBookId && audioLibrary[currentBookId]) {
+                    audioLibrary[currentBookId].tracks = audioLibrary[currentBookId].tracks.map(t => t.replace(`/${currentBookId}/`, `/${currentBookId}-fem/`));
+                }
+            } else {
+                if(voiceIcon) { voiceIcon.classList.remove('fa-user'); voiceIcon.classList.add('fa-user-tie'); }
+                if(voiceLabel) voiceLabel.textContent = 'MASC';
+                voiceToggleBtn.style.color = ''; // reset
+                
+                // Update tracks in library for current book
+                if (currentBookId && audioLibrary[currentBookId]) {
+                    audioLibrary[currentBookId].tracks = audioLibrary[currentBookId].tracks.map(t => t.replace(`/${currentBookId}-fem/`, `/${currentBookId}/`));
+                }
+            }
+
+            // If a track is currently playing, reload it with the correct voice
+            if (currentBookId) {
+                const player = document.getElementById("mainPlayer");
+                if (player) {
+                    const wasPlaying = !player.paused;
+                    const currentTime = player.currentTime;
+                    player.src = audioLibrary[currentBookId].tracks[audioState.trackIndex];
+                    
+                    // After the new source is loaded, set time and play
+                    player.onloadedmetadata = () => {
+                        player.currentTime = currentTime;
+                        if (wasPlaying) player.play().catch(e => console.error(e));
+                        player.onloadedmetadata = null; // remove listener
+                    };
+                }
+            }
+        });
+    }
+});
+

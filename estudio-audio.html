@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estúdio de Áudio Automático</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
+        </div>
+
+        <button class="mobile-back-btn" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>Voltar</span>
+        </button>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Painel</span>
+          </a>
+          <a href="audiobook.html" class="menu-item">
+            <i class="fas fa-headphones"></i>
+            <span>Audio Book</span>
+          </a>
+          <a href="play-books.html" class="menu-item">
+            <i class="fas fa-book-open"></i>
+            <span>Play Books</span>
+          </a>
+          <a href="videos.html" class="menu-item">
+            <i class="fas fa-video"></i>
+            <span>Vídeos</span>
+          </a>
+          <a href="artigos.html" class="menu-item">
+            <i class="fas fa-file-alt"></i>
+            <span>Artigos</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" style="color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Ferramenta IA</p>
+            <h1 style="font-size: 24px; color: #fff; margin: 0;">Estúdio de Criação de Áudio</h1>
+          </div>
+        </header>
+
+        <section class="dashboard-content" style="padding: 24px; max-width: 800px; margin: 0 auto;">
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 32px;">
+            <p style="color: var(--text-muted); margin-bottom: 24px;">Gere áudios automaticamente para seus audiobooks usando Inteligência Artificial. Você pode escolher gerar várias vozes ao mesmo tempo.</p>
+            
+            <form id="studioForm" style="display: flex; flex-direction: column; gap: 20px;">
+              
+              <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #fff;">Livro / Categoria (ID)</label>
+                <select id="bookId" class="modern-input" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px;" required>
+                  <option value="discipulado" style="background: #111827; color: #fff;">O Discipulado na Prática</option>
+                  <option value="lideranca" style="background: #111827; color: #fff;">Os 5 Níveis da Liderança Cristã</option>
+                  <option value="eusou" style="background: #111827; color: #fff;">Eu Sou</option>
+                  <option value="jonas" style="background: #111827; color: #fff;">Jonas 3 Inconformado</option>
+                  <option value="habitos" style="background: #111827; color: #fff;">Transformando Hábitos</option>
+                  <option value="familia" style="background: #111827; color: #fff;">Família</option>
+                  <option value="financas" style="background: #111827; color: #fff;">Finanças</option>
+                  <option value="vidacrista" style="background: #111827; color: #fff;">Vida Cristã</option>
+                  <option value="teologia" style="background: #111827; color: #fff;">Teologia</option>
+                  <option value="evangelismo" style="background: #111827; color: #fff;">Evangelismo</option>
+                  <option value="missoes" style="background: #111827; color: #fff;">Missões</option>
+                  <option value="outros" style="background: #111827; color: #fff;">Outros</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #fff;">Nome da Faixa (ex: faixa_01, intro, capitulo_1)</label>
+                <input type="text" id="trackName" class="modern-input" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px;" placeholder="faixa_03" required>
+              </div>
+
+              <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #fff;">Texto do Capítulo</label>
+                <textarea id="textContent" rows="10" class="modern-input" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; resize: vertical;" placeholder="Cole o texto aqui..." required></textarea>
+              </div>
+
+              <div>
+                <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #fff;">Vozes a Gerar (Selecione 1 ou mais)</label>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <label style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="voice-check" value="pt-BR-AntonioNeural" checked>
+                    <span><strong>Antônio</strong> (Masc - Grave/Maduro)</span>
+                  </label>
+
+                  <label style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="voice-check" value="pt-BR-FranciscaNeural" checked>
+                    <span><strong>Francisca</strong> (Fem - Profissional)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="statusMessage" style="display: none; padding: 16px; border-radius: 8px; margin-top: 10px;"></div>
+
+              <button type="submit" class="btn-gold" style="width: 100%; padding: 16px; font-size: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; cursor: pointer; margin-top: 10px;" id="generateBtn">
+                <i class="fas fa-magic"></i> Gerar Múltiplas Vozes
+              </button>
+
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      document.getElementById('studioForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const text = document.getElementById('textContent').value;
+        const bookId = document.getElementById('bookId').value;
+        const trackName = document.getElementById('trackName').value;
+        
+        const checkboxes = document.querySelectorAll('.voice-check:checked');
+        if (checkboxes.length === 0) {
+            alert('Selecione pelo menos uma voz para gerar!');
+            return;
+        }
+
+        const btn = document.getElementById('generateBtn');
+        const statusEl = document.getElementById('statusMessage');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando... (Pode demorar um pouco)';
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(255,255,255,0.1)';
+        statusEl.style.color = '#fff';
+        statusEl.innerHTML = 'Gerando faixas... Por favor, aguarde.';
+
+        let successCount = 0;
+        let errors = [];
+
+        for (let i = 0; i < checkboxes.length; i++) {
+            const voice = checkboxes[i].value;
+            statusEl.innerHTML = `Gerando áudio (${i+1}/${checkboxes.length}) - Voz: ${voice}...`;
+            
+            try {
+                const res = await fetch('/api/generate-audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': 'prgilbertopenido-secret-key-2024'
+                    },
+                    body: JSON.stringify({ text, voice, bookId, trackName })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    successCount++;
+                } else {
+                    errors.push(data.error);
+                }
+            } catch (err) {
+                errors.push(err.message);
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-magic"></i> Gerar Múltiplas Vozes';
+
+        if (successCount > 0 && errors.length === 0) {
+            statusEl.style.background = 'rgba(16, 185, 129, 0.2)';
+            statusEl.style.color = '#10b981';
+            statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Sucesso! ${successCount} áudio(s) gerado(s) e salvos no sistema.`;
+        } else {
+            statusEl.style.background = 'rgba(239, 68, 68, 0.2)';
+            statusEl.style.color = '#ef4444';
+            statusEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Operação concluída com ${errors.length} erros. Faixas geradas com sucesso: ${successCount}.`;
+        }
+      });
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
+
