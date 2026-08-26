@@ -248,7 +248,8 @@ async function openBookViewer(bookId) {
         }
         
         fetchUrls = [
-            `/api/proxy-pdf?url=${encodeURIComponent(filePath)}`, // Vercel limit 4.5MB
+            `/proxy-drive/${driveMatch[0]}`, // Novo Vercel Edge Proxy (Bypassa limite de tamanho e remove CORS)
+            `/api/proxy-pdf?url=${encodeURIComponent(filePath)}`, // Node.js Proxy Antigo (Vercel limit 4.5MB)
             `https://corsproxy.io/?${encodeURIComponent(driveDirect)}`, // Free CORS proxy
             `https://api.allorigins.win/raw?url=${encodeURIComponent(driveDirect)}` // Backup proxy
         ];

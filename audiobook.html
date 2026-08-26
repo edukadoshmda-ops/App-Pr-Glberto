@@ -368,15 +368,16 @@
         return url;
       }
 
-      // Converte links Google Drive para streaming direto (bypassa limite da Vercel)
+      // Converte links Google Drive para streaming direto (bypassa limite da Vercel via Edge Rewrite)
       function toAudioUrl(url) {
         if (!url) return null;
         url = url.trim();
         const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
                            url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         if (driveMatch) {
-          // Usa link direto do Drive que ignora verificação de vírus (funciona direto na tag <audio>)
-          return `https://drive.usercontent.google.com/download?id=${driveMatch[1]}&export=download&confirm=t`;
+          // Usa a rota proxy na borda da Vercel configurada no vercel.json
+          // Bypassa o limite de 4.5MB, resolve CORS e burla restrições do Google Drive
+          return `/proxy-drive/${driveMatch[1]}`;
         }
         return url;
       }
@@ -525,17 +526,16 @@
                     player.src = audioUrl;
                     player.play().catch(async (err) => {
                       console.warn('Tentando fallback de reprodução...', err);
-                      // Fallback usando corsproxy.io
+                      // Fallback usando docs.google.com/uc direto
                       const driveMatch = (ab.contentUrl || '').match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/) ||
                                          (ab.contentUrl || '').match(/[?&]id=([a-zA-Z0-9_-]+)/);
                       if (driveMatch) {
-                        const directUrl = `https://drive.usercontent.google.com/download?id=${driveMatch[1]}&export=download&confirm=t`;
-                        player.src = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
+                        player.src = `https://docs.google.com/uc?export=download&id=${driveMatch[1]}`;
                         try {
                           await player.play();
                           return;
                         } catch (e2) {
-                          console.warn('Proxy também falhou, abrindo aba...', e2);
+                          console.warn('Fallback secundário também falhou...', e2);
                         }
                       }
                       
