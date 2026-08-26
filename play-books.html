@@ -225,8 +225,9 @@
             const localItems = JSON.parse(localStorage.getItem('prgilbertopenido_playbooks') || '[]');
             if (localItems.length > 0) {
               const existingIds = new Set((playbooks || []).map(p => String(p.id)));
+              const existingTitles = new Set((playbooks || []).map(p => (p.title || '').toLowerCase().trim()));
               const localMapped = localItems
-                .filter(item => !existingIds.has(String(item.id)))
+                .filter(item => !existingIds.has(String(item.id)) && !existingTitles.has((item.title || '').toLowerCase().trim()))
                 .map(item => ({
                   id: item.id,
                   title: item.title,

@@ -180,8 +180,9 @@
                     const localItems = JSON.parse(localStorage.getItem('prgilbertopenido_videos') || '[]');
                     if (localItems.length > 0) {
                         const existingIds = new Set(videos.map(v => String(v.id)));
+                        const existingTitles = new Set(videos.map(v => (v.title || '').toLowerCase().trim()));
                         const localMapped = localItems
-                            .filter(item => !existingIds.has(String(item.id)))
+                            .filter(item => !existingIds.has(String(item.id)) && !existingTitles.has((item.title || '').toLowerCase().trim()))
                             .map(item => ({
                                 id: item.id, title: item.title, category: item.category,
                                 author: item.author || 'Pr. Gilberto Penido Bertho',
