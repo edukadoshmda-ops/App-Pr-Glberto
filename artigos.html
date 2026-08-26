@@ -261,6 +261,14 @@
                     }
                 } catch(e) {}
 
+                // Filtrar itens deletados (Vercel bypass)
+                try {
+                    const deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+                    if (deletedIds.length > 0) {
+                        allArticles = allArticles.filter(a => !deletedIds.includes(String(a.id)));
+                    }
+                } catch(e) {}
+
                 displayArticles(allArticles);
             } catch (err) {
                 console.error('Erro ao carregar artigos:', err);
@@ -342,6 +350,15 @@
             try {
                 const client = (typeof getSupabaseClient === 'function') ? getSupabaseClient() : null;
                 if (client) client.from('articles').delete().eq('id', id).then(() => {});
+            } catch(e) {}
+
+            // Marcar como deletado globalmente (para Vercel Read-Only)
+            try {
+                let deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+                if (!deletedIds.includes(String(id))) {
+                    deletedIds.push(String(id));
+                    localStorage.setItem('prgilbertopenido_deleted', JSON.stringify(deletedIds));
+                }
             } catch(e) {}
 
             // Atualiza lista em memória e re-renderiza

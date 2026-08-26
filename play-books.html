@@ -240,6 +240,14 @@
             }
           } catch(e) {}
 
+          // Filtrar itens deletados (Vercel bypass)
+          try {
+              const deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+              if (deletedIds.length > 0) {
+                  playbooks = playbooks.filter(p => !deletedIds.includes(String(p.id)));
+              }
+          } catch(e) {}
+
           const isAdmin = localStorage.getItem('isAdmin') === 'true';
           const grid = document.querySelector('.cards-grid');
 
@@ -522,6 +530,15 @@
             let local = JSON.parse(localStorage.getItem('prgilbertopenido_playbooks') || '[]');
             local = local.filter(p => String(p.id) !== String(id));
             localStorage.setItem('prgilbertopenido_playbooks', JSON.stringify(local));
+          } catch(e) {}
+
+          // Marcar como deletado globalmente (para Vercel Read-Only)
+          try {
+              let deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+              if (!deletedIds.includes(String(id))) {
+                  deletedIds.push(String(id));
+                  localStorage.setItem('prgilbertopenido_deleted', JSON.stringify(deletedIds));
+              }
           } catch(e) {}
 
           // Remove o card da tela

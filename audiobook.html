@@ -444,8 +444,16 @@
 
           if (audiobooks && audiobooks.length > 0) {
             const playlistContainer = document.getElementById('playlistTracks');
-            const grid = document.querySelector('.cards-grid');
-            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            // Filtrar itens deletados (Vercel bypass)
+          try {
+              const deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+              if (deletedIds.length > 0) {
+                  audiobooks = audiobooks.filter(a => !deletedIds.includes(String(a.id)));
+              }
+          } catch(e) {}
+
+          const grid = document.querySelector('.cards-grid');
+          const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
             const getCorrectCover = (title, originalCover) => {
               if (originalCover && originalCover.trim() !== '') {
@@ -617,6 +625,15 @@
             let local = JSON.parse(localStorage.getItem('prgilbertopenido_audiobooks') || '[]');
             local = local.filter(a => String(a.id) !== String(id));
             localStorage.setItem('prgilbertopenido_audiobooks', JSON.stringify(local));
+          } catch(e) {}
+
+          // Marcar como deletado globalmente (para Vercel Read-Only)
+          try {
+              let deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+              if (!deletedIds.includes(String(id))) {
+                  deletedIds.push(String(id));
+                  localStorage.setItem('prgilbertopenido_deleted', JSON.stringify(deletedIds));
+              }
           } catch(e) {}
 
           // Remove o card da tela

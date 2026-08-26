@@ -192,6 +192,14 @@
                     }
                 } catch(e) {}
 
+                // 4. Filtrar itens deletados (Vercel bypass)
+                try {
+                    const deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+                    if (deletedIds.length > 0) {
+                        videos = videos.filter(v => !deletedIds.includes(String(v.id)));
+                    }
+                } catch(e) {}
+
                 displayVideos(videos);
             } catch (err) {
                 console.error('Erro ao carregar vídeos:', err);
@@ -202,6 +210,16 @@
             if (event) event.stopPropagation();
             if (!confirm('Tem certeza que deseja excluir este vídeo?')) return;
             
+            // Delete from Supabase
+            try {
+                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+                if (supabase) {
+                    await supabase.from('videos').delete().eq('id', id);
+                }
+            } catch(e) {
+                console.warn('Erro ao deletar do Supabase:', e);
+            }
+
             // Delete from local storage
             try {
                 let local = JSON.parse(localStorage.getItem('prgilbertopenido_videos') || '[]');
@@ -212,24 +230,27 @@
                 }
             } catch(e) {}
 
+            // Marcar como deletado globalmente (para Vercel Read-Only)
+            try {
+                let deletedIds = JSON.parse(localStorage.getItem('prgilbertopenido_deleted') || '[]');
+                if (!deletedIds.includes(String(id))) {
+                    deletedIds.push(String(id));
+                    localStorage.setItem('prgilbertopenido_deleted', JSON.stringify(deletedIds));
+                }
+            } catch(e) {}
+
             try {
                 const res = await fetch(`/api/videos/${id}`, {
                     method: 'DELETE',
-                    headers: {
-                        'x-api-key': 'prgilbertopenido-secret-key-2024'
-                    }
+                    headers: { 'x-api-key': 'prgilbertopenido-secret-key-2024' }
                 });
-                if (res.ok) {
-                    loadVideos(); // Recarrega a lista
-                } else {
-                    // Try to reload anyway as it might have been deleted from local storage
-                    loadVideos();
-                }
             } catch (err) {
-                console.error('Erro ao excluir do servidor:', err);
-                // Reload list for local storage deletion
-                loadVideos();
+                console.warn('Erro ao excluir do servidor:', err);
             }
+            
+            // Atualiza UI imediatamente sem precisar recarregar
+            videos = videos.filter(v => String(v.id) !== String(id));
+            displayVideos(videos);
         }
 
         function getYoutubeThumbnail(url) {
