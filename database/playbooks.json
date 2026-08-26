@@ -64,5 +64,49 @@
     "createdAt": "2026-08-25T21:04:35.655Z",
     "totalPages": 0,
     "description": ""
+  },
+  {
+    "id": "1787701465919",
+    "contentType": "playbook",
+    "title": "Teologia Conteporânea",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1gFiB7DjL7SmBJ8Q12Gc6iafI3BVKER1h/view?usp=sharing",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-25T23:44:25.919Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787701766404",
+    "contentType": "playbook",
+    "title": "Teologia Conteporânea",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1gFiB7DjL7SmBJ8Q12Gc6iafI3BVKER1h/view?usp=sharing",
+    "coverUrl": "assets/playbooks/capas/lideranca-crista.jpg",
+    "createdAt": "2026-08-25T23:49:26.404Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787701871037",
+    "contentType": "playbook",
+    "title": "Teologia Conteporânea",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1gFiB7DjL7SmBJ8Q12Gc6iafI3BVKER1h/view?usp=sharing",
+    "coverUrl": "https://drive.google.com/file/d/1gFiB7DjL7SmBJ8Q12Gc6iafI3BVKER1h/view?usp=sharing",
+    "createdAt": "2026-08-25T23:51:11.037Z",
+    "totalPages": 0,
+    "description": ""
+  },
+  {
+    "id": "1787702029614",
+    "contentType": "playbook",
+    "title": "Teologia Conteporânea",
+    "category": "Teologia",
+    "contentUrl": "https://drive.google.com/file/d/1gFiB7DjL7SmBJ8Q12Gc6iafI3BVKER1h/view?usp=sharing",
+    "coverUrl": "https://drive.google.com/file/d/1ePNgTor293YCeLqvbwxfFvpy2YvkSL6J/view?usp=sharing",
+    "createdAt": "2026-08-25T23:53:49.614Z",
+    "totalPages": 0,
+    "description": ""
   }
 ]
