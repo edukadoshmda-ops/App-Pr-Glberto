@@ -238,29 +238,47 @@ async function openBookViewer(bookId) {
     // Cache resolved file on the currentBook for later reference
     currentBook.file = filePath;
 
-    let fetchUrl = filePath;
+    let fetchUrls = [filePath];
     const isExternal = filePath.startsWith('http') && !filePath.includes(window.location.hostname);
     if (isExternal) {
-        // Usar proxy local do servidor para evitar CORS e bloqueio do Google Drive
-        fetchUrl = `/api/proxy-pdf?url=${encodeURIComponent(filePath)}`;
+        let driveDirect = filePath;
+        const driveMatch = filePath.match(/[-\w]{25,}/);
+        if (driveMatch && filePath.includes('drive')) {
+            driveDirect = `https://drive.usercontent.google.com/download?id=${driveMatch[0]}&export=download&confirm=t`;
+        }
+        
+        fetchUrls = [
+            `/api/proxy-pdf?url=${encodeURIComponent(filePath)}`, // Vercel limit 4.5MB
+            `https://corsproxy.io/?${encodeURIComponent(driveDirect)}`, // Free CORS proxy
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(driveDirect)}` // Backup proxy
+        ];
     }
 
-    // Fetch the PDF as ArrayBuffer and pass bytes to pdf.js - more robust across servers
-    try {
-      const resp = await fetch(fetchUrl);
-      if (!resp.ok) throw new Error(`HTTP ${resp.status} fetching PDF`);
-      const data = await resp.arrayBuffer();
-      pdfDocument = await pdfjsLib.getDocument({ data }).promise;
-    } catch (fetchErr) {
-      // Fallback: try direct URL with proxy
-      try {
-        pdfDocument = await pdfjsLib.getDocument(fetchUrl).promise;
-      } catch (e2) {
-        if (isExternal) {
-            throw new Error(`Não foi possível carregar o PDF. Tente fazer o download e abrir localmente.`);
+    let success = false;
+    let lastError = null;
+
+    for (const url of fetchUrls) {
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            
+            const contentType = resp.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                throw new Error('Retornou HTML (página antivírus) em vez de PDF');
+            }
+
+            const data = await resp.arrayBuffer();
+            pdfDocument = await pdfjsLib.getDocument({ data }).promise;
+            success = true;
+            break; // Stop at first successful fetch
+        } catch (err) {
+            console.warn(`Proxy falhou (${url}):`, err.message);
+            lastError = err;
         }
-        throw new Error(`Erro ao carregar PDF: ${fetchErr.message} / ${e2.message}`);
-      }
+    }
+
+    if (!success) {
+        throw new Error(`Não foi possível carregar o PDF via CORS: ${lastError?.message}`);
     }
 
     totalPages = pdfDocument.numPages;
