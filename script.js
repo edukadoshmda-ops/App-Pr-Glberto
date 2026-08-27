@@ -1057,7 +1057,6 @@ const audioLibrary = {
   lideranca: {
     title: "Liderança",
     tracks: [
-      "assets/audiobooks/lideranca/faixa_01.mp3",
       "assets/audiobooks/lideranca/faixa_02.mp3",
       "assets/audiobooks/lideranca/faixa_03.mp3",
       "assets/audiobooks/lideranca/faixa_04.mp3",
@@ -1688,3 +1687,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ==========================================
+// THEME TOGGLE
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Check local storage for theme
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('theme-light');
+    }
+
+    // Attach to all toggle buttons (can be multiple on different pages)
+    const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+    
+    // Set initial icon based on theme
+    toggleBtns.forEach(btn => {
+        const icon = btn.querySelector('i');
+        if (document.body.classList.contains('theme-light')) {
+            if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+        } else {
+            if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+        }
+
+        btn.addEventListener('click', () => {
+            document.body.classList.toggle('theme-light');
+            const isLight = document.body.classList.contains('theme-light');
+            
+            // Save preference
+            localStorage.setItem('app-theme', isLight ? 'light' : 'dark');
+            
+            // Update all icons
+            toggleBtns.forEach(b => {
+                const i = b.querySelector('i');
+                if(i) {
+                    if (isLight) {
+                        i.classList.remove('fa-moon');
+                        i.classList.add('fa-sun');
+                    } else {
+                        i.classList.remove('fa-sun');
+                        i.classList.add('fa-moon');
+                    }
+                }
+            });
+        });
+    });
+});

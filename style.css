@@ -3731,3 +3731,534 @@ a[class*="tab"],
     justify-content: center;
   }
 }
+/* =========================================================
+   LIGHT THEME OVERRIDES
+========================================================= */
+body.theme-light {
+  --navy-950: #f8fafc;
+  --navy-900: #f1f5f9;
+  --navy-850: #e2e8f0;
+  --navy-800: #cbd5e1;
+  --navy-700: #94a3b8;
+
+  --text: #0f172a;
+  --text-soft: #334155;
+  --text-muted: #64748b;
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-gold: rgba(245, 181, 46, 0.6);
+  
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  background: #f8fafc;
+  color: var(--text);
+}
+
+body.theme-light .card,
+body.theme-light .module-card,
+body.theme-light .sidebar,
+body.theme-light .topbar,
+body.theme-light .media-card,
+body.theme-light .pillar-card,
+body.theme-light .video-card,
+body.theme-light .dashboard-content > div,
+body.theme-light article {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: var(--text) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+body.theme-light .hero {
+  background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+}
+
+body.theme-light h1, 
+body.theme-light h2, 
+body.theme-light h3, 
+body.theme-light h4, 
+body.theme-light h5, 
+body.theme-light strong {
+  color: #0f172a !important;
+}
+
+body.theme-light p,
+body.theme-light span,
+body.theme-light small,
+body.theme-light li {
+  color: var(--text-soft) !important;
+}
+
+body.theme-light .eyebrow {
+  color: var(--gold-dark) !important;
+}
+
+body.theme-light .btn-gold,
+body.theme-light .play-main-btn {
+  background: var(--gold) !important;
+  color: #050914 !important;
+}
+
+body.theme-light a {
+  color: var(--text-soft);
+}
+body.theme-light a:hover {
+  color: var(--gold-dark);
+}
+
+body.theme-light .menu-item {
+  color: var(--text-soft) !important;
+}
+body.theme-light .menu-item:hover,
+body.theme-light .menu-item.active {
+  background: rgba(0,0,0,0.05) !important;
+  color: var(--gold-dark) !important;
+}
+
+body.theme-light input,
+body.theme-light textarea,
+body.theme-light select {
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.2) !important;
+  color: #0f172a !important;
+}
+
+/* Fix inline styles on mobile testimonials and general components */
+body.theme-light [style*="rgba(255,255,255,0.03)"],
+body.theme-light [style*="rgba(255, 255, 255, 0.03)"] {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+body.theme-light .app-background {
+  opacity: 0.1;
+  filter: invert(1);
+}
+
+/* Theme Toggle Button Style */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: auto;
+}
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--gold);
+}
+body.theme-light .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0,0,0,0.1);
+  color: #0f172a;
+}
+body.theme-light .theme-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--gold-dark);
+}
+/* =========================================================
+   AGGRESSIVE LIGHT THEME OVERRIDES
+========================================================= */
+body.theme-light,
+body.theme-light .app-shell,
+body.theme-light .main-panel,
+body.theme-light .page-main {
+    background: #f8fafc !important;
+}
+
+body.theme-light .sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+body.theme-light .topbar {
+    background: #f8fafc !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+body.theme-light .feature-player,
+body.theme-light .module-card,
+body.theme-light .media-card,
+body.theme-light .stat-card,
+body.theme-light .pillar-card,
+body.theme-light .card,
+body.theme-light article,
+body.theme-light .video-box,
+body.theme-light .playlist-section > div,
+body.theme-light .dashboard-content > div {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+}
+
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light h4,
+body.theme-light h5,
+body.theme-light p,
+body.theme-light span,
+body.theme-light small,
+body.theme-light strong,
+body.theme-light li,
+body.theme-light label,
+body.theme-light i {
+    color: #1e293b !important;
+}
+
+body.theme-light .eyebrow,
+body.theme-light .mini-label {
+    color: var(--gold-dark) !important;
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+body.theme-light .meta-row span,
+body.theme-light .tag {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .btn-gold,
+body.theme-light .btn-gold *,
+body.theme-light .primary-btn,
+body.theme-light .primary-btn *,
+body.theme-light .play-main-btn,
+body.theme-light .play-main-btn * {
+    background: var(--gold) !important;
+    color: #050914 !important;
+    border: none !important;
+}
+
+body.theme-light .secondary-btn,
+body.theme-light .secondary-btn *,
+body.theme-light .logout-btn,
+body.theme-light .logout-btn * {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .menu-item {
+    color: #475569 !important;
+}
+body.theme-light .menu-item i {
+    color: #64748b !important;
+}
+body.theme-light .menu-item:hover,
+body.theme-light .menu-item.active {
+    background: #f1f5f9 !important;
+}
+body.theme-light .menu-item.active,
+body.theme-light .menu-item.active i {
+    color: var(--gold-dark) !important;
+}
+
+/* Fix Inputs */
+body.theme-light input,
+body.theme-light select,
+body.theme-light textarea {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .theme-toggle-btn {
+    background: #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+body.theme-light .theme-toggle-btn i {
+    color: #0f172a !important;
+}
+/* More overrides for specific pages */
+body.theme-light .recent-panel,
+body.theme-light .recent-item,
+body.theme-light .form-panel,
+body.theme-light .upload-card,
+body.theme-light .book-viewer-modal,
+body.theme-light .book-viewer-content,
+body.theme-light .book-container {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    color: #0f172a !important;
+}
+
+body.theme-light .recent-item .info p,
+body.theme-light .recent-item .info span {
+    color: #475569 !important;
+}
+/* Audiobook player light theme fixes */
+body.theme-light .elite-audio-player,
+body.theme-light .custom-playlist,
+body.theme-light .info-box {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+}
+
+body.theme-light .control-btn,
+body.theme-light .utility-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+body.theme-light .control-btn:hover,
+body.theme-light .utility-btn:hover {
+    background: #e2e8f0 !important;
+    color: var(--gold-dark) !important;
+}
+
+/* Play button specifically */
+body.theme-light .play-pause-btn {
+    background: var(--gold) !important;
+    color: #000 !important;
+    border: none !important;
+}
+
+body.theme-light .track-info h3,
+body.theme-light .track-info p,
+body.theme-light .time-display {
+    color: #0f172a !important;
+}
+
+body.theme-light .playlist-item,
+body.theme-light .track-item {
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+}
+body.theme-light .playlist-item:hover,
+body.theme-light .playlist-item.playing,
+body.theme-light .track-item:hover,
+body.theme-light .track-item.playing {
+    background: #f8fafc !important;
+}
+body.theme-light .playlist-item *,
+body.theme-light .track-item * {
+    color: #0f172a !important;
+}
+
+body.theme-light .progress-bar-bg {
+    background: #e2e8f0 !important;
+}
+body.theme-light .progress-fill {
+    background: var(--gold) !important;
+}
+/* =========================================================
+   COMPREHENSIVE LIGHT THEME — REMOVE ALL DARK BACKGROUNDS & GOLD LINES
+========================================================= */
+
+/* Header / Navbar */
+body.theme-light .header {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+}
+body.theme-light .header .nav a {
+    color: #334155 !important;
+}
+body.theme-light .header .nav a:hover {
+    color: var(--gold-dark) !important;
+}
+
+/* App background overlay */
+body.theme-light .app::before {
+    display: none !important;
+}
+body.theme-light .app-background {
+    opacity: 0.05 !important;
+}
+
+/* Hero Section */
+body.theme-light .hero {
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%) !important;
+}
+
+/* Summary Sections (Resumo Biográfico, etc.) */
+body.theme-light .summary-section {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
+}
+
+/* KILL the gold lines from ::before on pillar-cards */
+body.theme-light .pillar-card::before {
+    display: none !important;
+}
+body.theme-light .pillar-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+}
+body.theme-light .pillar-index {
+    background: rgba(245, 181, 46, 0.1) !important;
+    border-color: rgba(245, 181, 46, 0.3) !important;
+    color: var(--gold-dark) !important;
+}
+
+/* KILL the gold lines from ::before on cards */
+body.theme-light .card::before {
+    display: none !important;
+}
+body.theme-light .card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    backdrop-filter: none !important;
+}
+body.theme-light .card:hover {
+    border-color: rgba(245, 181, 46, 0.4) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+/* Feature player (Play Books main card) */
+body.theme-light .feature-player::before {
+    display: none !important;
+}
+body.theme-light .feature-cover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #f8fafc !important;
+}
+body.theme-light .feature-cover::after {
+    display: none !important;
+}
+
+/* Stat cards */
+body.theme-light .stat-card::before {
+    display: none !important;
+}
+body.theme-light .stat-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Module cards (Dashboard) */
+body.theme-light .module-card,
+body.theme-light .module-card.primary-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+}
+
+/* Strong text overrides for summary list */
+body.theme-light .summary-list strong {
+    color: var(--gold-dark) !important;
+}
+
+/* Footer */
+body.theme-light footer,
+body.theme-light .footer {
+    background: #f1f5f9 !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+body.theme-light .footer-bottom {
+    color: #64748b !important;
+}
+
+/* All remaining dark inline backgrounds */
+body.theme-light [style*="rgba(5, 9, 20"],
+body.theme-light [style*="rgba(8, 17, 38"],
+body.theme-light [style*="rgba(8, 18, 36"],
+body.theme-light [style*="rgba(10, 18, 32"],
+body.theme-light [style*="rgba(12, 22, 44"],
+body.theme-light [style*="rgba(13, 24, 52"],
+body.theme-light [style*="rgba(15, 28, 55"],
+body.theme-light [style*="rgba(17, 30, 61"],
+body.theme-light [style*="rgba(17, 31, 61"],
+body.theme-light [style*="rgba(20, 35, 72"],
+body.theme-light [style*="rgba(6, 14, 32"],
+body.theme-light [style*="rgba(6, 12, 24"],
+body.theme-light [style*="rgba(7, 16, 28"],
+body.theme-light [style*="rgba(8, 16, 32"],
+body.theme-light [style*="rgba(11, 19, 33"],
+body.theme-light [style*="rgba(23, 36, 71"],
+body.theme-light [style*="#050914"],
+body.theme-light [style*="#081126"],
+body.theme-light [style*="#0b1630"],
+body.theme-light [style*="#101d3b"],
+body.theme-light [style*="#070e22"],
+body.theme-light [style*="#0a1329"],
+body.theme-light [style*="rgba(10, 17, 28"] {
+    background: #ffffff !important;
+    border-color: rgba(0,0,0,0.1) !important;
+}
+
+/* Any gold borders that show as lines */
+body.theme-light [style*="border-gold"],
+body.theme-light [style*="border: 1px solid var(--border-gold)"] {
+    border-color: rgba(0,0,0,0.08) !important;
+}
+/* Fix book viewer navigation bar (dark box) */
+body.theme-light .book-navigation,
+body.theme-light .book-viewer-content,
+body.theme-light .book-viewer,
+body.theme-light .book-container,
+body.theme-light .book-zoom-controls {
+    background: #ffffff !important;
+    border-color: rgba(0,0,0,0.1) !important;
+}
+body.theme-light .book-nav-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+}
+body.theme-light .book-nav-btn:hover:not(:disabled) {
+    background: #e2e8f0 !important;
+    color: var(--gold-dark) !important;
+}
+body.theme-light .book-page-indicator,
+body.theme-light .book-page-indicator span {
+    color: #0f172a !important;
+}
+
+/* Fix sidebar menu font-size in light theme (increase zoom) */
+body.theme-light .sidebar .menu-item {
+    font-size: 15px !important;
+    color: #334155 !important;
+}
+body.theme-light .sidebar .menu-item i {
+    font-size: 18px !important;
+    color: #475569 !important;
+}
+body.theme-light .sidebar .menu-item span {
+    font-size: 14px !important;
+    color: #334155 !important;
+}
+body.theme-light .sidebar .menu-item.active span,
+body.theme-light .sidebar .menu-item.active i {
+    color: var(--gold-dark) !important;
+    font-weight: 700 !important;
+}
+
+/* Fix the scrollbar in light theme */
+body.theme-light ::-webkit-scrollbar-track {
+    background: #f1f5f9 !important;
+}
+body.theme-light ::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+}
+/* Volume slider + progress bar in light theme */
+body.theme-light #volumeBar {
+    background: rgba(0, 0, 0, 0.15) !important;
+}
+body.theme-light #volumeBar::-webkit-slider-thumb {
+    background: #0f172a !important;
+}
+body.theme-light #volumeBar::-moz-range-thumb {
+    background: #0f172a !important;
+}
+body.theme-light #progressBar {
+    background: rgba(0, 0, 0, 0.12) !important;
+}
+body.theme-light #progressBar::-webkit-slider-thumb {
+    background: var(--gold) !important;
+}

@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#cda451">
-  </head>
+      <link rel="stylesheet" href="theme-light-all.css">
+</head>
   <body>
     <div class="app">
       <div class="app-background"></div>
@@ -31,8 +32,13 @@
           <a href="#contato">Contato</a>
         </nav>
 
-        <!-- Login link: inline styles to ensure visibility even if global CSS is overridden -->
-        <a class="btn-gold" href="login.html" style="display:inline-block;padding:8px 12px;background:var(--gold);color:#101827;border-radius:8px;font-weight:700;text-decoration:none;">Entrar</a>
+        <div style="display: flex; align-items: center; gap: 15px; margin-left: auto;">
+          <button class="theme-toggle-btn" aria-label="Alternar tema" title="Alternar tema">
+            <i class="fas fa-moon"></i>
+          </button>
+          <!-- Login link: inline styles to ensure visibility even if global CSS is overridden -->
+          <a class="btn-gold" href="login.html" style="display:inline-block;padding:8px 12px;background:var(--gold);color:#101827;border-radius:8px;font-weight:700;text-decoration:none;">Entrar</a>
+        </div>
       </header>
 
       <main id="inicio">
@@ -307,6 +313,35 @@
             .catch(err => console.error('Service Worker registration failed:', err));
         });
       }
+
+      // Theme toggle logic
+      const savedTheme = localStorage.getItem('app-theme');
+      if (savedTheme === 'light') {
+          document.body.classList.add('theme-light');
+      }
+      const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+      toggleBtns.forEach(btn => {
+          const icon = btn.querySelector('i');
+          if (document.body.classList.contains('theme-light')) {
+              if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+          }
+          btn.addEventListener('click', () => {
+              document.body.classList.toggle('theme-light');
+              const isLight = document.body.classList.contains('theme-light');
+              localStorage.setItem('app-theme', isLight ? 'light' : 'dark');
+              toggleBtns.forEach(b => {
+                  const i = b.querySelector('i');
+                  if(i) {
+                      if (isLight) {
+                          i.classList.remove('fa-moon'); i.classList.add('fa-sun');
+                      } else {
+                          i.classList.remove('fa-sun'); i.classList.add('fa-moon');
+                      }
+                  }
+              });
+          });
+      });
     </script>
-  </body>
+      <script src="global-theme.js"></script>
+</body>
 </html>
