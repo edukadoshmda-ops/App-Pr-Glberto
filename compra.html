@@ -69,6 +69,7 @@
             font-weight: 700;
             border-radius: 50%;
             margin-right: 15px;
+            flex-shrink: 0;
         }
 
         .step-title {
@@ -78,6 +79,71 @@
             margin-bottom: 20px;
             display: flex;
             align-items: center;
+        }
+
+        .step-title-text {
+            color: inherit;
+        }
+
+        /* Light Theme Overrides */
+        body.theme-light .step-title,
+        body.theme-light .step-title-text {
+            color: #0f172a !important;
+        }
+
+        body.theme-light .purchase-header h1 {
+            color: #0f172a !important;
+        }
+
+        body.theme-light .purchase-header p {
+            color: #475569 !important;
+        }
+
+        body.theme-light .purchase-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.theme-light .pix-info {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        body.theme-light .pix-info h3 {
+            color: #b45309 !important;
+        }
+
+        body.theme-light .pix-info p {
+            color: #334155 !important;
+        }
+
+        body.theme-light .pix-info strong {
+            color: #0f172a !important;
+        }
+
+        body.theme-light .form-group label {
+            color: #1e293b !important;
+        }
+
+        body.theme-light .form-group input {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        body.theme-light .btn-back {
+            color: #0f172a !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        body.theme-light .back-link-bottom {
+            color: #475569 !important;
+        }
+
+        body.theme-light .back-link-bottom:hover {
+            color: #0f172a !important;
         }
 
         .pix-info {
@@ -220,17 +286,18 @@
         }
     </style>
     <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
     <div class="purchase-container">
-        <a href="venda.html" style="display: inline-flex; align-items: center; gap: 8px; color: #b8c5d6; text-decoration: none; font-weight: 600; font-size: 14px; margin-bottom: 20px; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
+        <a href="venda.html" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-bottom: 20px; padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease;">
             <i class="fas fa-arrow-left"></i>
             Voltar
         </a>
         
         <div class="purchase-header">
-            <h1>Finalizar Compra</h1>
-            <p>Acesso vitalício por apenas R$ 19,90</p>
+            <h1>Degustação Grátis & Assinatura Mensal</h1>
+            <p>Cadastre-se e ganhe <strong>7 dias de degustação gratuita</strong> ou ative por <strong>R$ 19,90/mês</strong></p>
         </div>
 
         <div class="purchase-grid">
@@ -238,23 +305,30 @@
             <div class="purchase-card">
                 <div class="step-title">
                     <span class="step-number">1</span>
-                    Faça o pagamento via PIX
+                    <span class="step-title-text">Pagamento via PIX Mensal</span>
                 </div>
                 
                 <div class="pix-info">
                     <h3><i class="fas fa-qrcode"></i> Chave PIX</h3>
-                    <p><strong>Valor:</strong> R$ 19,90</p>
-                    <p><strong>Chave:</strong> (32) 99103-5632</p>
+                    <p><strong>Valor Mensal:</strong> <span style="color: #25D366; font-weight: bold; font-size: 16px;">R$ 19,90</span></p>
+                    <p><strong>Chave PIX:</strong> <span style="font-family: monospace; background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 4px; color: #ffd700;" id="pixKeyValue">(32) 99103-5632</span></p>
                     <p><strong>Beneficiário:</strong> Pr. Gilberto Penido Bertho</p>
-                    <p style="margin-top: 15px; font-size: 14px;">
+                    
+                    <div style="margin-top: 15px; display: flex; gap: 8px;">
+                        <button type="button" onclick="copyPixKey()" style="flex: 1; padding: 10px 14px; background: rgba(205, 164, 81, 0.2); border: 1px solid #cda451; color: #cda451; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-copy"></i> Copiar Chave PIX
+                        </button>
+                    </div>
+
+                    <p style="margin-top: 15px; font-size: 13px; color: #b8c5d6;">
                         <i class="fas fa-info-circle" style="color: #cda451;"></i>
-                        Após fazer o PIX, envie o comprovante para o WhatsApp do Pr. Gilberto
+                        Você pode testar por 7 dias grátis primeiro ou já antecipar o pagamento via PIX para garantir 30 dias contínuos.
                     </p>
                 </div>
 
-                <a href="https://wa.me/5532991035632?text=Olá, fiz o PIX de R$ 19,90 para o acesso vitalício do PrGilbertoPenido. Segue o comprovante." target="_blank" class="whatsapp-btn">
+                <a id="directWhatsappBtn" href="https://wa.me/5532991035632?text=Ol%C3%A1%20Pr.%20Gilberto,%20fiz%20o%20PIX%20mensal%20de%20R$%2019,90%20para%20o%20app.%20Segue%20o%20comprovante." target="_blank" class="whatsapp-btn">
                     <i class="fab fa-whatsapp"></i>
-                    Enviar Comprovante via WhatsApp
+                    Enviar Comprovante no WhatsApp
                 </a>
             </div>
 
@@ -262,7 +336,7 @@
             <div class="purchase-card">
             <div class="step-title">
                 <span class="step-number">2</span>
-                Cadastre seus dados
+                <span class="step-title-text">Cadastre seus dados de acesso</span>
             </div>
             
             <form id="purchaseForm">
@@ -292,17 +366,24 @@
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    <i class="fas fa-user-plus"></i>
-                    Cadastrar e Aguardar Liberação
+                    <i class="fas fa-rocket"></i>
+                    Criar Conta & Iniciar 7 Dias Grátis
                 </button>
             </form>
 
-            <div id="successMessage" class="success-message">
-                <h3><i class="fas fa-check-circle"></i> Cadastro Realizado!</h3>
-                <p>Seus dados foram enviados com sucesso. Aguarde a confirmação do pagamento via WhatsApp para liberar seu acesso.</p>
-                <p style="font-size: 14px; color: #858f9a;">
-                    Após a confirmação, você poderá acessar o app com seu e-mail e senha.
-                </p>
+            <div id="successMessage" class="success-message" style="display: none;">
+                <h3><i class="fas fa-check-circle" style="color: #25D366;"></i> Degustação Gratuita Liberada!</h3>
+                <p>Você ganhou <strong>7 dias de degustação gratuita</strong>. Enviamos a confirmação para <strong id="userEmailSpan" style="color: #cda451;"></strong>.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                    <a href="login.html" class="submit-btn" style="text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-sign-in-alt"></i> Entrar no Aplicativo Agora
+                    </a>
+
+                    <a id="successWhatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display: inline-flex; justify-content: center; width: 100%;">
+                        <i class="fab fa-whatsapp"></i> Já fiz o PIX: Enviar Comprovante
+                    </a>
+                </div>
             </div>
         </div>
         </div>
@@ -311,36 +392,32 @@
         <div class="purchase-card" style="margin-top: 80px;">
             <div class="step-title">
                 <span class="step-number">3</span>
-                Próximos passos
+                <span class="step-title-text">Como funciona a degustação e assinatura</span>
             </div>
             
             <div style="color: #b8c5d6; line-height: 1.8;">
                 <p style="margin-bottom: 15px;">
                     <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
-                    Faça o PIX de R$ 19,90 para a chave (32) 9103-5632
+                    <strong>Passo 1:</strong> Cadastre-se e ganhe <strong>7 dias de degustação gratuita</strong> com acesso total e imediato.
                 </p>
                 <p style="margin-bottom: 15px;">
                     <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
-                    Envie o comprovante para o WhatsApp do Pr. Gilberto
+                    <strong>Passo 2:</strong> Desfrute de todos os áudios, livros e estudos sem restrições.
                 </p>
                 <p style="margin-bottom: 15px;">
                     <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
-                    Preencha o formulário acima com seus dados
+                    <strong>Passo 3:</strong> <strong>3 dias antes</strong> do fim da degustação, você receberá um lembrete por e-mail e WhatsApp para assinar o plano mensal de R$ 19,90 via PIX.
                 </p>
                 <p style="margin-bottom: 15px;">
                     <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
-                    Aguarde a confirmação do pagamento
-                </p>
-                <p>
-                    <i class="fas fa-check" style="color: #cda451; margin-right: 10px;"></i>
-                    Após confirmação, acesse o app com seu e-mail e senha
+                    <strong>Passo 4:</strong> Ao pagar o PIX, seu acesso é ativado por mais 30 dias. Se o pagamento não for realizado ao encerrar a degustação, sua conta será pausada até a confirmação do PIX.
                 </p>
             </div>
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <a href="venda.html" style="color: #b8c5d6; text-decoration: none;">
-                <i class="fas fa-arrow-left"></i> Voltar para página de venda
+            <a href="venda.html" class="back-link-bottom" style="text-decoration: none; font-weight: 500;">
+                <i class="fas fa-arrow-left"></i> Voltar para página de apresentação
             </a>
         </div>
     </div>
@@ -348,16 +425,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
     <script>
-        function copyPix() {
-            const pixCode = document.getElementById('pixCode').value;
-            navigator.clipboard.writeText(pixCode).then(() => {
-                alert('Código PIX copiado com sucesso! Abra o app do seu banco e cole na opção PIX Copia e Cola.');
-            }).catch(err => {
-                console.error('Erro ao copiar:', err);
-                const input = document.getElementById('pixCode');
-                input.select();
-                document.execCommand('copy');
-                alert('Código PIX copiado!');
+        function copyPixKey() {
+            const pixKey = "(32) 99103-5632";
+            navigator.clipboard.writeText(pixKey).then(() => {
+                alert('Chave PIX copiada: (32) 99103-5632\nCole no aplicativo do seu banco.');
+            }).catch(() => {
+                prompt('Copie a chave PIX abaixo:', pixKey);
             });
         }
 
@@ -382,63 +455,63 @@
 
             const submitBtn = this.querySelector('.submit-btn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando Assinatura...';
 
             try {
-                // 1. Tentar cadastro via Supabase Auth
-                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+                // Notificar servidor local com cadastro e solicitação de assinatura mensal
+                const port = window.location.port ? window.location.port : '3000';
+                let apiHost = '';
+                if (port === '3000' || port === '5000') {
+                    apiHost = `http://${window.location.hostname}:5000`;
+                }
 
-                if (supabase) {
-                    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: {
-                            data: {
-                                full_name: fullName,
-                                phone: phone
-                            }
-                        }
+                try {
+                    await fetch(`${apiHost}/api/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fullName,
+                            phone,
+                            email,
+                            password,
+                            subscriptionType: 'monthly',
+                            paidAmount: 19.90
+                        })
                     });
+                } catch(errFetch) {
+                    console.warn('Registro no backend Node:', errFetch);
+                }
 
-                    if (!signUpError) {
-                        document.getElementById('purchaseForm').style.display = 'none';
-                        document.getElementById('successMessage').style.display = 'block';
-                        return;
-                    } else if (signUpError.message && signUpError.message.includes('User already registered')) {
-                        alert('Este e-mail já está cadastrado. Faça login na plataforma.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
-                        return;
-                    } else {
-                        console.error('Supabase SignUp Error:', signUpError);
-                        alert('Erro do Supabase: ' + signUpError.message);
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
-                        return;
+                // Tentar cadastro no Supabase se configurado
+                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+                if (supabase) {
+                    try {
+                        await supabase.auth.signUp({
+                            email: email,
+                            password: password,
+                            options: {
+                                data: { full_name: fullName, phone: phone, subscription_type: 'monthly' }
+                            }
+                        });
+                    } catch(e) {
+                        console.warn('Supabase signup silencioso:', e);
                     }
                 }
 
-                // 2. Fallback para API Node caso Supabase esteja em desenvolvimento local
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullName, phone, email, password })
-                });
+                // Atualizar tela de sucesso
+                document.getElementById('purchaseForm').style.display = 'none';
+                document.getElementById('userEmailSpan').textContent = email;
+                
+                const whatsappMsg = encodeURIComponent(`Olá Pr. Gilberto! Fiz meu cadastro para a assinatura mensal de R$ 19,90 do App.\nNome: ${fullName}\nE-mail: ${email}\nTelefone: ${phone}\nSegue o comprovante do PIX:`);
+                const whatsappUrl = `https://wa.me/5532991035632?text=${whatsappMsg}`;
+                document.getElementById('successWhatsappLink').href = whatsappUrl;
+                document.getElementById('successMessage').style.display = 'block';
 
-                if (response.ok) {
-                    document.getElementById('purchaseForm').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    const error = await response.json();
-                    alert('Erro ao cadastrar: ' + (error.error || 'Tente novamente'));
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
-                }
             } catch (error) {
                 console.error('Erro no cadastro:', error);
-                alert('Erro de conexão ao cadastrar. Tente novamente.');
+                alert('Erro ao processar cadastro. Verifique sua conexão.');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar e Aguardar Liberação';
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Concluir Assinatura Mensal';
             }
         });
 

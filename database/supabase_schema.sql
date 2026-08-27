@@ -186,8 +186,8 @@ BEGIN
         COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', 'Usuário'),
         NEW.raw_user_meta_data->>'phone',
         NEW.email,
-        CASE WHEN NEW.email IN ('edukadoshmda@gmail.com', 'gilbertobertho@gmail.com') THEN 'approved' ELSE 'pending' END,
-        CASE WHEN NEW.email IN ('edukadoshmda@gmail.com', 'gilbertobertho@gmail.com') THEN TRUE ELSE FALSE END
+        CASE WHEN NEW.email IN ('gilbertobertho@gmail.com', 'gilbertbertho@gmail.com') THEN 'approved' ELSE 'pending' END,
+        CASE WHEN NEW.email IN ('gilbertobertho@gmail.com', 'gilbertbertho@gmail.com') THEN TRUE ELSE FALSE END
     )
     ON CONFLICT (id) DO UPDATE SET
         full_name = EXCLUDED.full_name,

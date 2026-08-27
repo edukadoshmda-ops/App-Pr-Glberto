@@ -145,7 +145,10 @@ const zoomValueElement =
    ABRIR LIVRO
 ========================================================= */
 
-function checkAccess(bookId) {
+function checkAccess(itemId, moduleType = 'playbooks') {
+  if (window.AppPermissions && typeof window.AppPermissions.checkItemAccess === 'function') {
+    return window.AppPermissions.checkItemAccess(moduleType, itemId);
+  }
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
   const status = localStorage.getItem('userStatus') || 'approved';
   
@@ -156,8 +159,15 @@ function checkAccess(bookId) {
   const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
   
   if (daysSinceRegistration <= 7) {
-    if (bookId !== 'habitos') {
-      alert('Acesso restrito. Durante o período de teste de 7 dias, apenas o "Transformando Hábitos" está liberado. Adquira o Premium para acesso total!');
+    if (itemId !== 'lideranca' && itemId !== 'habitos') {
+      if (window.AppPermissions && typeof window.AppPermissions.showAccessModal === 'function') {
+        window.AppPermissions.showAccessModal(
+          'Item Bloqueado na Degustação Grátis (7 Dias)',
+          'Durante os 7 dias de degustação grátis, você tem 1 item liberado neste módulo e todos os vídeos liberados. Assine o plano para desbloquear todos os conteúdos!'
+        );
+      } else {
+        alert('Acesso restrito. Durante o período de teste de 7 dias, apenas 1 item está liberado para degustação. Adquira o plano completo para acesso total!');
+      }
       return false;
     }
     return true;
@@ -994,6 +1004,27 @@ function logout() {
 const audioLibrary = {
   eusou: {
     title: "Eu Sou",
+    chapterTitles: [
+      "Prefácio e Introdução",
+      "Capítulo 1: O Chamado de Moisés",
+      "Capítulo 2: Eu Sou o Que Sou",
+      "Capítulo 3: Eu Sou o Pão da Vida",
+      "Capítulo 4: Eu Sou a Luz do Mundo",
+      "Capítulo 5: Eu Sou a Porta",
+      "Capítulo 6: Eu Sou o Bom Pastor",
+      "Capítulo 7: O Caminho, a Verdade e a Vida",
+      "Capítulo 8: A Videira Verdadeira",
+      "Capítulo 9: Antes que Abraão Existisse",
+      "Capítulo 10: O Deus Presente",
+      "Capítulo 11: O Senhor da Glória",
+      "Capítulo 12: O Alfa e o Ômega",
+      "Capítulo 13: O Cordeiro de Deus",
+      "Capítulo 14: O Rei dos Reis",
+      "Capítulo 15: O que Vem Sem Demora",
+      "Capítulo 16: O Refúgio no Deserto",
+      "Capítulo 17: A Presença que Transforma",
+      "Conclusão: A Plenitude do Eu Sou"
+    ],
     tracks: [
       "assets/audiobooks/eusou/faixa_01.mp3",
       "assets/audiobooks/eusou/faixa_02.mp3",
@@ -1018,6 +1049,22 @@ const audioLibrary = {
   },
   habitos: {
     title: "Transformando Hábitos",
+    chapterTitles: [
+      "Capítulo 1: A Anatomia dos Hábitos",
+      "Capítulo 2: Diagnóstico Comportamental",
+      "Capítulo 3: Arquitetura de Objetivos",
+      "Capítulo 4: Engenharia da Transformação",
+      "Capítulo 5: Psicologia Interna e Força de Vontade",
+      "Capítulo 6: Construção e Sustentação de Rotinas",
+      "Capítulo 7: Resiliência e Gestão de Recaídas",
+      "Capítulo 8: A Base Biológica da Performance",
+      "Capítulo 9: Produtividade Profunda e Gestão de Energia",
+      "Capítulo 10: A Dinâmica Social e Relações",
+      "Capítulo 11: O Modelo Mental de Alto Desempenho",
+      "Capítulo 12: Consolidação da Identidade",
+      "Capítulo 13: Automação e Sustentabilidade",
+      "Conclusão: O Plano de Ação Prático"
+    ],
     tracks: [
       "assets/audiobooks/habitos/faixa_01.mp3",
       "assets/audiobooks/habitos/faixa_02.mp3",
@@ -1037,6 +1084,22 @@ const audioLibrary = {
   },
   jonas: {
     title: "Jonas 3 Inconformado",
+    chapterTitles: [
+      "Prefácio e Introdução",
+      "Capítulo 1: A Fuga de um Homem",
+      "Capítulo 2: Três Dias na Escuridão",
+      "Capítulo 3: O Maior Avivamento da História",
+      "Capítulo 4: Quando o Profeta se Irrita",
+      "Capítulo 5: Nínive, Cidade que Deus Não Desistiu de Amar",
+      "Capítulo 6: Jonas e Jesus",
+      "Capítulo 7: Jonas e a Igreja de Hoje",
+      "Capítulo 8: O Clamor da Cidade",
+      "Capítulo 9: A Planta e o Verme",
+      "Capítulo 10: Graça Inesperada",
+      "Capítulo 11: O Deus que Perdoa",
+      "Capítulo 12: A Resposta do Coração",
+      "Conclusão: O Deus que Continua Chamando"
+    ],
     tracks: [
       "assets/audiobooks/jonas/faixa_01.mp3",
       "assets/audiobooks/jonas/faixa_02.mp3",
@@ -1055,7 +1118,23 @@ const audioLibrary = {
     ]
   },
   lideranca: {
-    title: "Liderança",
+    title: "Os 5 Níveis da Liderança Cristã",
+    chapterTitles: [
+      "Prefácio",
+      "Apresentação do Autor",
+      "Capítulo 1: Perfis de Liderança Cristã",
+      "Capítulo 2: Os 5 Níveis da Liderança Cristã",
+      "Capítulo 3: Fundamentos Bíblicos da Liderança",
+      "Capítulo 4: Ferramentas para Formação de Líderes",
+      "Capítulo 5: Vivendo para o Legado",
+      "Capítulo 6: Autoliderança e Vida Devocional",
+      "Capítulo 7: Liderança em Tempos de Crise",
+      "Capítulo 8: Relacionamentos e Conflitos",
+      "Capítulo 9: Visão Ministerial e Planejamento",
+      "Capítulo 10: Formação de Equipes e Honra",
+      "Conclusão: O Legado que Permanece",
+      "Palavras Finais"
+    ],
     tracks: [
       "assets/audiobooks/lideranca/faixa_02.mp3",
       "assets/audiobooks/lideranca/faixa_03.mp3",
@@ -1075,6 +1154,22 @@ const audioLibrary = {
   },
   discipulado: {
     title: "Discipulado na Prática",
+    chapterTitles: [
+      "Apresentação e Agradecimentos",
+      "Capítulo 1: O que é Discipulado",
+      "Capítulo 2: Visão Geral e Propósitos",
+      "Capítulo 3: As Bases Bíblicas e a Multiplicação",
+      "Capítulo 4: Pré-Evangelismo e Quebra de Barreiras",
+      "Capítulo 5: Evangelismo Pessoal e Amizade",
+      "Capítulo 6: Testemunho Pessoal e Salvação",
+      "Capítulo 7: Evangelismo em Lições nos Lares",
+      "Capítulo 8: Pós-Evangelismo e Integração",
+      "Capítulo 9: Acompanhamento e Consolidação",
+      "Capítulo 10: Formação de Novos Discipuladores",
+      "Capítulo 11: A Estrutura do Ministério Local",
+      "Capítulo 12: Superando Dificuldades no Ministério",
+      "Conclusão: Fruto que Permanece"
+    ],
     tracks: [
       "assets/audiobooks/discipulado/faixa_01.mp3",
       "assets/audiobooks/discipulado/faixa_02.mp3",
@@ -1146,14 +1241,23 @@ function setupAudioPlayer() {
      const item = document.createElement("button");
      item.type = "button";
      item.className = "track-item" + (index === audioState.trackIndex ? " active" : "");
+     
+     const chapterTitle = (activeBook && activeBook.chapterTitles && activeBook.chapterTitles[index])
+       ? activeBook.chapterTitles[index]
+       : `Capítulo ${index + 1}`;
+
      item.innerHTML = `
-       <span>${index + 1}. ${activeBook.title}</span>
-       <small>${formatTime(0)}</small>
+       <span style="display: flex; align-items: center; gap: 8px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+         <strong style="min-width: 22px;">${index + 1}.</strong>
+         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${chapterTitle}</span>
+       </span>
+       <span class="track-status" style="font-size: 11px; opacity: 0.85; margin-left: 8px; flex-shrink: 0;">${index === audioState.trackIndex ? "Tocando" : "Ouvir"}</span>
      `;
      item.addEventListener("click", () => {
        if (audioState.bookId && audioState.tracks[index]) {
          audioState.trackIndex = index;
          loadCurrentTrack();
+         if (player) player.play().catch(() => {});
        }
      });
      playlistList.appendChild(item);
@@ -1229,10 +1333,10 @@ function setupAudioPlayer() {
    if (!playBtn) return;
    if (player.paused) {
      playBtn.innerHTML = '<i class="fas fa-play"></i>';
-     playBtn.setAttribute("title", "Reproduzir");
+     playBtn.classList.remove("playing");
    } else {
      playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-     playBtn.setAttribute("title", "Pausar");
+     playBtn.classList.add("playing");
    }
   }
 
@@ -1242,7 +1346,10 @@ function setupAudioPlayer() {
      titleEl.textContent = `${activeBook.title}`;
    }
    if (artistEl) {
-     artistEl.textContent = activeBook ? `Faixa ${audioState.trackIndex + 1}` : "Liderança";
+     const chapterTitle = (activeBook && activeBook.chapterTitles && activeBook.chapterTitles[audioState.trackIndex])
+       ? activeBook.chapterTitles[audioState.trackIndex]
+       : `Capítulo ${audioState.trackIndex + 1}`;
+     artistEl.textContent = chapterTitle;
    }
    if (audioState.bookId) {
      updateCover(audioState.bookId);
@@ -1350,10 +1457,16 @@ function setupAudioPlayer() {
        if (book) {
          playlistTracks.innerHTML = book.tracks.map((track, index) => {
            const isActive = index === audioState.trackIndex;
+           const chapterTitle = (book.chapterTitles && book.chapterTitles[index])
+             ? book.chapterTitles[index]
+             : `Capítulo ${index + 1}`;
            return `
              <button type="button" class="playlist-track ${isActive ? "active" : ""}" data-index="${index}">
-               <span>${index + 1}. ${book.title}</span>
-               <small>${isActive ? "Tocando" : "Ouvir"}</small>
+               <span style="display:flex;align-items:center;gap:8px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                 <strong style="min-width:22px;">${index + 1}.</strong>
+                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${chapterTitle}</span>
+               </span>
+               <small style="margin-left:8px;flex-shrink:0;">${isActive ? "Tocando" : "Ouvir"}</small>
              </button>
            `;
          }).join("");
@@ -1413,7 +1526,7 @@ function setupAudioPlayer() {
 }
 
 function playAudiobook(bookId) {
-  if (!checkAccess(bookId)) return;
+  if (!checkAccess(bookId, 'audiobook')) return;
   if (!audioLibrary[bookId]) {
    console.error("Livro de áudio não encontrado:", bookId);
    return;
@@ -1425,9 +1538,10 @@ function playAudiobook(bookId) {
    return;
   }
 
+  const activeBook = audioLibrary[bookId];
   audioState.bookId = bookId;
   audioState.trackIndex = 0;
-  audioState.tracks = audioLibrary[bookId].tracks;
+  audioState.tracks = activeBook.tracks;
   player.src = audioState.tracks[0];
   try { player.volume = 0.8; } catch(e) {}
 
@@ -1436,8 +1550,12 @@ function playAudiobook(bookId) {
 
   const titleEl = document.getElementById("currentTrackTitle");
   const artistEl = document.getElementById("currentTrackArtist");
-  if (titleEl) titleEl.textContent = audioLibrary[bookId].title;
-  if (artistEl) artistEl.textContent = "Faixa 1";
+  if (titleEl) titleEl.textContent = activeBook.title;
+  
+  const initialChapter = (activeBook.chapterTitles && activeBook.chapterTitles[0])
+    ? activeBook.chapterTitles[0]
+    : "Capítulo 1";
+  if (artistEl) artistEl.textContent = initialChapter;
 
   const playlistList = document.getElementById("playlistList");
   if (playlistList && !playlistList.classList.contains('playlist-list')) {
@@ -1445,21 +1563,34 @@ function playAudiobook(bookId) {
   }
 
   if (playlistList) {
-   playlistList.innerHTML = audioLibrary[bookId].tracks.map((_, index) => `
+   playlistList.innerHTML = activeBook.tracks.map((_, index) => {
+     const chapterTitle = (activeBook.chapterTitles && activeBook.chapterTitles[index])
+       ? activeBook.chapterTitles[index]
+       : `Capítulo ${index + 1}`;
+     return `
      <button type="button" class="track-item ${index === 0 ? 'active' : ''}">
-       <span>${index + 1}. ${audioLibrary[bookId].title}</span>
-       <small>${index === 0 ? 'Tocando' : 'Ouvir'}</small>
+       <span style="display:flex;align-items:center;gap:8px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+         <strong style="min-width:22px;">${index + 1}.</strong>
+         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${chapterTitle}</span>
+       </span>
+       <span class="track-status" style="font-size:11px;opacity:0.85;margin-left:8px;flex-shrink:0;">${index === 0 ? 'Tocando' : 'Ouvir'}</span>
      </button>
-   `).join("");
+   `;
+   }).join("");
 
    playlistList.querySelectorAll(".track-item").forEach((button, index) => {
      button.addEventListener("click", () => {
        audioState.trackIndex = index;
-       player.src = audioLibrary[bookId].tracks[index];
+       player.src = activeBook.tracks[index];
        player.play().catch(() => {});
        playlistList.querySelectorAll(".track-item").forEach((btn) => btn.classList.remove("active"));
        button.classList.add("active");
-       if (artistEl) artistEl.textContent = `Faixa ${index + 1}`;
+       if (artistEl) {
+         const chapterTitle = (activeBook.chapterTitles && activeBook.chapterTitles[index])
+           ? activeBook.chapterTitles[index]
+           : `Capítulo ${index + 1}`;
+         artistEl.textContent = chapterTitle;
+       }
      });
    });
   }
@@ -1648,6 +1779,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentBookId = audioState.bookId;
             
             if (isFemaleVoice) {
+                voiceToggleBtn.classList.add('is-female');
                 if(voiceIcon) { voiceIcon.classList.remove('fa-user-tie'); voiceIcon.classList.add('fa-user'); }
                 if(voiceLabel) voiceLabel.textContent = 'FEM';
                 voiceToggleBtn.style.color = '#ec4899'; // pink color
@@ -1657,6 +1789,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     audioLibrary[currentBookId].tracks = audioLibrary[currentBookId].tracks.map(t => t.replace(`/${currentBookId}/`, `/${currentBookId}-fem/`));
                 }
             } else {
+                voiceToggleBtn.classList.remove('is-female');
                 if(voiceIcon) { voiceIcon.classList.remove('fa-user'); voiceIcon.classList.add('fa-user-tie'); }
                 if(voiceLabel) voiceLabel.textContent = 'MASC';
                 voiceToggleBtn.style.color = ''; // reset

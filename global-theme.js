@@ -1,3 +1,12 @@
+// Aplica tema instantaneamente para eliminar qualquer atraso visual ou FOUC
+(function() {
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme === 'light') {
+        document.documentElement.classList.add('theme-light');
+        if (document.body) document.body.classList.add('theme-light');
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('app-theme');
     if (savedTheme === 'light') {
@@ -45,5 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         document.body.appendChild(btn);
+    }
+
+    // Carregar auth-permissions.js dinamicamente se ainda não estiver presente
+    if (!window.AppPermissions && !document.querySelector('script[src*="auth-permissions.js"]')) {
+        const authScript = document.createElement('script');
+        authScript.src = 'auth-permissions.js';
+        document.head.appendChild(authScript);
     }
 });

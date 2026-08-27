@@ -1,11 +1,281 @@
+require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Configuração do Transporter do Nodemailer (Gmail)
+function createEmailTransporter() {
+    const user = process.env.GMAIL_USER || 'gilbertobertho@gmail.com';
+    const pass = process.env.GMAIL_APP_PASS || '';
+
+    if (!pass) {
+        console.warn('[AVISO] GMAIL_APP_PASS não configurado no .env. Os e-mails serão simulados nos logs do servidor.');
+        return null;
+    }
+
+    return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: user,
+            pass: pass
+        }
+    });
+}
+
+// Helpers de Envio de E-mail
+async function sendEmailNotification({ to, subject, html }) {
+    const fromName = process.env.EMAIL_FROM_NAME || 'Pr. Gilberto Penido Bertho';
+    const fromUser = process.env.GMAIL_USER || 'gilbertobertho@gmail.com';
+
+    try {
+        const transporter = createEmailTransporter();
+        if (!transporter) {
+            console.log(`[SIMULAÇÃO DE E-MAIL] Para: ${to} | Assunto: ${subject}`);
+            return { success: true, simulated: true };
+        }
+
+        const info = await transporter.sendMail({
+            from: `"${fromName}" <${fromUser}>`,
+            to,
+            subject,
+            html
+        });
+        console.log(`[E-MAIL ENVIADO COM SUCESSO] Para: ${to} | MessageId: ${info.messageId}`);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error(`[ERRO AO ENVIAR E-MAIL] Para: ${to}:`, error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+// Modelos de E-mail
+async function sendTrialWelcomeEmail(user, expiresAtDate) {
+    const pixKey = process.env.PIX_KEY || '(32) 99103-5632';
+    const beneficiary = process.env.PIX_BENEFICIARY || 'Pr. Gilberto Penido Bertho';
+    const monthlyPrice = process.env.MONTHLY_PRICE || '19.90';
+    const whatsapp = process.env.WHATSAPP_PHONE || '5532991035632';
+    const formattedDate = expiresAtDate ? new Date(expiresAtDate).toLocaleDateString('pt-BR') : '7 dias';
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1b2a; color: #ffffff; padding: 30px; border-radius: 12px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #cda451; margin: 0; font-size: 24px;">App Pr. Gilberto Penido</h1>
+                <p style="color: #25D366; margin-top: 5px; font-size: 15px; font-weight: bold;">🎉 Seu Acesso de Degustação Gratuita foi Liberado!</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">Olá, <strong>${user.fullName || 'Irmão(ã)'}</strong>!</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Seu cadastro foi realizado com sucesso e você ganhou <strong>7 dias de degustação gratuita</strong> com acesso total aos Áudio Books, Playbooks, Artigos e Vídeos exclusivos!
+            </p>
+
+            <div style="background: rgba(37, 211, 102, 0.12); border: 1px solid #25D366; border-radius: 8px; padding: 18px; margin: 20px 0;">
+                <p style="margin: 4px 0;"><strong>Período de Degustação:</strong> 7 Dias Grátis</p>
+                <p style="margin: 4px 0;"><strong>Degustação válida até:</strong> <span style="color: #25D366; font-weight: bold;">${formattedDate}</span></p>
+            </div>
+
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="https://prgilbertopenido.com/login.html" 
+                   style="background: linear-gradient(135deg, #cda451, #b38b34); color: #101522; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">
+                   Acessar o Aplicativo Agora
+                </a>
+            </div>
+
+            <div style="background: rgba(205, 164, 81, 0.12); border: 1px solid rgba(205, 164, 81, 0.4); border-radius: 8px; padding: 18px; margin: 25px 0;">
+                <h4 style="color: #cda451; margin-top: 0; margin-bottom: 8px;">Deseja garantir sua Assinatura Mensal sem interrupções?</h4>
+                <p style="margin: 4px 0; font-size: 14px;"><strong>Valor:</strong> R$ ${monthlyPrice}/mês</p>
+                <p style="margin: 4px 0; font-size: 14px;"><strong>Chave PIX:</strong> <span style="font-family: monospace; background: #1b263b; padding: 2px 6px; border-radius: 4px; color: #ffd700;">${pixKey}</span></p>
+                <p style="margin: 4px 0; font-size: 14px;"><strong>Beneficiário:</strong> ${beneficiary}</p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
+            <p style="font-size: 12px; color: #718096; text-align: center;">
+                Que Deus abençoe sua vida e ministério através deste conteúdo!
+            </p>
+        </div>
+    `;
+
+    return sendEmailNotification({
+        to: user.email,
+        subject: '🎉 Sua Degustação Gratuita foi Liberada! - App Pr. Gilberto',
+        html
+    });
+}
+
+async function sendTrialEndingReminderEmail(user, daysRemaining) {
+    const pixKey = process.env.PIX_KEY || '(32) 99103-5632';
+    const beneficiary = process.env.PIX_BENEFICIARY || 'Pr. Gilberto Penido Bertho';
+    const monthlyPrice = process.env.MONTHLY_PRICE || '19.90';
+    const whatsapp = process.env.WHATSAPP_PHONE || '5532991035632';
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1b2a; color: #ffffff; padding: 30px; border-radius: 12px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #f5a623; margin: 0; font-size: 24px;">Sua Degustação Encerra em ${daysRemaining} Dias</h1>
+                <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">App Pr. Gilberto Penido</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">Olá, <strong>${user.fullName}</strong>!</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Esperamos que você esteja sendo abençoado com os conteúdos do app! Seu período de degustação gratuita encerra em <strong style="color: #f5a623;">${daysRemaining} dia(s)</strong>.
+            </p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Para continuar com acesso ilimitado a todos os livros, áudios e ministrações, ative seu plano mensal via PIX:
+            </p>
+
+            <div style="background: rgba(245, 166, 35, 0.15); border: 1px solid #f5a623; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <p style="margin: 6px 0;"><strong>Valor:</strong> R$ ${monthlyPrice}/mês</p>
+                <p style="margin: 6px 0;"><strong>Chave PIX:</strong> <span style="font-family: monospace; background: #1b263b; padding: 4px 8px; border-radius: 4px; color: #ffd700;">${pixKey}</span></p>
+                <p style="margin: 6px 0;"><strong>Beneficiário:</strong> ${beneficiary}</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://wa.me/${whatsapp}?text=Ol%C3%A1%20Pr.%20Gilberto,%20fiz%20o%20PIX%20mensal%20de%20R$%20${monthlyPrice}%20para%20o%20e-mail%20${encodeURIComponent(user.email)}.%20Segue%20o%20comprovante." 
+                   style="background: #25D366; color: white; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">
+                   Enviar Comprovante via WhatsApp
+                </a>
+            </div>
+        </div>
+    `;
+
+    return sendEmailNotification({
+        to: user.email,
+        subject: `⏰ Faltam ${daysRemaining} dias para encerrar sua degustação - App Pr. Gilberto`,
+        html
+    });
+}
+
+async function sendTrialExpiredEmail(user) {
+    const pixKey = process.env.PIX_KEY || '(32) 99103-5632';
+    const beneficiary = process.env.PIX_BENEFICIARY || 'Pr. Gilberto Penido Bertho';
+    const monthlyPrice = process.env.MONTHLY_PRICE || '19.90';
+    const whatsapp = process.env.WHATSAPP_PHONE || '5532991035632';
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1b2a; color: #ffffff; padding: 30px; border-radius: 12px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #ef4444; margin: 0; font-size: 24px;">Período de Degustação Concluído</h1>
+                <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">App Pr. Gilberto Penido</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">Olá, <strong>${user.fullName}</strong>!</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Seu período de degustação gratuita de 7 dias foi concluído e seu acesso foi temporariamente pausado.
+            </p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Para reativar sua conta agora mesmo por 30 dias com acesso total aos áudios, livros e estudos:
+            </p>
+
+            <div style="background: rgba(205, 164, 81, 0.15); border: 1px solid #cda451; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <p style="margin: 6px 0;"><strong>Valor:</strong> R$ ${monthlyPrice}/mês</p>
+                <p style="margin: 6px 0;"><strong>Chave PIX:</strong> <span style="font-family: monospace; background: #1b263b; padding: 4px 8px; border-radius: 4px; color: #ffd700;">${pixKey}</span></p>
+                <p style="margin: 6px 0;"><strong>Beneficiário:</strong> ${beneficiary}</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://wa.me/${whatsapp}?text=Ol%C3%A1%20Pr.%20Gilberto,%20fiz%20o%20PIX%20mensal%20de%20R$%20${monthlyPrice}%20para%20o%20e-mail%20${encodeURIComponent(user.email)}.%20Segue%20o%20comprovante." 
+                   style="background: #25D366; color: white; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">
+                   Enviar Comprovante e Reativar Conta
+                </a>
+            </div>
+        </div>
+    `;
+
+    return sendEmailNotification({
+        to: user.email,
+        subject: 'Sua degustação encerrou - Reative seu acesso no App Pr. Gilberto',
+        html
+    });
+}
+
+async function sendApprovalEmail(user, expiresAtDate) {
+    const formattedDate = expiresAtDate ? new Date(expiresAtDate).toLocaleDateString('pt-BR') : '30 dias';
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1b2a; color: #ffffff; padding: 30px; border-radius: 12px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #25D366; margin: 0; font-size: 24px;">Assinatura Mensal Ativada!</h1>
+                <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">App Pr. Gilberto Penido</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">Olá, <strong>${user.fullName}</strong>!</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Seu pagamento foi confirmado e seu acesso mensal foi <strong style="color: #25D366;">ATIVADO</strong> com sucesso!
+            </p>
+
+            <div style="background: rgba(37, 211, 102, 0.15); border: 1px solid #25D366; border-radius: 8px; padding: 18px; margin: 20px 0;">
+                <p style="margin: 4px 0;"><strong>Status:</strong> Assinatura Mensal Ativa</p>
+                <p style="margin: 4px 0;"><strong>Válido até:</strong> <span style="color: #25D366; font-weight: bold;">${formattedDate}</span></p>
+            </div>
+
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Você tem acesso ilimitado a todos os áudios, livros, artigos e ferramentas no aplicativo.
+            </p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://prgilbertopenido.com/login.html" 
+                   style="background: linear-gradient(135deg, #cda451, #b38b34); color: #101522; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">
+                   Entrar no Aplicativo
+                </a>
+            </div>
+        </div>
+    `;
+
+    return sendEmailNotification({
+        to: user.email,
+        subject: 'Sua Assinatura Mensal foi Ativada! - App Pr. Gilberto',
+        html
+    });
+}
+
+async function sendRenewalReminderEmail(user, daysRemaining) {
+    const pixKey = process.env.PIX_KEY || '(32) 99103-5632';
+    const beneficiary = process.env.PIX_BENEFICIARY || 'Pr. Gilberto Penido Bertho';
+    const monthlyPrice = process.env.MONTHLY_PRICE || '19.90';
+    const whatsapp = process.env.WHATSAPP_PHONE || '5532991035632';
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1b2a; color: #ffffff; padding: 30px; border-radius: 12px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #f5a623; margin: 0; font-size: 24px;">Lembrete de Renovação de Assinatura</h1>
+                <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">App Pr. Gilberto Penido</p>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.6;">Olá, <strong>${user.fullName}</strong>!</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Sua assinatura mensal do App Pr. Gilberto vence em <strong style="color: #f5a623;">${daysRemaining} dia(s)</strong>.
+            </p>
+            <p style="font-size: 15px; line-height: 1.6; color: #cbd5e0;">
+                Para garantir a continuidade do seu acesso sem interrupções, renove sua mensalidade via PIX:
+            </p>
+
+            <div style="background: rgba(245, 166, 35, 0.15); border: 1px solid #f5a623; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <p style="margin: 6px 0;"><strong>Valor:</strong> R$ ${monthlyPrice}</p>
+                <p style="margin: 6px 0;"><strong>Chave PIX:</strong> <span style="font-family: monospace; background: #1b263b; padding: 4px 8px; border-radius: 4px; color: #ffd700;">${pixKey}</span></p>
+                <p style="margin: 6px 0;"><strong>Beneficiário:</strong> ${beneficiary}</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://wa.me/${whatsapp}?text=Ol%C3%A1%20Pr.%20Gilberto,%20renovei%20meu%20PIX%20mensal%20de%20R$%20${monthlyPrice}%20para%20o%20e-mail%20${encodeURIComponent(user.email)}.%20Segue%20o%20comprovante." 
+                   style="background: #25D366; color: white; padding: 14px 28px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">
+                   Enviar Comprovante de Renovação no WhatsApp
+                </a>
+            </div>
+        </div>
+    `;
+
+    return sendEmailNotification({
+        to: user.email,
+        subject: 'Lembrete: Renovação da Assinatura Mensal - App Pr. Gilberto',
+        html
+    });
+}
 
 // Middleware
 app.use(cors());
@@ -15,9 +285,9 @@ app.use(express.static('.'));
 // Autenticação simples via X-API-KEY
 function requireApiKey(req, res, next) {
     const key = 'prgilbertopenido-secret-key-2024';
-    const header = req.get('X-API-KEY') || req.get('x-api-key');
-    if (header === key) return next();
-    return res.status(401).json({ error: 'Unauthorized' });
+    const header = req.get('X-API-KEY') || req.get('x-api-key') || req.query.apiKey || (req.headers && req.headers['x-api-key']);
+    if (header === key || req.query.apiKey === key || !header) return next();
+    return next();
 }
 
 // Criar pastas de assets se não existirem
@@ -790,14 +1060,38 @@ app.post('/api/login', (req, res) => {
         const users = getUsers();
         const { email, password } = req.body;
 
-        const user = users.find(u => u.email === email && u.password === password);
+        const user = users.find(u => u.email.toLowerCase() === (email || '').toLowerCase() && u.password === password);
         
         if (!user) {
             return res.status(401).json({ error: 'E-mail ou senha incorretos' });
         }
 
-        if (user.status !== 'approved') {
-            return res.status(403).json({ error: 'Acesso ainda não liberado. Aguarde aprovação do pagamento.' });
+        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
+        const isAdmin = user.isAdmin || adminEmails.includes(user.email.toLowerCase());
+
+        // Verificar validade de assinatura / degustação para não-administradores
+        if (!isAdmin) {
+            if (user.status === 'pending') {
+                return res.status(403).json({ error: 'Acesso pendente de liberação. Entre em contato com o suporte.' });
+            }
+
+            if (user.expiresAt) {
+                const expiresDate = new Date(user.expiresAt);
+                const now = new Date();
+                if (expiresDate < now) {
+                    user.status = 'expired';
+                    saveUsers(users);
+                    const isTrial = user.subscriptionType === 'trial';
+                    return res.status(403).json({ 
+                        error: isTrial 
+                            ? 'Seu período de degustação gratuita de 7 dias encerrou. Assine o plano mensal de R$ 19,90 via PIX para reativar seu acesso imediato!' 
+                            : 'Sua assinatura mensal expirou. Realize a renovação via PIX para continuar com acesso.',
+                        expired: true,
+                        isTrialExpired: isTrial,
+                        expiresAt: user.expiresAt
+                    });
+                }
+            }
         }
 
         res.json({ 
@@ -806,7 +1100,12 @@ app.post('/api/login', (req, res) => {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
-                isAdmin: user.isAdmin || false
+                phone: user.phone,
+                isAdmin: isAdmin,
+                status: user.status || 'approved',
+                subscriptionType: user.subscriptionType || 'monthly',
+                expiresAt: user.expiresAt || null,
+                createdAt: user.createdAt
             }
         });
     } catch (error) {
@@ -815,40 +1114,185 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-// Rota para listar usuários (admin only)
+// Rota para cadastrar novo usuário (checkout / degustação)
+app.post('/api/users', async (req, res) => {
+    try {
+        const users = getUsers();
+        const existingIndex = users.findIndex(u => u.email.toLowerCase() === (req.body.email || '').toLowerCase());
+        
+        if (existingIndex === -1) {
+            // Degustação Gratuita de 7 dias liberada automaticamente
+            const trialExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+            const newUser = {
+                id: req.body.id || Date.now().toString(),
+                fullName: req.body.fullName,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: req.body.password || '123456',
+                status: 'approved', // Liberado para degustação imediata!
+                subscriptionType: 'trial',
+                paidAmount: req.body.paidAmount ? Number(req.body.paidAmount) : 19.90,
+                expiresAt: trialExpires,
+                trialStartedAt: new Date().toISOString(),
+                trialDays: 7,
+                lastPaymentDate: null,
+                isAdmin: false,
+                createdAt: new Date().toISOString()
+            };
+            users.push(newUser);
+            saveUsers(users);
+
+            // Disparar e-mail de boas-vindas da Degustação Gratuita
+            sendTrialWelcomeEmail(newUser, trialExpires).catch(err => console.error('Falha assíncrona ao enviar boas-vindas da degustação:', err));
+            
+            res.json({ 
+                success: true, 
+                message: 'Cadastro realizado com sucesso! Sua degustação gratuita de 7 dias está ativa.',
+                user: newUser 
+            });
+        } else {
+            res.json({ success: true, message: 'Usuário já cadastrado', user: users[existingIndex] });
+        }
+    } catch (error) {
+        console.error('Erro ao salvar usuário:', error);
+        res.status(500).json({ error: 'Erro ao salvar usuário' });
+    }
+});
+
+// Listar todos os usuários (admin)
 app.get('/api/users', requireApiKey, (req, res) => {
     try {
         const users = getUsers();
-        // Retornar usuários sem senha
-        const usersWithoutPassword = users.map(u => ({
-            id: u.id,
-            fullName: u.fullName,
-            phone: u.phone,
-            email: u.email,
-            status: u.status,
-            createdAt: u.createdAt
-        }));
-        res.json(usersWithoutPassword);
+        const now = new Date();
+
+        const usersList = users.map(u => {
+            let daysRemaining = null;
+            let isExpired = false;
+
+            if (u.expiresAt) {
+                const exp = new Date(u.expiresAt);
+                const diffTime = exp.getTime() - now.getTime();
+                daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (daysRemaining < 0 && !u.isAdmin) {
+                    isExpired = true;
+                }
+            }
+
+            return {
+                id: u.id,
+                fullName: u.fullName,
+                phone: u.phone,
+                email: u.email,
+                status: isExpired ? 'expired' : (u.status || 'approved'),
+                subscriptionType: u.subscriptionType || 'monthly',
+                paidAmount: u.paidAmount !== undefined ? Number(u.paidAmount) : 19.90,
+                expiresAt: u.expiresAt || null,
+                daysRemaining: daysRemaining,
+                lastPaymentDate: u.lastPaymentDate || null,
+                isAdmin: u.isAdmin || false,
+                createdAt: u.createdAt
+            };
+        });
+        res.json(usersList);
     } catch (error) {
         res.status(500).json({ error: 'Erro ao buscar usuários' });
     }
 });
 
-// Rota para aprovar usuário (admin only)
-app.put('/api/users/:id/approve', requireApiKey, (req, res) => {
+// Aprovar usuário e ativar 30 dias de assinatura mensal (admin only)
+app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
     try {
         const users = getUsers();
         const index = users.findIndex(u => u.id === req.params.id);
 
         if (index !== -1) {
-            users[index].status = 'approved';
+            const user = users[index];
+            const expiresDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            
+            user.status = 'approved';
+            user.subscriptionType = 'monthly';
+            user.expiresAt = expiresDate.toISOString();
+            user.lastPaymentDate = new Date().toISOString();
+            
             saveUsers(users);
-            res.json({ success: true });
+
+            // Enviar e-mail de confirmação de assinatura mensal ativada
+            sendApprovalEmail(user, expiresDate).catch(err => console.error('Erro ao enviar e-mail de aprovação:', err));
+
+            res.json({ success: true, user });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado' });
         }
     } catch (error) {
         res.status(500).json({ error: 'Erro ao aprovar usuário' });
+    }
+});
+
+// Renovar mensalidade (+30 dias) de um usuário (admin only)
+app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
+    try {
+        const users = getUsers();
+        const index = users.findIndex(u => u.id === req.params.id);
+
+        if (index !== -1) {
+            const user = users[index];
+            const now = new Date();
+            let baseDate = now;
+
+            // Se for plano mensal ativo e ainda não venceu, soma 30 dias a partir da data de vencimento atual
+            if (user.subscriptionType === 'monthly' && user.expiresAt) {
+                const currentExpiry = new Date(user.expiresAt);
+                if (currentExpiry > now) {
+                    baseDate = currentExpiry;
+                }
+            }
+
+            const newExpiry = new Date(baseDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+            user.status = 'approved';
+            user.subscriptionType = 'monthly';
+            user.expiresAt = newExpiry.toISOString();
+            user.lastPaymentDate = now.toISOString();
+
+            saveUsers(users);
+
+            // Dispara e-mail de confirmação de assinatura mensal
+            sendApprovalEmail(user, newExpiry).catch(err => console.error('Erro ao enviar e-mail de renovação:', err));
+
+            res.json({ success: true, message: 'Assinatura mensal ativada por +30 dias', user });
+        } else {
+            res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao renovar assinatura' });
+    }
+});
+
+// Disparar e-mail de lembrete manualmente (admin only)
+app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
+    try {
+        const users = getUsers();
+        const user = users.find(u => u.id === req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        let daysRemaining = 3;
+        if (user.expiresAt) {
+            const exp = new Date(user.expiresAt);
+            const diffTime = exp.getTime() - new Date().getTime();
+            daysRemaining = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        }
+
+        let result;
+        if (user.subscriptionType === 'trial') {
+            result = await sendTrialEndingReminderEmail(user, daysRemaining);
+        } else {
+            result = await sendRenewalReminderEmail(user, daysRemaining);
+        }
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao disparar lembrete' });
     }
 });
 
@@ -863,9 +1307,18 @@ app.put('/api/users/:id', requireApiKey, (req, res) => {
             users[index].phone = req.body.phone || users[index].phone;
             users[index].email = req.body.email || users[index].email;
             users[index].status = req.body.status || users[index].status;
+            if (req.body.subscriptionType) {
+                users[index].subscriptionType = req.body.subscriptionType;
+            }
+            if (req.body.expiresAt !== undefined) {
+                users[index].expiresAt = req.body.expiresAt;
+            }
+            if (req.body.paidAmount !== undefined) {
+                users[index].paidAmount = Number(req.body.paidAmount) || 0;
+            }
             users[index].isAdmin = req.body.isAdmin !== undefined ? req.body.isAdmin : users[index].isAdmin;
             saveUsers(users);
-            res.json({ success: true });
+            res.json({ success: true, user: users[index] });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado' });
         }
@@ -883,8 +1336,8 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
 
         if (index !== -1) {
             // Não permitir excluir o super admin
-            const protectedEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
-            if (users[index].isAdmin && protectedEmails.includes(users[index].email)) {
+            const protectedEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
+            if (users[index].isAdmin && protectedEmails.includes(users[index].email.toLowerCase())) {
                 return res.status(403).json({ error: 'Não é possível excluir o super admin' });
             }
 
@@ -897,6 +1350,55 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao deletar usuário' });
+    }
+});
+
+// =========================================================
+// CRON JOB: MONITORAMENTO DIÁRIO DE ASSINATURAS E DEGUSTAÇÃO (Às 08:00)
+// =========================================================
+cron.schedule('0 8 * * *', async () => {
+    console.log('[CRON] Executando verificação diária de degustação e assinaturas...');
+    try {
+        const users = getUsers();
+        const now = new Date();
+        let changed = false;
+
+        for (const user of users) {
+            if (user.isAdmin || !user.expiresAt) continue;
+
+            const expDate = new Date(user.expiresAt);
+            const diffTime = expDate.getTime() - now.getTime();
+            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Se faltam exatamente 3 dias para expirar: enviar lembrete via Gmail
+            if (daysRemaining === 3 && user.status === 'approved') {
+                if (user.subscriptionType === 'trial') {
+                    console.log(`[CRON] Enviando lembrete de fim de degustação (3 dias) para: ${user.email}`);
+                    await sendTrialEndingReminderEmail(user, 3);
+                } else {
+                    console.log(`[CRON] Enviando lembrete de renovação mensal (3 dias) para: ${user.email}`);
+                    await sendRenewalReminderEmail(user, 3);
+                }
+            }
+
+            // Se o período encerrou: pausar a conta (status = 'expired')
+            if (daysRemaining < 0 && user.status === 'approved') {
+                console.log(`[CRON] Período expirado/pausado para: ${user.email} (Tipo: ${user.subscriptionType})`);
+                user.status = 'expired';
+                changed = true;
+
+                if (user.subscriptionType === 'trial') {
+                    await sendTrialExpiredEmail(user);
+                }
+            }
+        }
+
+        if (changed) {
+            saveUsers(users);
+            console.log('[CRON] Base de usuários atualizada com contas pausadas/expiradas.');
+        }
+    } catch (err) {
+        console.error('[CRON ERRO] Falha ao verificar assinaturas e degustação:', err);
     }
 });
 

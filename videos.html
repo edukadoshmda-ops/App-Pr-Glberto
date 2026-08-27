@@ -49,6 +49,7 @@
       }
     </style>
     <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
     <div class="app-shell">
@@ -96,6 +97,10 @@
                     <i class="fas fa-plus-circle"></i>
                     <span>Criar</span>
                 </a>
+          <a href="configuracoes.html" class="menu-item">
+            <i class="fas fa-cog"></i>
+            <span>Configurações</span>
+          </a>
           <a href="apoio.html" "menu-item">
             <i "fas fa-handshake"></i>
             <span>Apoio</span>
@@ -288,6 +293,10 @@
                 return;
             }
 
+            const isAdmin = (window.AppPermissions && typeof window.AppPermissions.isUserAdmin === 'function')
+                ? window.AppPermissions.isUserAdmin()
+                : (localStorage.getItem('isAdmin') === 'true');
+
             videos.forEach(video => {
                 const item = document.createElement('div');
                 item.className = 'recent-item';
@@ -316,9 +325,11 @@
                         <h4>${escapeHtml(video.title || 'Untitled')}</h4>
                         <p>${escapeHtml((video.category || '') + ' • ' + (new Date(video.createdAt || Date.now())).toLocaleDateString('pt-BR'))}</p>
                     </div>
+                    ${isAdmin ? `
                     <button onclick="deleteVideo('${video.id}', event)" title="Excluir vídeo" style="background:transparent; border:none; color:#ff4d4d; font-size:16px; cursor:pointer; padding:8px; opacity:0.8; transition:0.2s;">
                         <i class="fas fa-trash"></i>
                     </button>
+                    ` : ''}
                 `;
                 
                 const openModal = () => openVideoModal(video.title, video.contentUrl || video.videoPath || video.youtubeUrl);

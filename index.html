@@ -12,6 +12,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#cda451">
       <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
   <body>
     <div class="app">
@@ -262,7 +263,7 @@
         
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1000px; margin: 0 auto;">
           <a href="https://cristoaunicaesperanca.com.br/" target="_blank" style="display: block; width: 100%; max-width: 450px; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); transition: transform 0.3s ease; background: #fff; position: relative;">
-            <img src="assets/apoio_nova_jerusalem.png" alt="Rádio Nova Jerusalém - Cristo a Única Esperança" style="width: 100%; height: 100%; object-fit: cover; transform: scale(1.05); display: block; border: none;" />
+            <img src="assets/apoio_nova_jerusalem.png" alt="Rádio Nova Jerusalém - Cristo a Única Esperança" style="width: 100%; height: 100%; object-fit: contain; padding: 12px; box-sizing: border-box; display: block; border: none;" />
           </a>
 
           <a href="https://batistanet.com.br/" target="_blank" style="display: block; width: 100%; max-width: 450px; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
@@ -290,9 +291,9 @@
               <i class="fab fa-instagram"></i>
               Instagram
             </a>
-            <a href="https://wa.me/553291035632" target="_blank" class="contact-item">
+            <a href="https://wa.me/5532991035632" target="_blank" class="contact-item">
               <i class="fab fa-whatsapp"></i>
-              (32) 9103-5632
+              (32) 99103-5632
             </a>
             <a href="https://www.youtube.com/" target="_blank" class="contact-item">
               <i class="fab fa-youtube"></i>
@@ -305,6 +306,7 @@
         </div>
       </footer>
     </div>
+
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

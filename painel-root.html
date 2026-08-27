@@ -7,17 +7,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            cursor: grab;
+            user-select: none;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-gold, #cda451) rgba(0,0,0,0.06);
+        }
+
+        .table-responsive-wrapper.grabbing {
+            cursor: grabbing !important;
+        }
+
         .users-table {
             width: 100%;
+            min-width: 1050px;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
         .users-table th,
         .users-table td {
-            padding: 16px;
+            padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap !important;
         }
 
         .users-table th {
@@ -26,11 +41,13 @@
             font-weight: 700;
             text-transform: uppercase;
             font-size: 12px;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.06em;
+            white-space: nowrap !important;
         }
 
         .users-table td {
             color: #b8c5d6;
+            white-space: nowrap !important;
         }
 
         .users-table tr:hover {
@@ -43,6 +60,7 @@
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap !important;
         }
 
         .status-approved {
@@ -56,8 +74,11 @@
         }
 
         .action-buttons {
-            display: flex;
-            gap: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap !important;
+            white-space: nowrap !important;
         }
 
         .btn-edit {
@@ -248,6 +269,7 @@
         }
     </style>
     <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
     <div id="noAccess" class="no-access" style="display: none;">
@@ -324,23 +346,26 @@
                         </button>
                     </div>
 
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>Telefone</th>
-                                <th>Status</th>
-                                <th>Admin</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align: center;">Carregando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Telefone</th>
+                                    <th>Validade PIX</th>
+                                    <th>Status</th>
+                                    <th>Admin</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </main>
         </div>
@@ -426,59 +451,124 @@
         async function loadUsers() {
             try {
                 let users = [];
-                if (typeof getSupabaseClient === 'function' && getSupabaseClient()) {
-                    const client = getSupabaseClient();
-                    const { data, error } = await client.from('profiles').select('*').order('created_at', { ascending: false });
-                    if (error) throw error;
-                    users = data.map(p => ({
-                        id: p.id,
-                        fullName: p.full_name,
-                        email: p.email,
-                        phone: p.phone,
-                        status: p.status,
-                        createdAt: p.created_at
-                    }));
-                } else {
-                    const response = await fetch('/api/users?apiKey=prgilbertopenido-secret-key-2024');
-                    users = await response.json();
-                }
+                const response = await fetch('/api/users?apiKey=prgilbertopenido-secret-key-2024');
+                users = await response.json();
                 
                 const tbody = document.getElementById('usersTableBody');
                 
-                if (users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum usuário cadastrado</td></tr>';
+                if (!users || users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum usuário cadastrado</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = users.map(user => `
-                    <tr>
-                        <td>${user.fullName}</td>
-                        <td>${user.email}</td>
-                        <td>${user.phone}</td>
-                        <td>
-                            <span class="status-badge ${user.status === 'approved' ? 'status-approved' : 'status-pending'}">
-                                ${user.status === 'approved' ? 'Aprovado' : 'Pendente'}
-                            </span>
-                        </td>
-                        <td>
-                            ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : '-'}
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-edit" onclick="openEditModal('${user.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-delete" onclick="openDeleteModal('${user.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = users.map(user => {
+                    const isApproved = user.status === 'approved';
+                    const isExpired = user.status === 'expired';
+                    const cleanPhone = (user.phone || '').replace(/\D/g, '');
+
+                    let validityHtml = '<span style="color: #b8c5d6; font-size: 12px;">Não definida</span>';
+                    const isTrial = user.subscriptionType === 'trial';
+                    if (user.isAdmin) {
+                        validityHtml = '<span style="color: #25D366; font-weight: 600; font-size: 12px;"><i class="fas fa-infinity"></i> Ilimitado</span>';
+                    } else if (user.expiresAt) {
+                        const exp = new Date(user.expiresAt);
+                        const formattedDate = exp.toLocaleDateString('pt-BR');
+                        const days = user.daysRemaining !== undefined ? user.daysRemaining : 0;
+                        if (days < 0 || isExpired) {
+                            validityHtml = `<span style="color: #ef4444; font-weight: 700; font-size: 12px;"><i class="fas fa-times-circle"></i> ${isTrial ? 'Degustação Encerrada' : 'Vencido'} (${formattedDate})</span>`;
+                        } else if (days <= 3) {
+                            validityHtml = `<span style="color: #f5a623; font-weight: 700; font-size: 12px;"><i class="fas fa-exclamation-triangle"></i> ${isTrial ? 'Degustação: ' : ''}${days}d restam (${formattedDate})</span>`;
+                        } else {
+                            validityHtml = `<span style="color: ${isTrial ? '#38bdf8' : '#25D366'}; font-weight: 600; font-size: 12px;"><i class="fas ${isTrial ? 'fa-hourglass-half' : 'fa-check'}"></i> ${isTrial ? 'Degustação (' + days + 'd)' : 'Mensal (' + days + 'd)'} - ${formattedDate}</span>`;
+                        }
+                    }
+
+                    return `
+                        <tr>
+                            <td><strong>${user.fullName}</strong></td>
+                            <td>${user.email}</td>
+                            <td>${user.phone || '—'}</td>
+                            <td>${validityHtml}</td>
+                            <td>
+                                <span class="status-badge ${isApproved ? 'status-approved' : (isExpired ? 'status-expired' : 'status-pending')}" style="${isExpired ? 'background: rgba(239, 68, 68, 0.2); color: #ef4444;' : ''}">
+                                    ${isApproved ? 'Ativo' : (isExpired ? 'Expirado' : 'Pendente')}
+                                </span>
+                            </td>
+                            <td>
+                                ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : '-'}
+                            </td>
+                            <td>
+                                <div class="action-buttons" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    <button class="btn-edit" style="background: rgba(37, 211, 102, 0.2); border-color: #25D366; color: #25D366;" onclick="renewUserSubscription('${user.id}')" title="Renovar +30 dias PIX">
+                                        <i class="fas fa-plus-circle"></i> +30d PIX
+                                    </button>
+
+                                    ${cleanPhone ? `
+                                        <button class="btn-edit" style="background: rgba(37, 211, 102, 0.15); color: #25D366;" onclick="sendWhatsAppBilling('${encodeURIComponent(user.fullName || '')}', '${cleanPhone}', '${encodeURIComponent(user.email || '')}')" title="Cobrar no WhatsApp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </button>
+                                    ` : ''}
+
+                                    <button class="btn-edit" style="background: rgba(205, 164, 81, 0.15); color: #cda451;" onclick="sendUserReminderEmail('${user.id}')" title="Enviar e-mail de lembrete Gmail">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+
+                                    <button class="btn-edit" onclick="openEditModal('${user.id}')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-delete" onclick="openDeleteModal('${user.id}')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (error) {
                 console.error('Erro ao carregar usuários:', error);
-                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444;">Erro ao carregar usuários</td></tr>';
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444;">Erro ao carregar usuários</td></tr>';
             }
+        }
+
+        async function renewUserSubscription(userId) {
+            if (!confirm('Confirmar recebimento do PIX e renovar o acesso deste usuário por +30 dias?')) return;
+            try {
+                const response = await fetch(`/api/users/${userId}/renew?apiKey=prgilbertopenido-secret-key-2024`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    alert('Assinatura renovada por +30 dias! E-mail de confirmação enviado.');
+                    loadUsers();
+                } else {
+                    alert('Erro ao renovar assinatura.');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Erro de conexão.');
+            }
+        }
+
+        async function sendUserReminderEmail(userId) {
+            if (!confirm('Enviar e-mail de lembrete de renovação via Gmail?')) return;
+            try {
+                const response = await fetch(`/api/users/${userId}/send-reminder?apiKey=prgilbertopenido-secret-key-2024`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    alert('E-mail de lembrete disparado com sucesso!');
+                } else {
+                    alert('Erro ao enviar e-mail.');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Erro de conexão.');
+            }
+        }
+
+        function sendWhatsAppBilling(name, phone, email) {
+            const decodedName = decodeURIComponent(name);
+            const msg = encodeURIComponent(`A paz do Senhor, ${decodedName}! 🌟\n\nPassando para lembrar com carinho que sua assinatura mensal do App Pr. Gilberto Penido está próxima do vencimento.\n\nPara renovar seu acesso por mais 30 dias e continuar desfrutando de todos os áudios, livros e estudos:\n\n💰 Valor: R$ 19,90/mês\n🔑 Chave PIX: (32) 99103-5632\n👤 Beneficiário: Pr. Gilberto Penido Bertho\n\nApós o pagamento, basta me enviar o comprovante por aqui para mantermos seu acesso 100% ativo. Que Deus abençoe! 🙏`);
+            window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
         }
 
         // Abrir modal de edição
@@ -609,8 +699,47 @@
             window.location.href = 'login.html';
         }
 
+        // Mãozinha para arrastar a tabela (Drag-to-Scroll)
+        function initDragToScroll() {
+            const slider = document.querySelector('.table-responsive-wrapper');
+            if (!slider) return;
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button, a, input, select, textarea, .modal')) return;
+                isDown = true;
+                slider.classList.add('grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('grabbing');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('grabbing');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.6;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
         // Inicializar
         checkAdminAccess();
+        document.addEventListener('DOMContentLoaded', () => {
+            initDragToScroll();
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>

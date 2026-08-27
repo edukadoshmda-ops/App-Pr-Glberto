@@ -381,12 +381,207 @@
             transition: all 0.3s ease;
         }
 
+            letter-spacing: 0.14em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 14px;
+            border: 1px solid rgba(124, 147, 196, 0.22);
+            border-radius: 12px;
+            background: rgba(10, 19, 31, 0.8);
+            color: var(--text);
+            font-size: 14px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: rgba(245, 166, 35, 0.6);
+            background: rgba(245, 166, 35, 0.04);
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.10);
+            transform: translateY(-1px);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(181,191,206,0.75);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px 16px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            color: #101522;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            box-shadow: 0 12px 35px rgba(245, 166, 35, 0.25);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out backwards 0.5s;
+        }
+
+        .btn-login::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(255,255,255,0.10), transparent 55%);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .btn-login:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(245, 166, 35, 0.28);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 18px rgba(245, 166, 35, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            margin-bottom: 18px;
+            animation: fadeInUp 0.6s ease-out backwards 0.55s;
+        }
+
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: var(--secondary);
+            transition: all 0.25s ease;
+        }
+
+        input[type="checkbox"]:hover {
+            transform: scale(1.04);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: none;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            gap: 10px;
+            animation: fadeInUp 0.6s ease-out backwards 0.6s;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-align: center;
+            padding: 9px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.015);
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 18px 18px;
+                border-radius: 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"],
+            input[type="password"],
+            .btn-login {
+                font-size: 13px;
+                padding: 12px 11px;
+                border-radius: 10px;
+            }
+        }
+
+        .container { position: relative; }
+        .back-arrow {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+        }
+
+        .back-arrow:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .back-arrow i { transform: translateX(-1px); }
+
+        .pwa-install-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(245,166,35,0.06);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(245,166,35,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
         .pwa-install-btn:hover {
             background: rgba(245,166,35,0.12);
             transform: translateY(-1px);
         }
     </style>
     <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
     <div class="container">
@@ -432,9 +627,8 @@
 
             <div class="footer-links">
                 <a href="venda.html">Comprar Acesso</a>
-                <a href="compra.html">Criar conta</a>
+                <a href="compra.html">Criar conta / Assinar</a>
             </div>
-
         </form>
     </div>
 
@@ -461,52 +655,7 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
             try {
-                // 1. Tentar Login via Supabase Auth se o cliente estiver disponível
-                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-                
-                if (supabase) {
-                    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                    if (!authError && authData.user) {
-                        // Buscar perfil do usuário na tabela profiles
-                        const { data: profile, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('*')
-                            .eq('id', authData.user.id)
-                            .single();
-
-                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
-                        const isAdmin = profile ? (profile.is_admin || adminEmails.includes(email)) : adminEmails.includes(email);
-                        const status = isAdmin ? 'approved' : (profile ? profile.status : 'approved');
-                        const createdAt = profile ? new Date(profile.created_at) : new Date();
-                        const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
-                        const isTrialActive = daysSinceRegistration <= 7;
-
-                        if (status !== 'approved' && !isAdmin && !isTrialActive) {
-                            alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = 'ENTRAR';
-                            return;
-                        }
-
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('userEmail', email);
-                        localStorage.setItem('userId', authData.user.id);
-                        localStorage.setItem('userName', profile ? profile.full_name : (email.includes('gilberto') ? 'Pr. Gilberto Penido Bertho' : email));
-                        localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
-                        localStorage.setItem('userStatus', status);
-                        localStorage.setItem('userCreatedAt', profile ? profile.created_at : new Date().toISOString());
-                        window.location.href = 'dashboard.html';
-                        return;
-                    } else if (authError) {
-                        console.warn("Supabase auth tentativa falhou, tentando autenticação local/servidor:", authError.message);
-                    }
-                }
-
-                // 2. Fallback para a API do Servidor Node se Supabase Auth falhar/estiver usando autenticação backend
+                // 1. Tentar Login via API do Servidor Node
                 try {
                     const response = await fetch('/api/login', {
                         method: 'POST',
@@ -516,20 +665,26 @@
 
                     const data = await response.json();
 
-                    if (response.ok && data.success) {
-                        const adminEmails = ['edukadoshmda@gmail.com', 'gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
-                        const isAdmin = data.user.isAdmin || adminEmails.includes(email);
-                        const status = isAdmin ? 'approved' : (data.user.status || 'approved');
-                        const createdAt = new Date(data.user.createdAt || new Date());
-                        const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
-                        const isTrialActive = daysSinceRegistration <= 7;
-
-                        if (status !== 'approved' && !isAdmin && !isTrialActive) {
-                            alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium ou entre em contato com o suporte.');
+                    if (!response.ok) {
+                        if (data.expired) {
+                            if (confirm(data.error + '\n\nDeseja abrir a página de pagamento via PIX para renovar agora?')) {
+                                window.location.href = 'compra.html';
+                            }
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = 'ENTRAR';
+                            return;
+                        } else if (data.error) {
+                            alert(data.error);
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = 'ENTRAR';
                             return;
                         }
+                    }
+
+                    if (response.ok && data.success) {
+                        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
+                        const isAdmin = data.user.isAdmin || adminEmails.includes(email.toLowerCase());
+                        const status = isAdmin ? 'approved' : (data.user.status || 'approved');
 
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email);
@@ -537,17 +692,18 @@
                         localStorage.setItem('userName', data.user.fullName || (email.includes('gilberto') ? 'Pr. Gilberto Penido Bertho' : email));
                         localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
                         localStorage.setItem('userStatus', status);
-                        localStorage.setItem('userCreatedAt', createdAt.toISOString());
+                        localStorage.setItem('userExpiresAt', data.user.expiresAt || '');
+                        localStorage.setItem('subscriptionType', data.user.subscriptionType || 'monthly');
+                        localStorage.setItem('userCreatedAt', data.user.createdAt || new Date().toISOString());
                         window.location.href = 'dashboard.html';
                         return;
                     }
                 } catch (fetchErr) {
-                    console.warn("Servidor local não respondeu ao login:", fetchErr);
+                    console.warn("Servidor local não respondeu ao login, tentando fallback:", fetchErr);
                 }
 
-                // 3. Fallback Direto Local (para garantir acesso imediato dos administradores mesmo offline)
+                // 2. Fallback Direto Local para Administradores
                 const hardcodedAdmins = [
-                    { email: 'edukadoshmda@gmail.com', pass: '123456', name: 'Super Admin' },
                     { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' },
                     { email: 'gilbertbertho@gmail.com', pass: '123456', name: 'Pr. Gilberto (Alternativo)' }
                 ];
@@ -616,4 +772,4 @@
     </script>
     <script src="global-theme.js"></script>
 </body>
-</html>
+</html>

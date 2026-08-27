@@ -4011,10 +4011,31 @@ body.theme-light .utility-btn {
     color: #475569 !important;
 }
 
+/* Voice Toggle Button - Female Mode */
+#voiceToggleBtn.is-female,
+#voiceToggleBtn.is-female i,
+#voiceToggleBtn.is-female span,
+#voiceToggleBtn.is-female #voiceIcon,
+#voiceToggleBtn.is-female #voiceLabel,
+body.theme-light #voiceToggleBtn.is-female,
+body.theme-light #voiceToggleBtn.is-female i,
+body.theme-light #voiceToggleBtn.is-female span,
+body.theme-light #voiceToggleBtn.is-female #voiceIcon,
+body.theme-light #voiceToggleBtn.is-female #voiceLabel {
+    color: #ec4899 !important;
+    border-color: rgba(236, 72, 153, 0.5) !important;
+    background: rgba(236, 72, 153, 0.12) !important;
+}
+
 body.theme-light .control-btn:hover,
 body.theme-light .utility-btn:hover {
     background: #e2e8f0 !important;
     color: var(--gold-dark) !important;
+}
+
+body.theme-light #voiceToggleBtn.is-female:hover {
+    background: rgba(236, 72, 153, 0.2) !important;
+    color: #db2777 !important;
 }
 
 /* Play button specifically */

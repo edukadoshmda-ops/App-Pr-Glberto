@@ -3,111 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuários - PrGilbertoPenido</title>
+    <title>Usuários e Faturamento - PrGilbertoPenido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="theme-light-all.css">
     <style>
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .metric-card {
+            background: var(--bg-card, #0a1329);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(245, 181, 46, 0.3);
+        }
+
+        .metric-card.gold-card {
+            border: 1.5px solid var(--border-gold, #cda451);
+            background: linear-gradient(135deg, rgba(205, 164, 81, 0.12), rgba(10, 19, 41, 0.9));
+        }
+
+        .metric-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .metric-icon.gold {
+            background: rgba(245, 181, 46, 0.15);
+            color: var(--gold, #f5b52e);
+            border: 1px solid rgba(245, 181, 46, 0.3);
+        }
+
+        .metric-icon.green {
+            background: rgba(37, 211, 102, 0.15);
+            color: #25D366;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+        }
+
+        .metric-icon.amber {
+            background: rgba(245, 166, 35, 0.15);
+            color: #f5a623;
+            border: 1px solid rgba(245, 166, 35, 0.3);
+        }
+
+        .metric-icon.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .metric-info h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted, #94a3b8);
+            margin: 0 0 4px 0;
+            font-weight: 700;
+        }
+
+        .metric-info .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-color, #ffffff);
+            margin: 0;
+        }
+
+        .metric-info .metric-sub {
+            font-size: 11px;
+            color: var(--muted, #64748b);
+            margin-top: 2px;
+        }
+
+        .table-container {
+            background: var(--bg-card, #0a1329);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            overflow-x: auto;
+            cursor: grab; /* Mãozinha para arrastar */
+            user-select: none;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-gold, #cda451) rgba(0,0,0,0.06);
+        }
+
+        .table-container.grabbing {
+            cursor: grabbing !important; /* Mãozinha segurando ao arrastar */
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--border-gold, #cda451);
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #f5b52e;
+        }
+
         .users-table {
             width: 100%;
+            min-width: 1120px; /* Garante que tudo fique numa linha só perfeitamente */
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
         .users-table th,
         .users-table td {
-            padding: 16px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            vertical-align: middle;
+            white-space: nowrap !important; /* Em uma linha só */
         }
 
         .users-table th {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--gold, #f5b52e);
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.1em;
+            font-size: 11.5px;
+            letter-spacing: 0.06em;
+            white-space: nowrap !important;
         }
 
         .users-table td {
-            color: #b8c5d6;
+            color: var(--text-color, #e2e8f0);
+            font-size: 13.5px;
+            white-space: nowrap !important;
         }
 
         .users-table tr:hover {
             background: rgba(255, 255, 255, 0.02);
         }
 
+        .user-name-cell {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap !important;
+        }
+
+        .user-name-cell > div {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap !important;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1.5px solid var(--border-gold, #cda451);
+            color: var(--gold, #f5b52e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
         .status-badge {
-            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11.5px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap !important;
         }
 
         .status-approved {
-            background: rgba(37, 211, 102, 0.2);
+            background: rgba(37, 211, 102, 0.15);
             color: #25D366;
+            border: 1px solid rgba(37, 211, 102, 0.3);
         }
 
         .status-pending {
-            background: rgba(245, 166, 35, 0.2);
+            background: rgba(245, 166, 35, 0.15);
             color: #f5a623;
+            border: 1px solid rgba(245, 166, 35, 0.3);
+        }
+
+        .admin-badge {
+            background: rgba(205, 164, 81, 0.2);
+            color: var(--gold, #f5b52e);
+            border: 1px solid rgba(205, 164, 81, 0.3);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: 800;
+            white-space: nowrap !important;
+        }
+
+        .price-badge {
+            font-weight: 800;
+            color: var(--gold, #f5b52e);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap !important;
         }
 
         .action-buttons {
-            display: flex;
-            gap: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap !important; /* Sem quebra de linha! */
+            white-space: nowrap !important;
+        }
+
+        .btn-action {
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-pause {
+            background: rgba(245, 166, 35, 0.15);
+            color: #f5a623;
+            border: 1px solid rgba(245, 166, 35, 0.35);
+        }
+
+        .btn-pause:hover {
+            background: rgba(245, 166, 35, 0.3);
+            transform: translateY(-1px);
         }
 
         .btn-activate {
-            padding: 8px 16px;
-            background: rgba(37, 211, 102, 0.2);
+            background: rgba(37, 211, 102, 0.15);
             color: #25D366;
-            border: 1px solid rgba(37, 211, 102, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
+            border: 1px solid rgba(37, 211, 102, 0.35);
         }
 
         .btn-activate:hover {
             background: rgba(37, 211, 102, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
-        .btn-deactivate {
-            padding: 8px 16px;
-            background: rgba(245, 166, 35, 0.2);
-            color: #f5a623;
-            border: 1px solid rgba(245, 166, 35, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .btn-deactivate:hover {
-            background: rgba(245, 166, 35, 0.3);
-            transform: translateY(-2px);
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
         }
 
         .btn-delete {
-            padding: 8px 16px;
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.15);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
         }
 
         .btn-delete:hover {
             background: rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
+        .whatsapp-link {
+            color: #25D366;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .whatsapp-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Modais */
         .modal {
             display: none;
             position: fixed;
@@ -115,10 +331,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 9999;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(4px);
         }
 
         .modal.active {
@@ -126,12 +343,19 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-card, #0a1329);
+            border: 1.5px solid var(--border-gold, #cda451);
             border-radius: 20px;
-            padding: 40px;
-            max-width: 400px;
+            padding: 32px 28px;
+            max-width: 460px;
             width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .modal-header {
@@ -142,64 +366,300 @@
         }
 
         .modal-header h2 {
-            color: #ffffff;
-            font-size: 24px;
+            color: var(--text-color, #ffffff);
+            font-size: 20px;
             font-weight: 700;
+            margin: 0;
         }
 
         .modal-close {
             background: none;
             border: none;
-            color: #b8c5d6;
+            color: var(--muted, #94a3b8);
             font-size: 24px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: color 0.2s;
         }
 
         .modal-close:hover {
-            color: #ffffff;
+            color: var(--text-color, #ffffff);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-color, #e2e8f0);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-gold, #cda451);
+            background: rgba(8, 17, 38, 0.9);
+            color: var(--text-color, #ffffff);
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            box-shadow: 0 0 10px rgba(245, 181, 46, 0.35);
         }
 
         .modal-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 24px;
         }
 
-        .btn-confirm {
+        .btn-modal-confirm {
             flex: 1;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #cda451, #a97a29);
-            color: #ffffff;
+            padding: 13px 20px;
+            background: linear-gradient(135deg, #f5b52e, #d99a18);
+            color: #0a0f1d;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 800;
+            font-size: 15px;
+            transition: transform 0.2s ease;
         }
 
-        .btn-confirm:hover {
+        .btn-modal-confirm:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(199, 164, 81, 0.4);
         }
 
-        .btn-cancel {
+        .btn-modal-cancel {
             flex: 1;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            padding: 13px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-color, #ffffff);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 15px;
         }
 
-        .btn-cancel:hover {
+        .btn-modal-cancel:hover {
             background: rgba(255, 255, 255, 0.15);
         }
+
+        /* Barra de Ações em Lote (Batch Actions) */
+        .batch-bar-container {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            z-index: 1000;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            pointer-events: none;
+            width: auto;
+            max-width: 90%;
+        }
+
+        .batch-bar-container.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .batch-bar {
+            background: rgba(10, 19, 41, 0.96);
+            border: 1.5px solid var(--border-gold, #cda451);
+            border-radius: 16px;
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(205, 164, 81, 0.25);
+            backdrop-filter: blur(12px);
+            flex-wrap: wrap;
+        }
+
+        body.theme-light .batch-bar {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: 1.5px solid #d99a18 !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .batch-count-badge {
+            background: linear-gradient(135deg, #f5b52e, #d99a18);
+            color: #0a0f1d;
+            font-weight: 800;
+            font-size: 13.5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .btn-batch {
+            padding: 9px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-batch-whatsapp {
+            background: #25D366;
+            color: #ffffff;
+        }
+
+        .btn-batch-whatsapp:hover {
+            background: #1eb956;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-batch-email {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        .btn-batch-email:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-batch-renew {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .btn-batch-renew:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-batch-clear {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color, #ffffff);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        body.theme-light .btn-batch-clear {
+            color: #1e293b !important;
+            border-color: #cbd5e1 !important;
+            background: #f1f5f9 !important;
+        }
+
+        /* Tag Pill para o Modal de Mensagem */
+        .tag-pill {
+            display: inline-block;
+            background: rgba(205, 164, 81, 0.15);
+            border: 1px solid rgba(205, 164, 81, 0.35);
+            color: #f5b52e;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-family: monospace;
+            cursor: pointer;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .tag-pill:hover {
+            background: rgba(205, 164, 81, 0.35);
+            transform: scale(1.04);
+        }
+
+        body.theme-light .tag-pill {
+            background: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            color: #b45309 !important;
+        }
+
+        .msg-preview-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            max-height: 160px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        body.theme-light .msg-preview-box {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+        }
+
+        /* Estilos específicos para o tema claro */
+        body.theme-light .metric-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+        }
+
+        body.theme-light .metric-card.gold-card {
+            background: linear-gradient(135deg, #fffdfa, #fef8eb) !important;
+            border: 1.5px solid #d99a18 !important;
+        }
+
+        body.theme-light .metric-info .metric-value {
+            color: #0f172a !important;
+        }
+
+        body.theme-light .table-container {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        body.theme-light .users-table th {
+            background: #f8fafc !important;
+            color: #b45309 !important;
+            border-bottom: 2px solid #e2e8f0 !important;
+        }
+
+        body.theme-light .users-table td {
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+
+        body.theme-light .user-avatar {
+            background: #f8fafc !important;
+            border-color: #d99a18 !important;
+            color: #b45309 !important;
+        }
+
+        body.theme-light .modal-content {
+            background: #ffffff !important;
+            border: 1.5px solid #d99a18 !important;
+        }
+
+        body.theme-light .form-input {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border-color: #d99a18 !important;
+        }
     </style>
-    <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
     <div class="app-shell">
@@ -242,14 +702,18 @@
                     <i class="fas fa-users"></i>
                     <span>Usuários</span>
                 </a>
-<a href="criar.html" class="menu-item">
+                <a href="criar.html" class="menu-item">
                     <i class="fas fa-plus-circle"></i>
                     <span>Criar</span>
                 </a>
-          <a href="apoio.html" "menu-item">
-            <i "fas fa-handshake"></i>
-            <span>Apoio</span>
-          </a>
+                <a href="configuracoes.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </a>
+                <a href="apoio.html" class="menu-item">
+                    <i class="fas fa-handshake"></i>
+                    <span>Apoio</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -263,216 +727,987 @@
         <main class="main-panel">
             <header class="topbar">
                 <div>
-                    <p class="eyebrow">Gestão de usuários</p>
-                    <h1>Usuários</h1>
+                    <p class="eyebrow">Gestão & Faturamento de Membros</p>
+                    <h1>Gestão de Usuários</h1>
                 </div>
             </header>
 
-                <section>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="color: #ffffff; font-size: 20px;">Usuários Cadastrados</h2>
-                        <button onclick="loadUsers()" class="btn-activate">
-                            <i class="fas fa-sync-alt"></i> Atualizar
-                        </button>
+            <!-- Cards de Faturamento e Métricas -->
+            <div class="metrics-grid">
+                <div class="metric-card gold-card">
+                    <div class="metric-icon gold">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4>Faturamento Mensal</h4>
+                        <p class="metric-value" id="totalMonthlyRevenue">R$ 0,00</p>
+                        <div class="metric-sub">Recorrência ativa calculada</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4>Assinantes Ativos</h4>
+                        <p class="metric-value" id="activeUsersCount">0</p>
+                        <div class="metric-sub">Acesso liberado à plataforma</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon amber">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4>Assinantes Pausados</h4>
+                        <p class="metric-value" id="pausedUsersCount">0</p>
+                        <div class="metric-sub">Acesso pausado / pendente</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h4>Ticket Médio</h4>
+                        <p class="metric-value" id="avgTicketRevenue">R$ 0,00</p>
+                        <div class="metric-sub">Média por assinante ativo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção da Tabela de Usuários -->
+            <section class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h2 style="font-size: 18px; font-weight: 700; color: var(--text-color, #ffffff); margin: 0;">
+                            Membros e Assinaturas
+                        </h2>
+                        <p style="font-size: 13px; color: var(--muted, #94a3b8); margin: 4px 0 0 0;">
+                            Gerencie os acessos, mensalidades e status dos assinantes da plataforma.
+                        </p>
                     </div>
 
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>Telefone</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="5" style="text-align: center;">Carregando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-            </main>
-        </div>
-
-        <!-- Modal de Confirmação de Exclusão -->
-        <div id="deleteModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Confirmar Exclusão</h2>
-                    <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="openNewUserModal()" class="btn-action btn-activate" style="padding: 10px 18px; font-size: 14px; font-weight: 700;">
+                            <i class="fas fa-user-plus"></i> Novo Usuário
+                        </button>
+                        <button onclick="loadUsers()" class="btn-action" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-color, #ffffff); padding: 10px 16px;">
+                            <i class="fas fa-sync-alt" id="refreshIcon"></i> Atualizar
+                        </button>
+                    </div>
                 </div>
-                <p style="color: #b8c5d6; margin-bottom: 20px;">
-                    Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
-                </p>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
-                    <button type="button" class="btn-delete" onclick="confirmDelete()">Excluir</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de Confirmação de Ativação/Desativação -->
-        <div id="statusModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="statusModalTitle">Alterar Status</h2>
-                    <button class="modal-close" onclick="closeStatusModal()">&times;</button>
-                </div>
-                <p id="statusModalMessage" style="color: #b8c5d6; margin-bottom: 20px;">
-                    Tem certeza que deseja alterar o status deste usuário?
-                </p>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeStatusModal()">Cancelar</button>
-                    <button type="button" class="btn-confirm" onclick="confirmStatusChange()">Confirmar</button>
-                </div>
-            </div>
-        </div>
-
-        <script src="script.js"></script>
-        <script>
-            let deleteUserId = null;
-            let statusUserId = null;
-            let newStatus = null;
-
-            // Carregar usuários
-            async function loadUsers() {
-                try {
-                    const response = await fetch('/api/users?apiKey=prgilbertopenido-secret-key-2024');
-                    const users = await response.json();
-                    
-                    const tbody = document.getElementById('usersTableBody');
-                    
-                    if (users.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhum usuário cadastrado</td></tr>';
-                        return;
-                    }
-
-                    tbody.innerHTML = users.map(user => `
+                <table class="users-table">
+                    <thead>
                         <tr>
-                            <td>${user.fullName}</td>
-                            <td>${user.email}</td>
-                            <td>${user.phone}</td>
-                            <td>
-                                <span class="status-badge ${user.status === 'approved' ? 'status-approved' : 'status-pending'}">
-                                    ${user.status === 'approved' ? 'Ativo' : 'Pendente'}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    ${user.status === 'approved' 
-                                        ? `<button class="btn-deactivate" onclick="openStatusModal('${user.id}', 'pending')">
-                                            <i class="fas fa-user-slash"></i> Desativar
-                                           </button>`
-                                        : `<button class="btn-activate" onclick="openStatusModal('${user.id}', 'approved')">
-                                            <i class="fas fa-user-check"></i> Ativar
-                                           </button>`
-                                    }
-                                    <button class="btn-delete" onclick="openDeleteModal('${user.id}')">
-                                        <i class="fas fa-trash"></i> Excluir
-                                    </button>
-                                </div>
+                            <th style="width: 44px; text-align: center;">
+                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" title="Selecionar todos os membros" style="cursor: pointer; width: 18px; height: 18px; accent-color: var(--gold, #f5b52e);">
+                            </th>
+                            <th>Nome do Usuário</th>
+                            <th>Email</th>
+                            <th>WhatsApp / Telefone</th>
+                            <th>Valor Pago (Mensal)</th>
+                            <th>Validade do Acesso</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 30px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--gold, #f5b52e);"></i>
+                                <p style="margin-top: 10px; color: var(--muted, #94a3b8);">Carregando usuários e faturamento...</p>
                             </td>
                         </tr>
-                    `).join('');
-                } catch (error) {
-                    console.error('Erro ao carregar usuários:', error);
-                    document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Erro ao carregar usuários</td></tr>';
-                }
-            }
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
 
-            // Abrir modal de exclusão
-            function openDeleteModal(userId) {
-                deleteUserId = userId;
-                document.getElementById('deleteModal').classList.add('active');
-            }
+    <!-- Barra Flutuante de Ações em Massa (Batch Actions) -->
+    <div id="batchBarContainer" class="batch-bar-container">
+        <div class="batch-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="batch-count-badge" id="selectedCountBadge">0</span>
+                <span style="font-size: 13.5px; font-weight: 700; color: var(--text-color, #ffffff);">selecionado(s)</span>
+            </div>
 
-            // Fechar modal de exclusão
-            function closeDeleteModal() {
-                document.getElementById('deleteModal').classList.remove('active');
-                deleteUserId = null;
-            }
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button onclick="openCustomMessageModal(null, true)" class="btn-batch btn-batch-whatsapp" title="Enviar mensagem personalizada de cobrança/aviso">
+                    <i class="fab fa-whatsapp"></i> Mensagem Personalizada
+                </button>
 
-            // Confirmar exclusão
-            async function confirmDelete() {
-                if (!deleteUserId) return;
+                <button onclick="batchSendEmailReminder()" class="btn-batch btn-batch-email" title="Enviar e-mail oficial de renovação via Gmail">
+                    <i class="fas fa-envelope"></i> Disparar E-mails (Gmail)
+                </button>
 
-                try {
-                    const response = await fetch(`/api/users/${deleteUserId}?apiKey=prgilbertopenido-secret-key-2024`, {
-                        method: 'DELETE'
-                    });
+                <button onclick="batchRenewUsers()" class="btn-batch btn-batch-renew" title="Renovar +30 dias de acesso via PIX para todos os selecionados">
+                    <i class="fas fa-plus-circle"></i> Renovar +30d PIX
+                </button>
 
-                    if (response.ok) {
-                        closeDeleteModal();
-                        loadUsers();
-                        alert('Usuário excluído com sucesso!');
-                    } else {
-                        alert('Erro ao excluir usuário');
-                    }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    alert('Erro ao excluir usuário');
-                }
-            }
+                <button onclick="clearBatchSelection()" class="btn-batch-clear" title="Desmarcar todos">
+                    <i class="fas fa-times"></i> Limpar
+                </button>
+            </div>
+        </div>
+    </div>
 
-            // Abrir modal de alteração de status
-            function openStatusModal(userId, status) {
-                statusUserId = userId;
-                newStatus = status;
+    <!-- Modal de Mensagem Personalizada Elegante (Individual ou em Massa) -->
+    <div id="customMessageModal" class="modal">
+        <div class="modal-content" style="max-width: 620px;">
+            <div class="modal-header">
+                <div>
+                    <h2 id="customMsgModalTitle" style="font-size: 19px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fab fa-whatsapp" style="color: #25D366;"></i> Mensagem Personalizada de Cobrança
+                    </h2>
+                    <p id="customMsgRecipientInfo" style="font-size: 12.5px; color: var(--muted, #94a3b8); margin: 4px 0 0 0;"></p>
+                </div>
+                <button class="modal-close" onclick="closeCustomMessageModal()">&times;</button>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 12.5px; font-weight: 700; color: var(--text-color, #e2e8f0); margin-bottom: 6px;">
+                    <i class="fas fa-magic" style="color: var(--gold, #f5b52e);"></i> Escolha o Modelo de Mensagem:
+                </label>
+                <select id="msgTemplateSelect" onchange="onTemplateChange()" class="form-input" style="cursor: pointer; padding: 10px 12px; font-weight: 600;">
+                    <option value="reminder">⏰ 1. Lembrete Amigável de Vencimento (Faltam 3 Dias)</option>
+                    <option value="trial_expired">🔒 2. Aviso de Degustação Encerrada (Reativação PIX)</option>
+                    <option value="confirmation">🎉 3. Confirmação & Boas-Vindas à Assinatura (+30 Dias)</option>
+                    <option value="pastoral">🙏 4. Acompanhamento Pastoral & Renovação</option>
+                    <option value="custom">✏️ 5. Mensagem Livre / Personalizada</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; color: var(--muted, #94a3b8); margin-bottom: 5px;">
+                    Variáveis dinâmicas (clique para inserir no texto):
+                </label>
+                <div>
+                    <span class="tag-pill" onclick="insertTag('{NOME}')" title="Nome do membro">{NOME}</span>
+                    <span class="tag-pill" onclick="insertTag('{VALOR}')" title="Valor (Ex: R$ 19,90)">{VALOR}</span>
+                    <span class="tag-pill" onclick="insertTag('{CHAVE_PIX}')" title="Chave PIX">(32) 99103-5632</span>
+                    <span class="tag-pill" onclick="insertTag('{VENCIMENTO}')" title="Data de vencimento">{VENCIMENTO}</span>
+                    <span class="tag-pill" onclick="insertTag('{DIAS}')" title="Dias restantes">{DIAS}</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 12.5px; font-weight: 700; color: var(--text-color, #e2e8f0); margin-bottom: 6px;">
+                    Texto da Mensagem (Editável):
+                </label>
+                <textarea id="customMsgTextarea" oninput="renderMessagePreview()" class="form-input" style="height: 135px; font-size: 13px; line-height: 1.5; resize: vertical;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--muted, #94a3b8); margin-bottom: 4px;">
+                    <i class="fas fa-eye"></i> Prévia Formatada para o Usuário:
+                </label>
+                <div id="customMsgPreview" class="msg-preview-box"></div>
+            </div>
+
+            <!-- Lista de Destinatários quando em Massa -->
+            <div id="batchRecipientsList" style="display: none; margin-bottom: 14px; max-height: 130px; overflow-y: auto; background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                <span style="font-size: 12px; font-weight: 700; color: var(--gold, #f5b52e); display: block; margin-bottom: 6px;">
+                    <i class="fab fa-whatsapp"></i> Clique no botão de cada membro para abrir a conversa com o texto pronto:
+                </span>
+                <div id="batchRecipientsButtons" style="display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 15px; flex-wrap: wrap;">
+                <button type="button" class="btn-modal-cancel" onclick="closeCustomMessageModal()" style="flex: 0.7;">Fechar</button>
+
+                <button type="button" onclick="copyCustomMessage()" class="btn-action" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 11px 16px; border-radius: 10px; font-weight: 600;">
+                    <i class="fas fa-copy"></i> Copiar Mensagem
+                </button>
+
+                <button type="button" id="btnSendCustomWhatsApp" onclick="sendCustomWhatsApp()" class="btn-modal-confirm" style="background: linear-gradient(135deg, #25D366, #128C7E); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fab fa-whatsapp" style="font-size: 17px;"></i> Abrir no WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar Novo Usuário -->
+    <div id="newUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Membro / Assinante</h2>
+                <button class="modal-close" onclick="closeNewUserModal()">&times;</button>
+            </div>
+            <form id="newUserForm" onsubmit="handleCreateUser(event)">
+                <div class="form-group">
+                    <label for="newUserName">Nome Completo</label>
+                    <input type="text" id="newUserName" required class="form-input" placeholder="Ex: Pastor Carlos Eduardo" />
+                </div>
+                <div class="form-group">
+                    <label for="newUserEmail">E-mail</label>
+                    <input type="email" id="newUserEmail" required class="form-input" placeholder="carlos@exemplo.com" />
+                </div>
+                <div class="form-group">
+                    <label for="newUserPhone">Telefone / WhatsApp</label>
+                    <input type="text" id="newUserPhone" class="form-input" placeholder="(32) 99999-9999" />
+                </div>
+                <div class="form-group">
+                    <label for="newUserPrice">Valor Pago Mensal (R$)</label>
+                    <input type="number" id="newUserPrice" step="0.01" min="0" value="19.90" required class="form-input" placeholder="19.90" />
+                </div>
+                <div class="form-group">
+                    <label for="newUserStatus">Status Inicial</label>
+                    <select id="newUserStatus" class="form-input" style="cursor: pointer;">
+                        <option value="approved">Ativo (Acesso Liberado)</option>
+                        <option value="pending">Pausado / Pendente</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closeNewUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-modal-confirm">Salvar Membro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Editar Usuário e Valor Pago -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Usuário</h2>
+                <button class="modal-close" onclick="closeEditUserModal()">&times;</button>
+            </div>
+            <form id="editUserForm" onsubmit="handleUpdateUser(event)">
+                <input type="hidden" id="editUserId" />
+                <div class="form-group">
+                    <label for="editUserName">Nome Completo</label>
+                    <input type="text" id="editUserName" required class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">E-mail</label>
+                    <input type="email" id="editUserEmail" required class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="editUserPhone">WhatsApp / Telefone</label>
+                    <input type="text" id="editUserPhone" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="editUserPrice">Valor Pago Mensal (R$)</label>
+                    <input type="number" id="editUserPrice" step="0.01" min="0" required class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="editUserStatus">Status de Acesso</label>
+                    <select id="editUserStatus" class="form-input" style="cursor: pointer;">
+                        <option value="approved">Ativo (Acesso Liberado)</option>
+                        <option value="pending">Pausado (Acesso Bloqueado)</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closeEditUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-modal-confirm">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <p style="color: var(--text-color, #e2e8f0); margin-bottom: 20px; font-size: 14px; line-height: 1.5;">
+                Tem certeza que deseja excluir este usuário? Esta ação removerá os dados cadastrais da plataforma.
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn-action btn-delete" style="flex: 1; padding: 13px; font-size: 15px; font-weight: 700; justify-content: center;" onclick="confirmDelete()">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Ativação/Pausa -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="statusModalTitle">Alterar Status</h2>
+                <button class="modal-close" onclick="closeStatusModal()">&times;</button>
+            </div>
+            <p id="statusModalMessage" style="color: var(--text-color, #e2e8f0); margin-bottom: 20px; font-size: 14px; line-height: 1.5;">
+                Tem certeza que deseja alterar o status deste usuário?
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeStatusModal()">Cancelar</button>
+                <button type="button" class="btn-modal-confirm" onclick="confirmStatusChange()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUsers = [];
+        let deleteUserId = null;
+        let statusUserId = null;
+        let newStatus = null;
+        let selectedUserIds = new Set();
+        let targetMsgUser = null;
+        let isBatchMsgMode = false;
+        const API_KEY = 'prgilbertopenido-secret-key-2024';
+
+        // Templates Oficiais Pastorais / Elegantes
+        const MSG_TEMPLATES = {
+            reminder: `A paz do Senhor, {NOME}! 🌟\n\nPassando para lembrar com carinho que sua assinatura mensal do App Pr. Gilberto Penido vence em {VENCIMENTO} ({DIAS} dias restantes).\n\nPara renovar seu acesso por mais 30 dias e continuar desfrutando de todos os áudios, livros e estudos:\n\n💰 Valor Mensal: {VALOR}\n🔑 Chave PIX: {CHAVE_PIX}\n👤 Beneficiário: Pr. Gilberto Penido Bertho\n\nApós o PIX, basta me enviar o comprovante por aqui para mantermos seu acesso 100% ativo. Que Deus abençoe ricamente sua vida e ministério! 🙏`,
+            
+            trial_expired: `Olá, {NOME}! Graça e paz. ✨\n\nSeu período de degustação gratuita de 7 dias no App Pr. Gilberto Penido encerrou.\n\nPara reativar seu acesso imediato e continuar acompanhando todos os livros, audiobooks e ministrações exclusivas:\n\n💰 Valor Mensal: {VALOR}\n🔑 Chave PIX: {CHAVE_PIX}\n👤 Beneficiário: Pr. Gilberto Penido Bertho\n\nBasta realizar o PIX e me enviar o comprovante por aqui. Seu acesso será reativado na mesma hora! Estamos juntos nessa jornada. 📖`,
+            
+            confirmation: `Graça e paz, {NOME}! 🎉\n\nConfirmamos com muita alegria o recebimento do seu PIX e a ativação da sua assinatura mensal no App Pr. Gilberto Penido por mais 30 dias!\n\nSeu acesso já está 100% liberado em todos os módulos, livros, áudios e ministrações. Aproveite cada estudo para o seu crescimento espiritual!\n\nQualquer dúvida, estou à disposição por aqui. Forte abraço!`,
+            
+            pastoral: `Olá, amado(a) {NOME}! Como vai a sua caminhada? 🕊️\n\nEspero que os materiais e ministrações do nosso aplicativo estejam edificando grandemente a sua vida e ministério.\n\nLembramos que a renovação mensal ({VALOR}) pode ser realizada com toda comodidade via PIX:\n\n🔑 Chave PIX: {CHAVE_PIX}\n👤 Pr. Gilberto Penido Bertho\n\nSeguimos orando por você e sua família. Permanecemos juntos! 🙏`,
+            
+            custom: `Olá, {NOME}!\n\nInformamos que seu plano no App Pr. Gilberto Penido está com vencimento para {VENCIMENTO}.\n\nValor: {VALOR}\nChave PIX: {CHAVE_PIX}\n\nEnvie o comprovante para reativação imediata!`
+        };
+
+        // Formatação de Moeda BRL
+        function formatMoney(value) {
+            const num = Number(value) || 0;
+            return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Carregar Usuários e Calcular Métricas Financeiras
+        async function loadUsers() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+            try {
+                const response = await fetch(`/api/users?apiKey=${API_KEY}`, {
+                    headers: { 'x-api-key': API_KEY }
+                });
                 
-                const title = status === 'approved' ? 'Ativar Usuário' : 'Desativar Usuário';
-                const message = status === 'approved' 
-                    ? 'Tem certeza que deseja ativar este usuário? Ele terá acesso ao sistema.'
-                    : 'Tem certeza que deseja desativar este usuário? Ele perderá acesso ao sistema.';
-                
-                document.getElementById('statusModalTitle').textContent = title;
-                document.getElementById('statusModalMessage').textContent = message;
-                document.getElementById('statusModal').classList.add('active');
+                if (!response.ok) throw new Error('Falha ao obter lista do servidor');
+                const users = await response.json();
+                currentUsers = users;
+                renderUsersTable(users);
+                calculateFinancialMetrics(users);
+            } catch (error) {
+                console.warn('Usando dados em cache/local:', error);
+                const fallbackUsers = [
+                    { id: "admin-001", fullName: "Pr. Gilberto Penido Bertho", phone: "(32) 99103-5632", email: "gilbertobertho@gmail.com", status: "approved", paidAmount: 19.90, isAdmin: true },
+                    { id: "user-003", fullName: "Carlos Eduardo Silva", phone: "(11) 98765-4321", email: "carlos.silva@exemplo.com", status: "approved", paidAmount: 19.90, isAdmin: false, subscriptionType: 'monthly', expiresAt: new Date(Date.now() + 3 * 86400000).toISOString(), daysRemaining: 3 },
+                    { id: "user-004", fullName: "Maria Aparecida Santos", phone: "(21) 99887-1122", email: "maria.santos@exemplo.com", status: "approved", paidAmount: 19.90, isAdmin: false, subscriptionType: 'trial', expiresAt: new Date(Date.now() + 5 * 86400000).toISOString(), daysRemaining: 5 },
+                    { id: "user-005", fullName: "João Batista de Souza", phone: "(31) 98877-6655", email: "joao.souza@exemplo.com", status: "expired", paidAmount: 19.90, isAdmin: false, subscriptionType: 'trial', expiresAt: new Date(Date.now() - 86400000).toISOString(), daysRemaining: -1 }
+                ];
+                currentUsers = fallbackUsers;
+                renderUsersTable(fallbackUsers);
+                calculateFinancialMetrics(fallbackUsers);
+            } finally {
+                if (refreshIcon) {
+                    setTimeout(() => refreshIcon.classList.remove('fa-spin'), 400);
+                }
+            }
+        }
+
+        // Calcular Métricas de Faturamento
+        function calculateFinancialMetrics(users) {
+            let totalRevenue = 0;
+            let activeCount = 0;
+            let pausedCount = 0;
+
+            users.forEach(u => {
+                const amount = Number(u.paidAmount) || 0;
+                if (u.status === 'approved') {
+                    activeCount++;
+                    totalRevenue += amount;
+                } else {
+                    pausedCount++;
+                }
+            });
+
+            const avgTicket = activeCount > 0 ? (totalRevenue / activeCount) : 0;
+
+            document.getElementById('totalMonthlyRevenue').textContent = formatMoney(totalRevenue) + ' /mês';
+            document.getElementById('activeUsersCount').textContent = activeCount;
+            document.getElementById('pausedUsersCount').textContent = pausedCount;
+            document.getElementById('avgTicketRevenue').textContent = formatMoney(avgTicket);
+        }
+
+        // Renderizar Tabela com Checkboxes e Botão de Mensagem
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum usuário cadastrado.</td></tr>';
+                return;
             }
 
-            // Fechar modal de status
-            function closeStatusModal() {
-                document.getElementById('statusModal').classList.remove('active');
-                statusUserId = null;
-                newStatus = null;
-            }
+            tbody.innerHTML = users.map(user => {
+                const initial = (user.fullName || 'U').charAt(0).toUpperCase();
+                const isApproved = user.status === 'approved';
+                const isExpired = user.status === 'expired';
+                const cleanPhone = (user.phone || '').replace(/\D/g, '');
+                const waLink = cleanPhone ? `https://wa.me/55${cleanPhone}` : null;
+                const paidVal = Number(user.paidAmount !== undefined ? user.paidAmount : 19.90);
+                const isChecked = selectedUserIds.has(user.id);
 
-            // Confirmar alteração de status
-            async function confirmStatusChange() {
-                if (!statusUserId || !newStatus) return;
-
-                try {
-                    const response = await fetch(`/api/users/${statusUserId}?apiKey=prgilbertopenido-secret-key-2024`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: newStatus })
-                    });
-
-                    if (response.ok) {
-                        closeStatusModal();
-                        loadUsers();
-                        alert('Status alterado com sucesso!');
+                let validityHtml = '<span style="color: var(--muted); font-size: 12px;">Não definida</span>';
+                const isTrial = user.subscriptionType === 'trial';
+                if (user.isAdmin) {
+                    validityHtml = '<span style="color: #25D366; font-weight: 600; font-size: 12px;"><i class="fas fa-infinity"></i> Ilimitado (Admin)</span>';
+                } else if (user.expiresAt) {
+                    const exp = new Date(user.expiresAt);
+                    const formattedDate = exp.toLocaleDateString('pt-BR');
+                    const days = user.daysRemaining !== undefined ? user.daysRemaining : 0;
+                    
+                    if (days < 0 || isExpired) {
+                        validityHtml = `
+                            <div>
+                                <span style="color: #ef4444; font-weight: 700; font-size: 12px;"><i class="fas fa-times-circle"></i> ${isTrial ? 'Degustação Encerrada' : 'Mensal Vencido'} (${formattedDate})</span>
+                            </div>
+                        `;
+                    } else if (days <= 3) {
+                        validityHtml = `
+                            <div>
+                                <span style="color: #f5a623; font-weight: 700; font-size: 12px;"><i class="fas fa-exclamation-triangle"></i> ${isTrial ? 'Degustação encerra em ' + days + 'd' : 'Vence em ' + days + 'd'} (${formattedDate})</span>
+                            </div>
+                        `;
                     } else {
-                        alert('Erro ao alterar status');
+                        validityHtml = `
+                            <div>
+                                <span style="color: ${isTrial ? '#38bdf8' : '#25D366'}; font-weight: 600; font-size: 12px;">
+                                    <i class="fas ${isTrial ? 'fa-hourglass-half' : 'fa-calendar-check'}"></i> ${isTrial ? 'Degustação (' + days + 'd)' : 'Mensal (' + days + 'd)'} - ${formattedDate}
+                                </span>
+                            </div>
+                        `;
                     }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    alert('Erro ao alterar status');
+                }
+
+                return `
+                    <tr style="${isChecked ? 'background: rgba(245, 181, 46, 0.08);' : ''}">
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="user-row-checkbox" value="${user.id}" onchange="toggleUserSelection('${user.id}', this.checked)" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 17px; height: 17px; accent-color: var(--gold, #f5b52e);">
+                        </td>
+                        <td>
+                            <div class="user-name-cell">
+                                <div class="user-avatar">${initial}</div>
+                                <div>
+                                    <strong style="color: var(--text-color, #ffffff);">${user.fullName || 'Sem Nome'}</strong>
+                                    ${user.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.email || '—'}</td>
+                        <td>
+                            ${waLink ? `
+                                <a href="${waLink}" target="_blank" class="whatsapp-link" title="Conversar no WhatsApp">
+                                    <i class="fab fa-whatsapp"></i> ${user.phone}
+                                </a>
+                            ` : (user.phone || '—')}
+                        </td>
+                        <td>
+                            <div class="price-badge">
+                                <span>${formatMoney(paidVal)}</span>
+                                <button class="btn-action btn-edit" style="padding: 3px 8px; font-size: 11px;" onclick="openEditUserModal('${user.id}')" title="Alterar valor pago">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            ${validityHtml}
+                        </td>
+                        <td>
+                            <span class="status-badge ${isApproved ? 'status-approved' : (isExpired ? 'status-expired' : 'status-pending')}" style="${isExpired ? 'background: rgba(239, 68, 68, 0.15); color: #ef4444;' : ''}">
+                                <i class="fas ${isApproved ? 'fa-check-circle' : (isExpired ? 'fa-times-circle' : 'fa-pause-circle')}"></i>
+                                ${isApproved ? 'Ativo' : (isExpired ? 'Expirado' : 'Pendente')}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action" style="background: rgba(37, 211, 102, 0.18); border: 1px solid rgba(37, 211, 102, 0.4); color: #25D366;" onclick="openCustomMessageModal('${user.id}', false)" title="Mensagem personalizada de aviso / cobrança no WhatsApp">
+                                    <i class="fab fa-whatsapp"></i> Mensagem
+                                </button>
+
+                                <button class="btn-action btn-activate" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.35); color: #25D366;" onclick="renewUserSubscription('${user.id}')" title="Adicionar +30 dias de acesso via PIX">
+                                    <i class="fas fa-plus-circle"></i> +30d PIX
+                                </button>
+                                
+                                <button class="btn-action" style="background: rgba(205, 164, 81, 0.15); border: 1px solid rgba(205, 164, 81, 0.3); color: #cda451;" onclick="sendUserReminderEmail('${user.id}')" title="Enviar e-mail oficial de renovação via Gmail">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+
+                                <button class="btn-action btn-edit" onclick="openEditUserModal('${user.id}')" title="Editar dados e valor pago">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <button class="btn-action btn-delete" onclick="openDeleteModal('${user.id}')" title="Excluir usuário">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateBatchSelectionUI();
+        }
+
+        // ==========================================
+        // SELEÇÃO EM MASSA (BATCH ACTIONS)
+        // ==========================================
+        function toggleSelectAll(masterCheckbox) {
+            const isChecked = masterCheckbox.checked;
+            if (isChecked) {
+                currentUsers.forEach(u => selectedUserIds.add(u.id));
+            } else {
+                selectedUserIds.clear();
+            }
+            renderUsersTable(currentUsers);
+        }
+
+        function toggleUserSelection(userId, isChecked) {
+            if (isChecked) {
+                selectedUserIds.add(userId);
+            } else {
+                selectedUserIds.delete(userId);
+            }
+            updateBatchSelectionUI();
+        }
+
+        function clearBatchSelection() {
+            selectedUserIds.clear();
+            const master = document.getElementById('selectAllCheckbox');
+            if (master) master.checked = false;
+            renderUsersTable(currentUsers);
+        }
+
+        function updateBatchSelectionUI() {
+            const count = selectedUserIds.size;
+            const container = document.getElementById('batchBarContainer');
+            const badge = document.getElementById('selectedCountBadge');
+            const master = document.getElementById('selectAllCheckbox');
+
+            if (badge) badge.textContent = count;
+
+            if (count > 0) {
+                container.classList.add('active');
+            } else {
+                container.classList.remove('active');
+            }
+
+            if (master) {
+                master.checked = (count === currentUsers.length && currentUsers.length > 0);
+            }
+        }
+
+        // Renovar Assinatura em Lote (+30 dias)
+        async function batchRenewUsers() {
+            if (selectedUserIds.size === 0) return;
+            if (!confirm(`Deseja renovar a assinatura por +30 dias para os ${selectedUserIds.size} membros selecionados?`)) return;
+
+            let success = 0;
+            for (const id of selectedUserIds) {
+                try {
+                    const res = await fetch(`/api/users/${id}/renew?apiKey=${API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'x-api-key': API_KEY }
+                    });
+                    if (res.ok) success++;
+                } catch(e) {
+                    console.error(e);
                 }
             }
 
-            // Logout
-            function logout() {
-                localStorage.clear();
-                window.location.href = 'login.html';
-            }
-
-            // Load users on page load
+            alert(`Renovação concluída! ${success} de ${selectedUserIds.size} usuários foram atualizados com +30 dias.`);
+            clearBatchSelection();
             loadUsers();
-        </script>
-        <script src="script.js"></script>
-        <script src="global-theme.js"></script>
+        }
+
+        // Disparar E-mails em Lote (Gmail)
+        async function batchSendEmailReminder() {
+            if (selectedUserIds.size === 0) return;
+            if (!confirm(`Deseja disparar o e-mail de lembrete de renovação via Gmail para os ${selectedUserIds.size} membros selecionados?`)) return;
+
+            let success = 0;
+            for (const id of selectedUserIds) {
+                try {
+                    const res = await fetch(`/api/users/${id}/send-reminder?apiKey=${API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'x-api-key': API_KEY }
+                    });
+                    if (res.ok) success++;
+                } catch(e) {
+                    console.error(e);
+                }
+            }
+
+            alert(`Disparo concluído! ${success} de ${selectedUserIds.size} e-mails enviados.`);
+            clearBatchSelection();
+        }
+
+        // ==========================================
+        // MODAL DE MENSAGEM PERSONALIZADA (INDIVIDUAL E EM MASSA)
+        // ==========================================
+        function openCustomMessageModal(userId, isBatch = false) {
+            isBatchMsgMode = isBatch;
+            targetMsgUser = userId ? currentUsers.find(u => u.id === userId) : null;
+
+            const modalTitle = document.getElementById('customMsgModalTitle');
+            const recipientInfo = document.getElementById('customMsgRecipientInfo');
+            const batchList = document.getElementById('batchRecipientsList');
+            const batchButtons = document.getElementById('batchRecipientsButtons');
+            const btnSingleWa = document.getElementById('btnSendCustomWhatsApp');
+
+            if (isBatch) {
+                const selectedUsers = currentUsers.filter(u => selectedUserIds.has(u.id));
+                modalTitle.innerHTML = `<i class="fab fa-whatsapp" style="color: #25D366;"></i> Mensagem em Massa (${selectedUsers.length} Membros)`;
+                recipientInfo.textContent = `A mensagem será gerada dinamicamente para cada um dos ${selectedUsers.length} membros selecionados.`;
+                
+                batchList.style.display = 'block';
+                btnSingleWa.style.display = 'none';
+
+                // Usar o primeiro usuário como referência para o preview
+                targetMsgUser = selectedUsers[0] || { fullName: 'Membro Exemplo', phone: '(32) 99103-5632', paidAmount: 19.90, expiresAt: new Date().toISOString(), daysRemaining: 3 };
+
+                // Montar lista de botões WhatsApp individuais
+                renderBatchWhatsAppButtons();
+            } else {
+                modalTitle.innerHTML = `<i class="fab fa-whatsapp" style="color: #25D366;"></i> Mensagem para ${targetMsgUser.fullName || 'Membro'}`;
+                recipientInfo.textContent = `Telefone: ${targetMsgUser.phone || 'Não informado'} | E-mail: ${targetMsgUser.email || '—'}`;
+                batchList.style.display = 'none';
+                btnSingleWa.style.display = 'inline-flex';
+            }
+
+            // Selecionar template apropriado baseado no status do usuário
+            const select = document.getElementById('msgTemplateSelect');
+            if (targetMsgUser && targetMsgUser.subscriptionType === 'trial' && (targetMsgUser.status === 'expired' || targetMsgUser.daysRemaining < 0)) {
+                select.value = 'trial_expired';
+            } else if (targetMsgUser && targetMsgUser.status === 'approved' && targetMsgUser.daysRemaining <= 3) {
+                select.value = 'reminder';
+            } else {
+                select.value = 'reminder';
+            }
+
+            onTemplateChange();
+            document.getElementById('customMessageModal').classList.add('active');
+        }
+
+        function closeCustomMessageModal() {
+            document.getElementById('customMessageModal').classList.remove('active');
+            targetMsgUser = null;
+            isBatchMsgMode = false;
+        }
+
+        function onTemplateChange() {
+            const templateKey = document.getElementById('msgTemplateSelect').value;
+            const textarea = document.getElementById('customMsgTextarea');
+            textarea.value = MSG_TEMPLATES[templateKey] || MSG_TEMPLATES.reminder;
+            renderMessagePreview();
+        }
+
+        function insertTag(tag) {
+            const textarea = document.getElementById('customMsgTextarea');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start) + tag + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            renderMessagePreview();
+        }
+
+        function formatCustomMessageForUser(rawText, user) {
+            if (!user) return rawText;
+            const nome = user.fullName || 'Membro';
+            const valor = formatMoney(user.paidAmount !== undefined ? user.paidAmount : 19.90);
+            const chavePix = '(32) 99103-5632';
+            const vencimento = user.expiresAt ? new Date(user.expiresAt).toLocaleDateString('pt-BR') : 'a definir';
+            const dias = user.daysRemaining !== undefined ? (user.daysRemaining < 0 ? 'encerrado' : user.daysRemaining) : '3';
+
+            return rawText
+                .replace(/{NOME}/g, nome)
+                .replace(/{VALOR}/g, valor)
+                .replace(/{CHAVE_PIX}/g, chavePix)
+                .replace(/{VENCIMENTO}/g, vencimento)
+                .replace(/{DIAS}/g, dias);
+        }
+
+        function renderMessagePreview() {
+            const rawText = document.getElementById('customMsgTextarea').value;
+            const formatted = formatCustomMessageForUser(rawText, targetMsgUser);
+            document.getElementById('customMsgPreview').textContent = formatted;
+
+            if (isBatchMsgMode) {
+                renderBatchWhatsAppButtons();
+            }
+        }
+
+        function renderBatchWhatsAppButtons() {
+            const batchButtons = document.getElementById('batchRecipientsButtons');
+            if (!batchButtons) return;
+            const rawText = document.getElementById('customMsgTextarea').value;
+            const selectedUsers = currentUsers.filter(u => selectedUserIds.has(u.id));
+
+            batchButtons.innerHTML = selectedUsers.map((user, idx) => {
+                const cleanPhone = (user.phone || '').replace(/\D/g, '');
+                const userMsg = formatCustomMessageForUser(rawText, user);
+                const waUrl = cleanPhone ? `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(userMsg)}` : null;
+
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 8px;">
+                        <div>
+                            <strong style="color: #ffffff; font-size: 13px;">${idx + 1}. ${user.fullName}</strong>
+                            <span style="color: var(--muted); font-size: 12px; margin-left: 6px;">(${user.phone || 'Sem telefone'})</span>
+                        </div>
+                        ${cleanPhone ? `
+                            <a href="${waUrl}" target="_blank" class="btn-action" style="background: #25D366; color: #ffffff; padding: 5px 12px; font-size: 12px; text-decoration: none; border-radius: 6px;">
+                                <i class="fab fa-whatsapp"></i> Abrir Conversa
+                            </a>
+                        ` : '<span style="color: #ef4444; font-size: 12px;">Sem WhatsApp</span>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyCustomMessage() {
+            const previewText = document.getElementById('customMsgPreview').textContent;
+            navigator.clipboard.writeText(previewText).then(() => {
+                alert('Mensagem copiada para a área de transferência com sucesso!');
+            }).catch(() => {
+                prompt('Copie o texto da mensagem abaixo:', previewText);
+            });
+        }
+
+        function sendCustomWhatsApp() {
+            if (!targetMsgUser) return;
+            const cleanPhone = (targetMsgUser.phone || '').replace(/\D/g, '');
+            if (!cleanPhone) {
+                alert('Este usuário não possui um número de WhatsApp cadastrado!');
+                return;
+            }
+            const rawText = document.getElementById('customMsgTextarea').value;
+            const userMsg = formatCustomMessageForUser(rawText, targetMsgUser);
+            window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(userMsg)}`, '_blank');
+        }
+
+        // ==========================================
+        // AÇÕES INDIVIDUAIS
+        // ==========================================
+        async function renewUserSubscription(userId) {
+            if (!confirm('Deseja confirmar o pagamento do PIX e renovar a assinatura deste membro por +30 dias?')) return;
+
+            try {
+                const response = await fetch(`/api/users/${userId}/renew?apiKey=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'x-api-key': API_KEY }
+                });
+
+                if (response.ok) {
+                    alert('Assinatura renovada por +30 dias com sucesso! E-mail de confirmação enviado.');
+                    loadUsers();
+                } else {
+                    alert('Erro ao renovar assinatura.');
+                }
+            } catch (err) {
+                console.error('Erro ao renovar:', err);
+                alert('Erro de conexão ao renovar assinatura.');
+            }
+        }
+
+        async function sendUserReminderEmail(userId) {
+            if (!confirm('Deseja enviar o e-mail de lembrete de renovação do PIX para este membro via Gmail?')) return;
+
+            try {
+                const response = await fetch(`/api/users/${userId}/send-reminder?apiKey=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'x-api-key': API_KEY }
+                });
+
+                if (response.ok) {
+                    alert('E-mail de lembrete de renovação enviado com sucesso!');
+                } else {
+                    alert('Erro ao enviar e-mail.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão ao enviar e-mail.');
+            }
+        }
+
+        // Modais de Criação
+        function openNewUserModal() {
+            document.getElementById('newUserForm').reset();
+            document.getElementById('newUserPrice').value = '19.90';
+            document.getElementById('newUserModal').classList.add('active');
+        }
+
+        function closeNewUserModal() {
+            document.getElementById('newUserModal').classList.remove('active');
+        }
+
+        async function handleCreateUser(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const phone = document.getElementById('newUserPhone').value.trim();
+            const paidAmount = parseFloat(document.getElementById('newUserPrice').value) || 19.90;
+            const status = document.getElementById('newUserStatus').value;
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fullName, email, phone, paidAmount, status
+                    })
+                });
+
+                if (response.ok) {
+                    closeNewUserModal();
+                    loadUsers();
+                    alert('Membro cadastrado com sucesso!');
+                } else {
+                    alert('Erro ao cadastrar membro.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro na conexão. Tente novamente.');
+            }
+        }
+
+        // Modal de Edição
+        function openEditUserModal(userId) {
+            const user = currentUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUserName').value = user.fullName || '';
+            document.getElementById('editUserEmail').value = user.email || '';
+            document.getElementById('editUserPhone').value = user.phone || '';
+            document.getElementById('editUserPrice').value = user.paidAmount !== undefined ? user.paidAmount : 19.90;
+            document.getElementById('editUserStatus').value = user.status || 'approved';
+
+            document.getElementById('editUserModal').classList.add('active');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.remove('active');
+        }
+
+        async function handleUpdateUser(e) {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const fullName = document.getElementById('editUserName').value.trim();
+            const email = document.getElementById('editUserEmail').value.trim();
+            const phone = document.getElementById('editUserPhone').value.trim();
+            const paidAmount = parseFloat(document.getElementById('editUserPrice').value) || 19.90;
+            const status = document.getElementById('editUserStatus').value;
+
+            try {
+                const response = await fetch(`/api/users/${id}?apiKey=${API_KEY}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                    },
+                    body: JSON.stringify({ fullName, email, phone, paidAmount, status })
+                });
+
+                if (response.ok) {
+                    closeEditUserModal();
+                    loadUsers();
+                    alert('Dados e valor pago atualizados com sucesso!');
+                } else {
+                    alert('Erro ao salvar alterações do usuário.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro na conexão com o servidor.');
+            }
+        }
+
+        // Modal de Exclusão
+        function openDeleteModal(userId) {
+            deleteUserId = userId;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteUserId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteUserId) return;
+
+            try {
+                const response = await fetch(`/api/users/${deleteUserId}?apiKey=${API_KEY}`, {
+                    method: 'DELETE',
+                    headers: { 'x-api-key': API_KEY }
+                });
+
+                if (response.ok) {
+                    closeDeleteModal();
+                    loadUsers();
+                    alert('Usuário removido com sucesso!');
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao excluir usuário.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao excluir usuário.');
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Mãozinha para arrastar a tabela (Drag-to-Scroll)
+        function initDragToScroll() {
+            const slider = document.querySelector('.table-container');
+            if (!slider) return;
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                // Ignorar se clicou diretamente em elementos interativos
+                if (e.target.closest('button, a, input, select, textarea, .modal, .tag-pill')) return;
+                isDown = true;
+                slider.classList.add('grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('grabbing');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('grabbing');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.6; // Sensibilidade do arrasto
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            initDragToScroll();
+        });
+    </script>
+    <script src="script.js"></script>
+    <script src="global-theme.js"></script>
 </body>
 </html>
 

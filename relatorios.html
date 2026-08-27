@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios Profissionais - PrGilbertoPenido</title>
+    <script>
+        // Aplicação instantânea do tema salvo (0ms de atraso visual)
+        if (localStorage.getItem('app-theme') === 'light') {
+            document.documentElement.classList.add('theme-light');
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
     <style>
         .relatorio-layout {
             display: grid;
@@ -19,28 +27,28 @@
         }
 
         .relatorio-card {
-            background: #ffffff;
-            border: 1px solid #e8ebef;
+            background: var(--bg-card, #0a1329);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 18px;
             padding: 28px;
-            box-shadow: 0 12px 35px rgba(20, 30, 45, .06);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, .3);
         }
 
         .relatorio-heading {
             padding-bottom: 20px;
             margin-bottom: 25px;
-            border-bottom: 1px solid #edf0f3;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .relatorio-heading h2 {
             margin: 7px 0 6px;
             font-size: 22px;
-            color: #18202a;
+            color: var(--text-color, #ffffff);
         }
 
         .relatorio-heading p {
             margin: 0;
-            color: #858f9a;
+            color: var(--muted, #94a3b8);
             font-size: 13px;
             line-height: 1.6;
         }
@@ -54,28 +62,30 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 8px;
-            color: #35404b;
-            font-size: 12px;
-            font-weight: 500;
+            color: var(--text-color, #e2e8f0);
+            font-size: 12.5px;
+            font-weight: 600;
         }
 
         .form-group-relatorio input,
         .form-group-relatorio select {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #d5dbe1;
+            border: 1.5px solid var(--border-gold, #cda451);
+            background: rgba(8, 17, 38, 0.9);
             border-radius: 8px;
             font-size: 13px;
-            color: #35404b;
+            color: var(--text-color, #ffffff);
             font-family: inherit;
-            transition: .2s ease;
+            box-sizing: border-box;
+            outline: none;
         }
 
         .form-group-relatorio input:focus,
         .form-group-relatorio select:focus {
             outline: none;
-            border-color: #c79b43;
-            box-shadow: 0 0 0 3px rgba(199, 155, 67, .1);
+            border-color: #f5b52e;
+            box-shadow: 0 0 0 3px rgba(245, 181, 46, .2);
         }
 
         .form-row-relatorio {
@@ -86,7 +96,7 @@
 
         .tabela-preview {
             margin-top: 25px;
-            border: 1px solid #e8ebef;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             overflow: hidden;
         }
@@ -98,58 +108,61 @@
         }
 
         .tabela-preview th {
-            background: #f5f7fa;
+            background: rgba(255, 255, 255, 0.03);
             padding: 12px;
             text-align: left;
-            color: #35404b;
-            font-weight: 600;
-            border-bottom: 1px solid #e8ebef;
+            color: var(--gold, #f5b52e);
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .tabela-preview td {
-            padding: 12px;
-            border-bottom: 1px solid #edf0f3;
-            color: #697581;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-color, #e2e8f0);
+            vertical-align: middle;
         }
 
         .tabela-preview tr:hover {
-            background: #fafbfc;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .btn-adicionar-linha {
             width: 100%;
             padding: 12px;
             margin-top: 15px;
-            border: 2px dashed #cdd4db;
-            background: transparent;
-            color: #35404b;
+            border: 2px dashed rgba(245, 181, 46, 0.4);
+            background: rgba(245, 181, 46, 0.05);
+            color: var(--gold, #f5b52e);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             transition: .2s ease;
         }
 
         .btn-adicionar-linha:hover {
-            border-color: #c79b43;
-            background: #fffdf8;
-            color: #c79b43;
+            border-color: #f5b52e;
+            background: rgba(245, 181, 46, 0.12);
+            transform: translateY(-1px);
         }
 
         .btn-remover {
-            background: #f5e6e6;
-            color: #d32f2f;
-            border: 0;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             padding: 6px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 11px;
+            font-weight: 600;
             transition: .2s ease;
         }
 
         .btn-remover:hover {
-            background: #d32f2f;
-            color: #fff;
+            background: rgba(239, 68, 68, 0.3);
         }
 
         .info-box {
@@ -215,43 +228,119 @@
             gap: 10px;
             margin-top: 25px;
             padding-top: 20px;
-            border-top: 1px solid #edf0f3;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .btn-cancel-relatorio {
             flex: 1;
             padding: 12px;
-            border: 1px solid #d5dbe1;
-            background: transparent;
-            color: #35404b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color, #ffffff);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             transition: .2s ease;
         }
 
         .btn-cancel-relatorio:hover {
-            background: #f5f7fa;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .btn-gerar-relatorio {
             flex: 1;
             padding: 12px;
             border: 0;
-            background: linear-gradient(135deg, #c79b43, #a97a29);
-            color: #fff;
+            background: linear-gradient(135deg, #f5b52e, #d99a18);
+            color: #0a0f1d;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 800;
             transition: .2s ease;
             box-shadow: 0 4px 12px rgba(199, 155, 67, .2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-gerar-relatorio:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(199, 155, 67, .3);
+        }
+
+        /* Estilos de alta velocidade para o tema claro */
+        body.theme-light .relatorio-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
+        }
+
+        body.theme-light .relatorio-heading {
+            border-bottom: 1px solid #edf0f3 !important;
+        }
+
+        body.theme-light .relatorio-heading h2 {
+            color: #18202a !important;
+        }
+
+        body.theme-light .relatorio-heading p {
+            color: #64748b !important;
+        }
+
+        body.theme-light .form-group-relatorio label {
+            color: #334155 !important;
+        }
+
+        body.theme-light .form-group-relatorio input,
+        body.theme-light .form-group-relatorio select {
+            background: #f8fafc !important;
+            border: 1.5px solid #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+
+        body.theme-light .form-group-relatorio input:focus,
+        body.theme-light .form-group-relatorio select:focus {
+            border-color: #d99a18 !important;
+            background: #ffffff !important;
+        }
+
+        body.theme-light .tabela-preview {
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        body.theme-light .tabela-preview th {
+            background: #f8fafc !important;
+            color: #b45309 !important;
+            border-bottom: 1.5px solid #e2e8f0 !important;
+        }
+
+        body.theme-light .tabela-preview td {
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+
+        body.theme-light .btn-adicionar-linha {
+            border-color: #d99a18 !important;
+            background: #fffdf8 !important;
+            color: #b45309 !important;
+        }
+
+        body.theme-light .form-actions-relatorio {
+            border-top: 1px solid #edf0f3 !important;
+        }
+
+        body.theme-light .btn-cancel-relatorio {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #334155 !important;
         }
 
         @media (max-width: 1000px) {
@@ -278,7 +367,6 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="theme-light-all.css">
 </head>
 <body>
     <div class="app-shell">
@@ -326,6 +414,10 @@
                     <i class="fas fa-plus-circle"></i>
                     <span>Criar</span>
                 </a>
+          <a href="configuracoes.html" class="menu-item">
+            <i class="fas fa-cog"></i>
+            <span>Configurações</span>
+          </a>
           <a href="apoio.html" "menu-item">
             <i "fas fa-handshake"></i>
             <span>Apoio</span>
@@ -637,10 +729,11 @@
             alert('✅ Relatório gerado com sucesso e salvo no sistema!');
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabaseClient.js"></script>
-    <script src="script.js"></script>
-      <script src="global-theme.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabaseClient.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="global-theme.js"></script>
 </body>
 </html>
 

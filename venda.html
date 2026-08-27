@@ -166,9 +166,8 @@
         }
 
         .hero-section h1 span {
-            background: linear-gradient(135deg, #ffffff 40%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--gold);
+            display: block;
         }
 
         .hero-section p.hero-desc {
@@ -406,30 +405,39 @@
             padding: 48px 40px;
             margin-bottom: 80px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 40px;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
         }
 
         .author-photo-wrap {
             position: relative;
-            flex-shrink: 0;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
         .author-photo {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
+            width: 100%;
+            height: auto;
+            display: block;
             object-fit: cover;
-            border: 4px solid var(--gold);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(245, 181, 46, 0.25);
+        }
+
+        .author-info {
+            width: 100%;
+            max-width: 820px;
         }
 
         .author-info h3 {
             font-size: 28px;
             font-weight: 800;
             color: #ffffff;
-            margin: 8px 0 12px;
+            margin: 8px 0 16px;
         }
 
         .author-info p {
@@ -778,6 +786,7 @@
         }
     </style>
     <link rel="stylesheet" href="theme-light-all.css">
+    <script src="auth-permissions.js"></script>
 </head>
 <body>
 
@@ -820,8 +829,8 @@
                     <span>Acesso Imediato no Celular e PC</span>
                 </div>
                 <div class="highlight-item">
-                    <i class="fas fa-infinity" style="color: var(--gold);"></i>
-                    <span>Vitalício por apenas R$ 19,90</span>
+                    <i class="fas fa-calendar-check" style="color: var(--gold);"></i>
+                    <span>Apenas R$ 19,90/mês</span>
                 </div>
             </div>
 
@@ -975,29 +984,6 @@
             </div>
         </section>
 
-        <!-- Author Section -->
-        <section class="author-section">
-            <div class="author-photo-wrap" style="max-width: 250px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; border: 4px solid #fff;">
-                <img src="assets/gilberto_autor.png" alt="Pr. Gilberto Penido Bertho" class="author-photo" style="width: 100%; height: auto; display: block; filter: contrast(1.1) brightness(1.05);">
-            </div>
-            <div class="author-info">
-                <span class="section-tag" style="text-align: left;">Sobre o Autor</span>
-                <h3>Pr. Gilberto Penido Bertho</h3>
-                <p>
-                    Filho de Arnaldo dos Santos Bertho e Ruth Penido Bertho, nasceu em Paracambi - RJ. Dos seus cinco irmãos, dois também são Pastores. 
-                    Por muitos anos tem percorrido o Brasil como discipulador, treinando pastores e igrejas dentro deste empolgante método de evangelismo e discipulado.
-                </p>
-                <p>
-                    Possui os graus de Bacharel em Teologia, Educação Religiosa e Pós-Graduado em Psicanálise Clínica. 
-                    Em mais de quatro décadas de ministério, pastoreou diversas igrejas em Minas Gerais, trabalhou como missionário da CBM em parceria com a JMN e organizou a IB Central de Três Corações e a 2ª e 3ª Igreja Batista de Varginha.
-                </p>
-                <p>
-                    Coordenou projetos de evangelização como a Trans-Uberlândia e a Campanha "Minha Esperança Brasil". 
-                    Foi diretor e professor do Seminário Teológico Batista do Triângulo Mineiro e é docente do Instituto Haggai do Brasil. 
-                    É casado com Mara Raquel e pai de Jônatas.
-                </p>
-            </div>
-        </section>
 
         <!-- Testimonials -->
         <section class="testimonials-section">
@@ -1063,7 +1049,7 @@
             <div class="section-title-wrap">
                 <span class="section-tag">Oferta Especial de Teste</span>
                 <h2>Experimente por 7 Dias Grátis</h2>
-                <p>Acesse agora sem nenhum compromisso. Se gostar, garanta o acesso vitalício por um valor único simbólico.</p>
+                <p>Acesse agora sem nenhum compromisso. Se gostar, continue sua assinatura mensal por apenas R$ 19,90/mês via PIX.</p>
             </div>
 
             <div class="pricing-box">
@@ -1072,14 +1058,14 @@
                 </div>
 
                 <div class="price-from" style="color: #10b981; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 10px;">
-                    <i class="fas fa-check-circle"></i> Teste Grátis: R$ 0,00 nos primeiros 7 dias
+                    <i class="fas fa-check-circle"></i> Degustação Gratuita: R$ 0,00 nos primeiros 7 dias
                 </div>
-                <div class="price-main">R$ 19<span>,90</span></div>
-                <div class="price-sub">Pagamento único para acesso vitalício • Cancele quando quiser nos 7 dias</div>
+                <div class="price-main">R$ 19<span>,90</span><span style="font-size: 16px; color: var(--muted); font-weight: 600;">/mês</span></div>
+                <div class="price-sub">Assinatura mensal acessível via PIX • Cancele quando quiser</div>
 
                 <ul class="benefits-list">
                     <li><i class="fas fa-gift" style="color: #10b981;"></i> <strong>7 Dias Grátis</strong> para explorar 100% da plataforma</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Acesso Vitalício</strong> a todos os Play Books em PDF</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>Acesso Completo</strong> a todos os Play Books em PDF</li>
                     <li><i class="fas fa-check-circle"></i> <strong>Todos os Audiobooks</strong> narrados em alta qualidade</li>
                     <li><i class="fas fa-check-circle"></i> <strong>Vídeos e Masterclasses</strong> exclusivos do Pr. Gilberto</li>
                     <li><i class="fas fa-check-circle"></i> <strong>Artigos e Estudos</strong> bíblicos aprofundados</li>
@@ -1121,7 +1107,7 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        Você ganha 7 dias de acesso irrestrito para navegar por todos os módulos, ler todos os Play Books em PDF, ouvir os Audiobooks narrados e assistir às aulas. Você testa tudo sem nenhum compromisso. Se amar o conteúdo e quiser continuar com acesso vitalício, o investimento é de apenas R$ 19,90 taxa única.
+                        Você ganha 7 dias de acesso irrestrito para navegar por todos os módulos, ler todos os Play Books em PDF, ouvir os Audiobooks narrados e assistir às aulas. Você testa tudo sem nenhum compromisso. Para continuar com acesso ilimitado após a degustação, o investimento é de apenas R$ 19,90/mês via PIX.
                     </div>
                 </div>
 
@@ -1137,11 +1123,11 @@
 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span>O acesso é vitalício mesmo? Terei que pagar mensalidade?</span>
+                        <span>Como funciona o pagamento após os 7 dias de degustação?</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        Sim! O valor de R$ 19,90 é pagamento único. Não há cobranças mensais nem anuais. Você terá acesso perpétuo a todos os materiais e às futuras atualizações sem custo adicional.
+                        A assinatura é mensal e muito acessível: apenas R$ 19,90 por mês via PIX. Três dias antes de vencer seu período de teste, você recebe um lembrete amigável no seu e-mail e WhatsApp com a chave PIX para renovar seu acesso por mais 30 dias com total tranquilidade.
                     </div>
                 </div>
 
@@ -1185,7 +1171,7 @@
         <div class="contact-info">
             <span><i class="fas fa-envelope"></i> gilbertobertho@gmail.com</span>
             <span>•</span>
-            <span><i class="fab fa-whatsapp"></i> <a href="https://wa.me/553291035632" target="_blank">(32) 9103-5632</a></span>
+            <span><i class="fab fa-whatsapp"></i> <a href="https://wa.me/5532991035632" target="_blank">(32) 99103-5632</a></span>
         </div>
     </footer>
 
