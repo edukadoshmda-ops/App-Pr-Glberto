@@ -4262,3 +4262,17 @@ body.theme-light #progressBar {
 body.theme-light #progressBar::-webkit-slider-thumb {
     background: var(--gold) !important;
 }
+/* Mobile topbar light theme */
+body.theme-light .mobile-topbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+    backdrop-filter: blur(12px) !important;
+}
+body.theme-light .mobile-topbar .mobile-page-title {
+    color: #0f172a !important;
+}
+body.theme-light .mobile-menu-toggle {
+    background: rgba(0,0,0,0.05) !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    color: #334155 !important;
+}
