@@ -1,11 +1,13 @@
 require('dotenv').config();
 const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-const cron = require('node-cron');
+// const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -514,14 +516,24 @@ if (!fs.existsSync(audiobooksDbPath)) fs.writeFileSync(audiobooksDbPath, JSON.st
 if (!fs.existsSync(playbooksDbPath)) fs.writeFileSync(playbooksDbPath, JSON.stringify([]));
 
 // Função para ler usuários do banco de dados
-function getUsers() {
-    const data = fs.readFileSync(usersDbPath, 'utf8');
-    return JSON.parse(data);
+async function getUsers() {
+    try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (error) throw error;
+        return data || [];
+    } catch(err) {
+        console.error('Erro ao buscar usuários do Supabase:', err);
+        return [];
+    }
 }
 
 // Função para salvar usuários no banco de dados
-function saveUsers(users) {
-    fs.writeFileSync(usersDbPath, JSON.stringify(users, null, 2));
+async function saveUsers(users) {
+    try {
+        await supabase.from('users').upsert(users, { onConflict: 'email' });
+    } catch(err) {
+        console.error('Erro ao salvar usuários no Supabase:', err);
+    }
 }
 
 function getAudiobooks() { return JSON.parse(fs.readFileSync(audiobooksDbPath, 'utf8')); }
@@ -1060,9 +1072,9 @@ app.post('/api/testimony', async (req, res) => {
 // Rotas para Usuários
 
 // Rota para registrar novo usuário
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         
         // Verificar se email já existe
         const existingUser = users.find(u => u.email === req.body.email);
@@ -1081,7 +1093,7 @@ app.post('/api/register', (req, res) => {
         };
 
         users.push(newUser);
-        saveUsers(users);
+        await saveUsers(users);
 
         res.json({ success: true, message: 'Usuário cadastrado com sucesso. Aguarde aprovação.' });
     } catch (error) {
@@ -1091,9 +1103,9 @@ app.post('/api/register', (req, res) => {
 });
 
 // Rota para login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const { email, password } = req.body;
 
         const user = users.find(u => u.email.toLowerCase() === (email || '').toLowerCase() && u.password === password);
@@ -1116,7 +1128,7 @@ app.post('/api/login', (req, res) => {
                 const now = new Date();
                 if (expiresDate < now) {
                     user.status = 'expired';
-                    saveUsers(users);
+                    await saveUsers(users);
                     const isTrial = user.subscriptionType === 'trial';
                     return res.status(403).json({ 
                         error: isTrial 
@@ -1153,7 +1165,7 @@ app.post('/api/login', (req, res) => {
 // Rota para cadastrar novo usuário (checkout / degustação)
 app.post('/api/users', async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const existingIndex = users.findIndex(u => u.email.toLowerCase() === (req.body.email || '').toLowerCase());
         
         if (existingIndex === -1) {
@@ -1176,7 +1188,7 @@ app.post('/api/users', async (req, res) => {
                 createdAt: new Date().toISOString()
             };
             users.push(newUser);
-            saveUsers(users);
+            await saveUsers(users);
 
             // Disparar e-mail de boas-vindas da Degustação Gratuita
             sendTrialWelcomeEmail(newUser, trialExpires).catch(err => console.error('Falha assíncrona ao enviar boas-vindas da degustação:', err));
@@ -1196,9 +1208,9 @@ app.post('/api/users', async (req, res) => {
 });
 
 // Listar todos os usuários (admin)
-app.get('/api/users', requireApiKey, (req, res) => {
+app.get('/api/users', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const now = new Date();
 
         const usersList = users.map(u => {
@@ -1238,7 +1250,7 @@ app.get('/api/users', requireApiKey, (req, res) => {
 // Aprovar usuário e ativar 30 dias de assinatura mensal (admin only)
 app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const index = users.findIndex(u => u.id === req.params.id);
 
         if (index !== -1) {
@@ -1250,7 +1262,7 @@ app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
             user.expiresAt = expiresDate.toISOString();
             user.lastPaymentDate = new Date().toISOString();
             
-            saveUsers(users);
+            await saveUsers(users);
 
             // Enviar e-mail de confirmação de assinatura mensal ativada
             sendApprovalEmail(user, expiresDate).catch(err => console.error('Erro ao enviar e-mail de aprovação:', err));
@@ -1267,7 +1279,7 @@ app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
 // Renovar mensalidade (+30 dias) de um usuário (admin only)
 app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const index = users.findIndex(u => u.id === req.params.id);
 
         if (index !== -1) {
@@ -1289,7 +1301,7 @@ app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
             user.expiresAt = newExpiry.toISOString();
             user.lastPaymentDate = now.toISOString();
 
-            saveUsers(users);
+            await saveUsers(users);
 
             // Dispara e-mail de confirmação de assinatura mensal
             sendApprovalEmail(user, newExpiry).catch(err => console.error('Erro ao enviar e-mail de renovação:', err));
@@ -1306,7 +1318,7 @@ app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
 // Disparar e-mail de lembrete manualmente (admin only)
 app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const user = users.find(u => u.id === req.params.id);
 
         if (!user) {
@@ -1333,9 +1345,9 @@ app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
 });
 
 // Rota para editar usuário (admin only)
-app.put('/api/users/:id', requireApiKey, (req, res) => {
+app.put('/api/users/:id', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const index = users.findIndex(u => u.id === req.params.id);
 
         if (index !== -1) {
@@ -1353,7 +1365,7 @@ app.put('/api/users/:id', requireApiKey, (req, res) => {
                 users[index].paidAmount = Number(req.body.paidAmount) || 0;
             }
             users[index].isAdmin = req.body.isAdmin !== undefined ? req.body.isAdmin : users[index].isAdmin;
-            saveUsers(users);
+            await saveUsers(users);
             res.json({ success: true, user: users[index] });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado' });
@@ -1365,9 +1377,9 @@ app.put('/api/users/:id', requireApiKey, (req, res) => {
 });
 
 // Rota para deletar usuário (admin only)
-app.delete('/api/users/:id', requireApiKey, (req, res) => {
+app.delete('/api/users/:id', requireApiKey, async (req, res) => {
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const index = users.findIndex(u => u.id === req.params.id);
 
         if (index !== -1) {
@@ -1378,7 +1390,7 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
             }
 
             users.splice(index, 1);
-            saveUsers(users);
+            await saveUsers(users);
             res.json({ success: true });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado' });
@@ -1392,10 +1404,12 @@ app.delete('/api/users/:id', requireApiKey, (req, res) => {
 // =========================================================
 // CRON JOB: MONITORAMENTO DIÁRIO DE ASSINATURAS E DEGUSTAÇÃO (Às 08:00)
 // =========================================================
-cron.schedule('0 8 * * *', async () => {
-    console.log('[CRON] Executando verificação diária de degustação e assinaturas...');
+// [MIGRADO PARA VERCEL CRON]
+// cron.schedule('0 8 * * *', async () => {
+    async function runDailyCron() {
+    console.log('[CRON] Executando verificação diária de degustação e assinaturas via Supabase...');
     try {
-        const users = getUsers();
+        const users = await getUsers();
         const now = new Date();
         let changed = false;
 
@@ -1430,7 +1444,7 @@ cron.schedule('0 8 * * *', async () => {
         }
 
         if (changed) {
-            saveUsers(users);
+            await saveUsers(users);
             console.log('[CRON] Base de usuários atualizada com contas pausadas/expiradas.');
         }
     } catch (err) {
@@ -1611,4 +1625,5 @@ if (require.main === module) {
     });
 }
 
+app.runDailyCron = runDailyCron;
 module.exports = app;
