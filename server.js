@@ -540,6 +540,7 @@ async function saveUsers(users) {
         }
     } catch(err) {
         console.error('Erro ao salvar usuários no Supabase:', err);
+        throw err;
     }
 }
 
