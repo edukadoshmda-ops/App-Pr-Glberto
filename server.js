@@ -533,7 +533,11 @@ async function getUsers() {
 // Função para salvar usuários no banco de dados
 async function saveUsers(users) {
     try {
-        await supabase.from('users').upsert(users, { onConflict: 'email' });
+        const { error } = await supabase.from('users').upsert(users, { onConflict: 'id' });
+        if (error) {
+            console.error('Supabase upsert error:', error);
+            throw new Error(error.message);
+        }
     } catch(err) {
         console.error('Erro ao salvar usuários no Supabase:', err);
     }
@@ -1212,6 +1216,9 @@ app.post('/api/users', async (req, res) => {
 
 // Listar todos os usuários (admin)
 app.get('/api/users', requireApiKey, async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     try {
         const users = await getUsers();
         const now = new Date();
