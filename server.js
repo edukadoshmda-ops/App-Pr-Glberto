@@ -1261,7 +1261,7 @@ app.get('/api/users', requireApiKey, async (req, res) => {
 app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
-        const index = users.findIndex(u => u.id === req.params.id);
+        const index = users.findIndex(u => String(u.id) === String(req.params.id));
 
         if (index !== -1) {
             const user = users[index];
@@ -1290,7 +1290,7 @@ app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
 app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
-        const index = users.findIndex(u => u.id === req.params.id);
+        const index = users.findIndex(u => String(u.id) === String(req.params.id));
 
         if (index !== -1) {
             const user = users[index];
@@ -1329,7 +1329,7 @@ app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
 app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
-        const user = users.find(u => u.id === req.params.id);
+        const user = users.find(u => String(u.id) === String(req.params.id));
 
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -1358,7 +1358,7 @@ app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
 app.put('/api/users/:id', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
-        const index = users.findIndex(u => u.id === req.params.id);
+        const index = users.findIndex(u => String(u.id) === String(req.params.id));
 
         if (index !== -1) {
             users[index].fullName = req.body.fullName || users[index].fullName;
@@ -1390,7 +1390,7 @@ app.put('/api/users/:id', requireApiKey, async (req, res) => {
 app.delete('/api/users/:id', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
-        const index = users.findIndex(u => u.id === req.params.id);
+        const index = users.findIndex(u => String(u.id) === String(req.params.id));
 
         if (index !== -1) {
             // Não permitir excluir o super admin

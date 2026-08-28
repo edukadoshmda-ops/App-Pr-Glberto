@@ -1352,7 +1352,7 @@
         // ==========================================
         function openCustomMessageModal(userId, isBatch = false) {
             isBatchMsgMode = isBatch;
-            targetMsgUser = userId ? currentUsers.find(u => u.id === userId) : null;
+            targetMsgUser = userId ? currentUsers.find(u => String(u.id) === String(userId)) : null;
 
             const modalTitle = document.getElementById('customMsgModalTitle');
             const recipientInfo = document.getElementById('customMsgRecipientInfo');
@@ -1498,7 +1498,7 @@
         function openStatusModal(userId, targetStatus) {
             statusUserId = userId;
             newStatus = targetStatus;
-            const user = currentUsers.find(u => u.id === userId);
+            const user = currentUsers.find(u => String(u.id) === String(userId));
             const userName = user ? user.fullName : 'este usuário';
             const isActivating = targetStatus === 'approved';
 
@@ -1639,7 +1639,7 @@
 
         // Modal de Edição
         function openEditUserModal(userId) {
-            const user = currentUsers.find(u => u.id === userId);
+            const user = currentUsers.find(u => String(u.id) === String(userId));
             if (!user) return;
 
             document.getElementById('editUserId').value = user.id;
