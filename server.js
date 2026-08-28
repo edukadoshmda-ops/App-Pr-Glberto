@@ -1584,7 +1584,7 @@ app.post('/api/generate-audio', requireApiKey, (req, res) => {
     const outputPath = path.join(outputFolder, fileName);
     const tempTextPath = path.join(__dirname, `temp_${Date.now()}.txt`);
 
-    fs.writeFileSync(tempTextPath, text, 'utf-8');
+    try { fs.writeFileSync(tempTextPath, text, 'utf-8'); } catch(e) { console.warn('Vercel Read-Only File System ignorado para fs.writeFileSync'); }
 
     const pythonScript = path.join(__dirname, 'tts_generator.py');
     const command = `python "${pythonScript}" "${tempTextPath}" "${voice}" "${outputPath}"`;
