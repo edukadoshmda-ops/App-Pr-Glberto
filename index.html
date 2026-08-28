@@ -173,12 +173,13 @@
           </div>
           
           <div style="color: var(--text-muted); font-size: 16px; line-height: 1.7; display: flex; flex-direction: column; gap: 16px; background: rgba(255,255,255,0.02); padding: 32px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-            <p><strong>Gilberto Penido Bertho</strong>, filho de Arnaldo dos Santos Bertho e Ruth Penido Bertho, nasceu em Paracambi - RJ, no dia 29/06/1959. Tem cinco irmãos: Reinaldo, Aloizio, Reginaldo, Lea Consuelo e Roberto. Desses cinco irmãos, dois são Pastores, Aloizio e Reginaldo.</p>
-            <p>Por muitos anos tem percorrido o Brasil como discipulador, treinando pastores e igrejas dentro deste empolgante método de evangelismo e discipulado.</p>
-            <p>Possui os graus de Bacharel em Teologia, Educação Religiosa e Pós-Graduado em Psicanálise Clínica.</p>
-            <p>Em mais de quatro décadas de ministério, pastoreou diversas igrejas em Minas Gerais, trabalhou como missionário da CBM em parceria com a JMN. Durante seu ministério organizou a Igreja Batista Central de Três Corações, a Segunda Igreja Batista de Varginha e a Terceira Igreja Batista de Varginha. Coordenou projetos especiais de evangelização, como a Trans-Uberlândia, a Trans-Triângulo e coordenou a Campanha "Minha Esperança Brasil", da Associação Evangelística Billy Graham, em MG.</p>
-            <p>Foi diretor e professor do Seminário Teológico Batista do Triângulo Mineiro. Em 2006 foi o relator do comitê de evangelismo e missões da Convenção Batista Mineira.</p>
-            <p>Casou-se com Mara Raquel, no dia 5 de fevereiro de 1985, e desta abençoada e feliz união, nasceu seu único filho Jônatas. Pr. Gilberto também é docente do Instituto Haggai do Brasil.</p>
+            <p>Todo o recurso adquirido com essa Plataforma será usado <strong>integralmente para a obra missionária</strong>. O Pr. Gilberto desenvolve e apoia financeiramente vários trabalhos missionários em Minas Gerais e em vários estados do Brasil — e essa Plataforma foi criada para ser uma das mantenedoras desses projetos.</p>
+            <p>Não fique de fora! Aproveite essa oportunidade para <strong>semear</strong> e desfrutar de conteúdos edificantes para o seu crescimento espiritual.</p>
+            <p style="margin-top: 8px;">
+              <a href="compra.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #f5a623, #c8841a); color: #101522; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 20px rgba(245,166,35,0.35); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(245,166,35,0.5)';" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(245,166,35,0.35)';">
+                <i class="fas fa-user-plus"></i> Faça seu cadastro agora
+              </a>
+            </p>
           </div>
         </div>
       </section>
@@ -254,6 +255,29 @@
               </div>
             </div>
           </article>
+        </div>
+
+        <!-- Formulário de Testemunho -->
+        <div style="max-width: 600px; margin: 60px auto 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 40px 30px; border-radius: 16px;">
+          <h3 style="text-align: center; margin-bottom: 12px; color: #fff; font-size: 24px;">Envie seu Testemunho</h3>
+          <p style="text-align: center; color: #a1a1aa; margin-bottom: 30px; font-size: 15px;">Compartilhe conosco as bênçãos e os frutos do seu ministério.</p>
+          
+          <form id="testimonyForm" style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <label for="testNome" style="display: block; margin-bottom: 8px; color: #cbd5e1; font-weight: 500; text-align: left;">Nome Completo</label>
+              <input type="text" id="testNome" required style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit; font-size: 15px;" placeholder="Pr. João da Silva" />
+            </div>
+            <div>
+              <label for="testEmail" style="display: block; margin-bottom: 8px; color: #cbd5e1; font-weight: 500; text-align: left;">E-mail</label>
+              <input type="email" id="testEmail" required style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit; font-size: 15px;" placeholder="joao@email.com" />
+            </div>
+            <div>
+              <label for="testMsg" style="display: block; margin-bottom: 8px; color: #cbd5e1; font-weight: 500; text-align: left;">Seu Testemunho</label>
+              <textarea id="testMsg" required rows="5" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit; font-size: 15px; resize: vertical;" placeholder="Escreva aqui como o ministério tem abençoado sua vida..."></textarea>
+            </div>
+            <button type="submit" class="btn-gold" style="padding: 16px; margin-top: 10px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; font-size: 16px; transition: transform 0.2s;">Enviar Testemunho</button>
+            <div id="testimonyFeedback" style="display: none; text-align: center; padding: 12px; border-radius: 8px; margin-top: 10px; font-weight: 500;"></div>
+          </form>
         </div>
       </section>
 
@@ -345,5 +369,54 @@
       });
     </script>
       <script src="global-theme.js"></script>
+      
+      <!-- Script do Formulário de Testemunho -->
+      <script>
+        document.getElementById('testimonyForm')?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const form = e.target;
+          const btn = form.querySelector('button[type="submit"]');
+          const feedback = document.getElementById('testimonyFeedback');
+          
+          const nome = document.getElementById('testNome').value;
+          const email = document.getElementById('testEmail').value;
+          const mensagem = document.getElementById('testMsg').value;
+          
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+          feedback.style.display = 'none';
+
+          try {
+            const res = await fetch('/api/testimony', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ nome, email, mensagem })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+              feedback.textContent = 'Obrigado! Seu testemunho foi enviado com sucesso para o Pr. Gilberto.';
+              feedback.style.background = 'rgba(37, 211, 102, 0.2)';
+              feedback.style.color = '#25D366';
+              feedback.style.border = '1px solid rgba(37, 211, 102, 0.5)';
+              feedback.style.display = 'block';
+              form.reset();
+            } else {
+              throw new Error(data.error || 'Erro ao enviar.');
+            }
+          } catch (err) {
+            feedback.textContent = 'Ocorreu um erro ao enviar. Tente novamente mais tarde.';
+            feedback.style.background = 'rgba(239, 68, 68, 0.2)';
+            feedback.style.color = '#ef4444';
+            feedback.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+            feedback.style.display = 'block';
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Enviar Testemunho';
+          }
+        });
+      </script>
 </body>
 </html>

@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
-      <link rel="stylesheet" href="theme-light-all.css">
+    <link rel="stylesheet" href="theme-light-all.css">
     <script src="auth-permissions.js"></script>
-</head>
+  </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
@@ -86,29 +86,36 @@
           </button>
         </header>
 
-        <section class="stats-row">
+        <!-- STATS: cards visíveis para todos; números apenas para admin -->
+        <section class="stats-row" id="statsRow" style="grid-template-columns: repeat(5, 1fr);">
           <article class="stat-card accent-green">
-            <span>Projetos ativos</span>
-            <strong>18</strong>
-            <small>+12% este mês</small>
+            <span>Audio Books</span>
+            <strong id="statAudiobooks" style="display:none;">5</strong>
+            <small id="statAudiobooksSub" style="display:none;">títulos disponíveis</small>
           </article>
 
           <article class="stat-card accent-gold">
             <span>Play Books</span>
-            <strong>46</strong>
-            <small>+8 títulos</small>
+            <strong id="statPlaybooks" style="display:none;">6</strong>
+            <small id="statPlaybooksSub" style="display:none;">títulos disponíveis</small>
           </article>
 
           <article class="stat-card accent-blue">
             <span>Artigos</span>
-            <strong>29</strong>
-            <small>+15 artigos</small>
+            <strong id="statArtigos" style="display:none;">1</strong>
+            <small id="statArtigosSub" style="display:none;">publicados</small>
           </article>
 
           <article class="stat-card accent-dark">
-            <span>Relatórios</span>
-            <strong>94%</strong>
-            <small>Meta concluída</small>
+            <span>Vídeos</span>
+            <strong id="statVideos" style="display:none;">5</strong>
+            <small id="statVideosSub" style="display:none;">disponíveis</small>
+          </article>
+          
+          <article class="stat-card accent-green" style="border-color: rgba(37, 211, 102, 0.3);">
+            <span>Usuários</span>
+            <strong id="statUsuarios" style="display:none;">2</strong>
+            <small id="statUsuariosSub" style="display:none;">cadastrados</small>
           </article>
         </section>
 
@@ -147,7 +154,26 @@
     </div>
 
     <script src="script.js"></script>
-      <script src="global-theme.js"></script>
-</body>
-</html>
+    <script src="global-theme.js"></script>
 
+    <script>
+      // Controla a visibilidade dos números — apenas para admin
+      function loadDashboardStats() {
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+        if (!isAdmin) return; // usuário comum: cards sem números
+
+        // Exibe números + subtítulos somente para admin
+        ['statAudiobooks','statAudiobooksSub',
+         'statPlaybooks','statPlaybooksSub',
+         'statArtigos','statArtigosSub',
+         'statVideos','statVideosSub',
+         'statUsuarios','statUsuariosSub'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = '';
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', loadDashboardStats);
+    </script>
+  </body>
+</html>

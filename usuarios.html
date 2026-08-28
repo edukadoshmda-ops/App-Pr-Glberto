@@ -1229,6 +1229,10 @@
                                 <button class="btn-action btn-activate" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.35); color: #25D366;" onclick="renewUserSubscription('${user.id}')" title="Adicionar +30 dias de acesso via PIX">
                                     <i class="fas fa-plus-circle"></i> +30d PIX
                                 </button>
+
+                                <button class="btn-action" style="background: ${isApproved ? 'rgba(239,68,68,0.15)' : 'rgba(37,211,102,0.15)'}; border: 1px solid ${isApproved ? 'rgba(239,68,68,0.35)' : 'rgba(37,211,102,0.35)'}; color: ${isApproved ? '#ef4444' : '#25D366'};" onclick="openStatusModal('${user.id}', '${isApproved ? 'pending' : 'approved'}')" title="${isApproved ? 'Pausar acesso' : 'Ativar acesso'}">
+                                    <i class="fas ${isApproved ? 'fa-pause-circle' : 'fa-play-circle'}"></i> ${isApproved ? 'Pausar' : 'Ativar'}
+                                </button>
                                 
                                 <button class="btn-action" style="background: rgba(205, 164, 81, 0.15); border: 1px solid rgba(205, 164, 81, 0.3); color: #cda451;" onclick="sendUserReminderEmail('${user.id}')" title="Enviar e-mail oficial de renovação via Gmail">
                                     <i class="fas fa-envelope"></i>
@@ -1486,6 +1490,66 @@
             const rawText = document.getElementById('customMsgTextarea').value;
             const userMsg = formatCustomMessageForUser(rawText, targetMsgUser);
             window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(userMsg)}`, '_blank');
+        }
+
+        // ==========================================
+        // MODAL DE ATIVAR / PAUSAR
+        // ==========================================
+        function openStatusModal(userId, targetStatus) {
+            statusUserId = userId;
+            newStatus = targetStatus;
+            const user = currentUsers.find(u => u.id === userId);
+            const userName = user ? user.fullName : 'este usuário';
+            const isActivating = targetStatus === 'approved';
+
+            document.getElementById('statusModalTitle').textContent = isActivating ? '✅ Ativar Acesso' : '⏸ Pausar Acesso';
+            document.getElementById('statusModalMessage').textContent = isActivating
+                ? `Deseja ATIVAR o acesso de ${userName}? Ele poderá fazer login normalmente na plataforma.`
+                : `Deseja PAUSAR o acesso de ${userName}? Ele não conseguirá mais fazer login até ser reativado.`;
+
+            const confirmBtn = document.querySelector('#statusModal .btn-modal-confirm');
+            if (confirmBtn) {
+                confirmBtn.style.background = isActivating
+                    ? 'linear-gradient(135deg, #25D366, #128C7E)'
+                    : 'linear-gradient(135deg, #ef4444, #b91c1c)';
+                confirmBtn.textContent = isActivating ? 'Ativar Acesso' : 'Pausar Acesso';
+            }
+
+            document.getElementById('statusModal').classList.add('active');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            statusUserId = null;
+            newStatus = null;
+        }
+
+        async function confirmStatusChange() {
+            if (!statusUserId || !newStatus) return;
+
+            try {
+                const response = await fetch(`/api/users/${statusUserId}?apiKey=${API_KEY}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': API_KEY
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    closeStatusModal();
+                    loadUsers();
+                    const msg = newStatus === 'approved' ? 'Acesso ATIVADO com sucesso!' : 'Acesso PAUSADO com sucesso!';
+                    alert(msg);
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao alterar status.');
+                }
+            } catch (err) {
+                console.error('Erro ao alterar status:', err);
+                alert('Erro de conexão ao alterar status.');
+            }
         }
 
         // ==========================================

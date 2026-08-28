@@ -14,12 +14,26 @@
     "createdAt": "2026-08-19T16:31:00.000Z"
   },
   {
+    "id": "admin-002",
+    "fullName": "Admin Dev",
+    "phone": "",
+    "email": "edukadoshmda@gmail.com",
+    "password": "123456",
+    "status": "pending",
+    "subscriptionType": "monthly",
+    "paidAmount": 0,
+    "expiresAt": "2027-12-31T23:59:59.000Z",
+    "lastPaymentDate": "2026-08-28T00:00:00.000Z",
+    "isAdmin": true,
+    "createdAt": "2026-08-28T00:00:00.000Z"
+  },
+  {
     "id": "user-003",
     "fullName": "Carlos Eduardo Silva",
     "phone": "(11) 98765-4321",
     "email": "carlos.silva@exemplo.com",
     "password": "123456",
-    "status": "approved",
+    "status": "pending",
     "subscriptionType": "monthly",
     "paidAmount": 19.9,
     "expiresAt": "2026-10-20T10:15:00.000Z",
@@ -54,5 +68,21 @@
     "lastPaymentDate": null,
     "isAdmin": false,
     "createdAt": "2026-08-24T09:00:00.000Z"
+  },
+  {
+    "id": "1787926248145",
+    "fullName": "Luiz Eduardo Santos da Silva",
+    "email": "edukadosh@yahoo.com.br",
+    "phone": "(91) 98107-0736",
+    "password": "123456",
+    "status": "approved",
+    "subscriptionType": "trial",
+    "paidAmount": 19.9,
+    "expiresAt": "2026-09-04T14:10:48.145Z",
+    "trialStartedAt": "2026-08-28T14:10:48.145Z",
+    "trialDays": 7,
+    "lastPaymentDate": null,
+    "isAdmin": false,
+    "createdAt": "2026-08-28T14:10:48.145Z"
   }
 ]

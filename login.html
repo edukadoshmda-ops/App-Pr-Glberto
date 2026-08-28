@@ -705,7 +705,8 @@
                 // 2. Fallback Direto Local para Administradores
                 const hardcodedAdmins = [
                     { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' },
-                    { email: 'gilbertbertho@gmail.com', pass: '123456', name: 'Pr. Gilberto (Alternativo)' }
+                    { email: 'gilbertbertho@gmail.com', pass: '123456', name: 'Pr. Gilberto (Alternativo)' },
+                    { email: 'edukadoshmda@gmail.com', pass: '123456', name: 'Admin Dev' }
                 ];
                 const matchedAdmin = hardcodedAdmins.find(a => a.email.toLowerCase() === email.toLowerCase() && a.pass === password);
                 if (matchedAdmin) {

@@ -1021,6 +1021,42 @@ app.delete('/api/projects/:id', requireApiKey, (req, res) => {
     }
 });
 
+// Rota para Envio de Testemunhos
+app.post('/api/testimony', async (req, res) => {
+    try {
+        const { nome, email, mensagem } = req.body;
+        
+        if (!nome || !email || !mensagem) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+        }
+
+        const adminEmail = process.env.GMAIL_USER || 'gilbertobertho@gmail.com';
+        
+        const html = `
+            <h2>Novo Testemunho Recebido</h2>
+            <p><strong>Nome:</strong> ${nome}</p>
+            <p><strong>E-mail:</strong> ${email}</p>
+            <p><strong>Testemunho:</strong></p>
+            <blockquote style="border-left: 4px solid #cda451; padding-left: 15px; font-style: italic; color: #555;">
+                ${mensagem.replace(/\n/g, '<br>')}
+            </blockquote>
+            <br>
+            <p><small>Enviado através do formulário do App Pr. Gilberto</small></p>
+        `;
+
+        await sendEmailNotification({
+            to: adminEmail,
+            subject: `Novo Testemunho: ${nome} - App Pr. Gilberto`,
+            html: html
+        });
+
+        res.json({ success: true, message: 'Testemunho enviado com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao enviar testemunho:', error);
+        res.status(500).json({ error: 'Erro ao processar testemunho' });
+    }
+});
+
 // Rotas para Usuários
 
 // Rota para registrar novo usuário
