@@ -1450,7 +1450,7 @@ app.delete('/api/users/:id', requireApiKey, async (req, res) => {
     } catch (err) {
         console.error('[CRON ERRO] Falha ao verificar assinaturas e degustação:', err);
     }
-});
+}
 
 // Rota para upload de conteúdo (vídeo ou artigo)
 const contentStorage = multer.diskStorage({
