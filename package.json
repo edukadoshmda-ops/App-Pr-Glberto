@@ -2,9 +2,7 @@
   "name": "eliteflow-backend",
   "version": "1.0.0",
   "description": "Backend para sistema de upload de vídeos EliteFlow",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
