@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+let supabase = null; try { supabase = createClient(process.env.SUPABASE_URL || 'a', process.env.SUPABASE_ANON_KEY || 'a'); } catch(e) { console.error('SUPABASE INIT ERROR:', e.message); }
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -302,7 +302,7 @@ const pdfsDir = path.join(assetsDir, 'artigos', 'pdfs'); // Pasta para PDFs de a
 
 [assetsDir, videosDir, coversDir, articlesDir, projectsDir, pdfsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+        try { fs.mkdirSync(dir, { recursive: true }); } catch(e) { console.warn('Vercel Read-Only File System ignorado para fs.mkdirSync'); }
     }
 });
 
@@ -455,7 +455,7 @@ const usersDbPath = path.join(__dirname, 'database', 'users.json');
 // Criar pasta database se não existir
 const dbDir = path.join(__dirname, 'database');
 if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
+    try { fs.mkdirSync(dbDir, { recursive: true }); } catch(e) { console.warn('Vercel Read-Only File System ignorado para fs.mkdirSync'); }
 }
 
 // Inicializar banco de dados se não existir
@@ -1576,7 +1576,7 @@ app.post('/api/generate-audio', requireApiKey, (req, res) => {
 
     const outputFolder = path.join(__dirname, 'assets', 'audiobooks', targetBookId);
     if (!fs.existsSync(outputFolder)) {
-        fs.mkdirSync(outputFolder, { recursive: true });
+        try { fs.mkdirSync(outputFolder, { recursive: true }); } catch(e) { console.warn('Vercel Read-Only File System ignorado para fs.mkdirSync'); }
     }
 
     // Usar trackName.mp3 caso o usuario não passe a extensão, senão usar do jeito que vier
