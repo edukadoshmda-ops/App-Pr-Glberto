@@ -1117,7 +1117,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'E-mail ou senha incorretos' });
         }
 
-        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
+        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com', 'edukadoshmda@gmail.com'];
         const isAdmin = user.isAdmin || adminEmails.includes(user.email.toLowerCase());
 
         // Verificar validade de assinatura / degustação para não-administradores
