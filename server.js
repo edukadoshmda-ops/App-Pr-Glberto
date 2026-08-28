@@ -282,7 +282,7 @@ async function sendRenewalReminderEmail(user, daysRemaining) {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(__dirname));
 
 // Autenticação simples via X-API-KEY
 function requireApiKey(req, res, next) {
