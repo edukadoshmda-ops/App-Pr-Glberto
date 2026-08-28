@@ -460,19 +460,19 @@ if (!fs.existsSync(dbDir)) {
 
 // Inicializar banco de dados se não existir
 if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, JSON.stringify([]));
+    try { fs.writeFileSync(dbPath, JSON.stringify([])); } catch(e) { }
 }
 
 if (!fs.existsSync(articlesDbPath)) {
-    fs.writeFileSync(articlesDbPath, JSON.stringify([]));
+    try { fs.writeFileSync(articlesDbPath, JSON.stringify([])); } catch(e) { }
 }
 
 if (!fs.existsSync(projectsDbPath)) {
-    fs.writeFileSync(projectsDbPath, JSON.stringify([]));
+    try { fs.writeFileSync(projectsDbPath, JSON.stringify([])); } catch(e) { }
 }
 
 if (!fs.existsSync(usersDbPath)) {
-    fs.writeFileSync(usersDbPath, JSON.stringify([]));
+    try { fs.writeFileSync(usersDbPath, JSON.stringify([])); } catch(e) { }
 }
 
 // Função para ler vídeos do banco de dados
@@ -512,8 +512,8 @@ const audiobooksDbPath = path.join(__dirname, 'database', 'audiobooks.json');
 const playbooksDbPath = path.join(__dirname, 'database', 'playbooks.json');
 
 // Garante que os arquivos existam
-if (!fs.existsSync(audiobooksDbPath)) fs.writeFileSync(audiobooksDbPath, JSON.stringify([]));
-if (!fs.existsSync(playbooksDbPath)) fs.writeFileSync(playbooksDbPath, JSON.stringify([]));
+if (!fs.existsSync(audiobooksDbPath)) try { fs.writeFileSync(audiobooksDbPath, JSON.stringify([])); } catch(e) { }
+if (!fs.existsSync(playbooksDbPath)) try { fs.writeFileSync(playbooksDbPath, JSON.stringify([])); } catch(e) { }
 
 // Função para ler usuários do banco de dados
 async function getUsers() {
