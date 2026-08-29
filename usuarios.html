@@ -1528,8 +1528,8 @@
             if (!statusUserId || !newStatus) return;
 
             try {
-                const response = await fetch(`/api/users/${statusUserId}?apiKey=${API_KEY}`, {
-                    method: 'PUT',
+                const response = await fetch(`/api/users/${statusUserId}/status?apiKey=${API_KEY}`, {
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-api-key': API_KEY

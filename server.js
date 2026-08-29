@@ -518,22 +518,45 @@ const playbooksDbPath = path.join(__dirname, 'database', 'playbooks.json');
 if (!fs.existsSync(audiobooksDbPath)) try { fs.writeFileSync(audiobooksDbPath, JSON.stringify([])); } catch(e) { }
 if (!fs.existsSync(playbooksDbPath)) try { fs.writeFileSync(playbooksDbPath, JSON.stringify([])); } catch(e) { }
 
-// Função para ler usuários do banco de dados
 async function getUsers() {
     try {
         const { data, error } = await supabase.from('users').select('*');
         if (error) throw error;
-        return data || [];
+        
+        return (data || []).map(u => ({
+            id: u.id,
+            fullName: u.name || u.fullName || 'Usuário',
+            email: u.email,
+            phone: u.phone,
+            password: u.password,
+            status: u.status || 'pending',
+            subscriptionType: u.subscriptionType || 'trial',
+            expiresAt: u.subscriptionExpires || u.expiresAt || null,
+            isAdmin: u.role === 'admin' || u.isAdmin || false,
+            paidAmount: u.paidAmount || 19.90,
+            createdAt: u.created_at || new Date().toISOString()
+        }));
     } catch(err) {
         console.error('Erro ao buscar usuários do Supabase:', err);
         return [];
     }
 }
 
-// Função para salvar usuários no banco de dados
-async function saveUsers(users) {
+async function saveUsers(usersArray) {
     try {
-        const { error } = await supabase.from('users').upsert(users, { onConflict: 'id' });
+        const dataToUpsert = usersArray.map(u => ({
+            id: u.id,
+            name: u.fullName,
+            email: u.email,
+            password: u.password || '123456',
+            phone: u.phone,
+            status: u.status,
+            subscriptionType: u.subscriptionType,
+            subscriptionExpires: u.expiresAt,
+            role: u.isAdmin ? 'admin' : 'user'
+        }));
+        
+        const { error } = await supabase.from('users').upsert(dataToUpsert, { onConflict: 'id' });
         if (error) {
             console.error('Supabase upsert error:', error);
             throw new Error(error.message);
@@ -1384,6 +1407,29 @@ app.put('/api/users/:id', requireApiKey, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao editar usuário' });
+    }
+});
+
+// Rota para pausar/ativar usuário (alterar status)
+app.put('/api/users/:id/status', requireApiKey, async (req, res) => {
+    try {
+        const users = await getUsers();
+        const index = users.findIndex(u => String(u.id) === String(req.params.id));
+
+        if (index !== -1) {
+            const { status } = req.body;
+            if (!['pending', 'approved', 'expired', 'inativo'].includes(status)) {
+                return res.status(400).json({ error: 'Status inválido' });
+            }
+            users[index].status = status;
+            await saveUsers(users);
+            res.json({ success: true, user: users[index] });
+        } else {
+            res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+    } catch (error) {
+        console.error('Erro ao alterar status:', error);
+        res.status(500).json({ error: 'Erro ao alterar status do usuário' });
     }
 });
 
