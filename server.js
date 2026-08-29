@@ -1150,16 +1150,10 @@ app.post('/api/login', async (req, res) => {
 
         // Verificar validade de assinatura / degustação para não-administradores
         if (!isAdmin) {
-            if (user.status === 'pending') {
-                return res.status(403).json({ error: 'Acesso pendente de liberação. Entre em contato com o suporte.' });
-            }
-
             if (user.expiresAt) {
                 const expiresDate = new Date(user.expiresAt);
                 const now = new Date();
                 if (expiresDate < now) {
-                    user.status = 'expired';
-                    await saveUsers(users);
                     const isTrial = user.subscriptionType === 'trial';
                     return res.status(403).json({ 
                         error: isTrial 
