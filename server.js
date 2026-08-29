@@ -1176,7 +1176,7 @@ app.post('/api/login', async (req, res) => {
                 phone: user.phone,
                 isAdmin: isAdmin,
                 status: user.status || 'approved',
-                subscriptionType: user.subscriptionType || 'monthly',
+                subscriptionType: user.subscriptionType || (isAdmin ? 'monthly' : 'trial'),
                 expiresAt: user.expiresAt || null,
                 createdAt: user.createdAt
             }
@@ -1260,7 +1260,7 @@ app.get('/api/users', requireApiKey, async (req, res) => {
                 phone: u.phone,
                 email: u.email,
                 status: isExpired ? 'expired' : (u.status || 'approved'),
-                subscriptionType: u.subscriptionType || 'monthly',
+                subscriptionType: u.subscriptionType || (u.isAdmin ? 'monthly' : 'trial'),
                 paidAmount: u.paidAmount !== undefined ? Number(u.paidAmount) : 19.90,
                 expiresAt: u.expiresAt || null,
                 daysRemaining: daysRemaining,

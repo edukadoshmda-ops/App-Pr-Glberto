@@ -529,6 +529,16 @@
                 }
 
                 const playAudio = () => {
+                  if (window.AppPermissions && typeof window.AppPermissions.checkItemAccess === 'function') {
+                    if (!window.AppPermissions.checkItemAccess('audiobook', ab.id, -1)) {
+                      return;
+                    }
+                  } else if (typeof checkAccess === 'function') {
+                    if (!checkAccess(ab.id, 'audiobook')) {
+                      return;
+                    }
+                  }
+
                   if (!audioUrl) {
                     alert('Link de áudio não disponível para: ' + ab.title);
                     return;

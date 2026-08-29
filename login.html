@@ -685,6 +685,7 @@
                         const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
                         const isAdmin = data.user.isAdmin || adminEmails.includes(email.toLowerCase());
                         const status = isAdmin ? 'approved' : (data.user.status || 'approved');
+                        const subType = isAdmin ? 'monthly' : (data.user.subscriptionType || 'trial');
 
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email);
@@ -693,7 +694,7 @@
                         localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
                         localStorage.setItem('userStatus', status);
                         localStorage.setItem('userExpiresAt', data.user.expiresAt || '');
-                        localStorage.setItem('subscriptionType', data.user.subscriptionType || 'monthly');
+                        localStorage.setItem('subscriptionType', subType);
                         localStorage.setItem('userCreatedAt', data.user.createdAt || new Date().toISOString());
                         window.location.href = 'dashboard.html';
                         return;

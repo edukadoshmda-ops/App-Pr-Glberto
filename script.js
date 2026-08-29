@@ -145,40 +145,45 @@ const zoomValueElement =
    ABRIR LIVRO
 ========================================================= */
 
-function checkAccess(itemId, moduleType = 'playbooks') {
+function checkAccess(itemId, moduleType = 'playbooks', itemIndex = -1) {
   if (window.AppPermissions && typeof window.AppPermissions.checkItemAccess === 'function') {
-    return window.AppPermissions.checkItemAccess(moduleType, itemId);
+    return window.AppPermissions.checkItemAccess(moduleType, itemId, itemIndex);
   }
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  const status = localStorage.getItem('userStatus') || 'approved';
+  const subType = (localStorage.getItem('subscriptionType') || '').toLowerCase().trim();
+  const isSub = (localStorage.getItem('isSubscriber') === 'true' || subType === 'monthly' || subType === 'subscriber' || subType === 'paid') && subType !== 'trial';
   
-  if (isAdmin || status === 'approved') return true;
+  if (isAdmin || isSub) return true;
 
-  const createdAtStr = localStorage.getItem('userCreatedAt');
+  const createdAtStr = localStorage.getItem('userCreatedAt') || localStorage.getItem('loginDate');
   const createdAt = createdAtStr ? new Date(createdAtStr) : new Date();
-  const daysSinceRegistration = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
+  const daysPassed = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24));
   
-  if (daysSinceRegistration <= 7) {
-    if (itemId !== 'lideranca' && itemId !== 'habitos') {
-      if (window.AppPermissions && typeof window.AppPermissions.showAccessModal === 'function') {
-        window.AppPermissions.showAccessModal(
-          'Item Bloqueado na Degustação Grátis (7 Dias)',
-          'Durante os 7 dias de degustação grátis, você tem 1 item liberado neste módulo e todos os vídeos liberados. Assine o plano para desbloquear todos os conteúdos!'
-        );
-      } else {
-        alert('Acesso restrito. Durante o período de teste de 7 dias, apenas 1 item está liberado para degustação. Adquira o plano completo para acesso total!');
-      }
-      return false;
+  if (daysPassed <= 7 && localStorage.getItem('userStatus') !== 'expired') {
+    const strId = String(itemId || '').toLowerCase();
+    if (moduleType === 'videos') return true;
+    if (moduleType === 'audiobook' && strId === 'lideranca') return true;
+    if (moduleType === 'playbooks' && strId === 'lideranca') return true;
+    if (moduleType === 'artigos' && strId === 'artigo-01') return true;
+
+    if (window.AppPermissions && typeof window.AppPermissions.showAccessModal === 'function') {
+      window.AppPermissions.showAccessModal(
+        'Item Bloqueado na Degustação Grátis (7 Dias)',
+        'Durante a degustação de 7 dias grátis, você tem 1 item liberado neste módulo e todos os vídeos 100% liberados. Assine o plano para desbloquear todos os conteúdos!'
+      );
+    } else {
+      alert('Durante a degustação de 7 dias grátis, apenas 1 item deste módulo está liberado. Assine o plano completo por R$ 19,90/mês para acesso total!');
     }
-    return true;
+    return false;
   }
   
-  alert('Seu período de teste de 7 dias expirou. Adquira o acesso Premium para continuar usando.');
+  alert('Seu período de degustação de 7 dias expirou. Assine o plano mensal por R$ 19,90 via PIX para reativar seu acesso.');
   return false;
 }
 
-async function openBookViewer(bookId) {
-  if (!checkAccess(bookId)) return;
+async function openBookViewer(bookId, moduleType = 'playbooks', itemIndex = -1) {
+  const actualModule = String(bookId || '').startsWith('dynamic_art_') ? 'artigos' : moduleType;
+  if (!checkAccess(bookId, actualModule, itemIndex)) return;
 
   if (!books[bookId]) {
 

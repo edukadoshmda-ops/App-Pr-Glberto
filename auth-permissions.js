@@ -28,14 +28,27 @@
 
     function isSubscriber() {
         if (isUserAdmin()) return true;
+        const subType = (localStorage.getItem('subscriptionType') || '').toLowerCase().trim();
+        const isSubFlag = localStorage.getItem('isSubscriber') === 'true' || localStorage.getItem('hasPaidPlan') === 'true';
         const status = localStorage.getItem('userStatus');
-        const isSub = localStorage.getItem('isSubscriber') === 'true' || localStorage.getItem('hasPaidPlan') === 'true';
-        return isSub && status === 'approved';
+        
+        // Se for explicitamente degustação (trial), NÃO é assinante completo
+        if (subType === 'trial') return false;
+
+        return (isSubFlag || subType === 'monthly' || subType === 'subscriber' || subType === 'paid') && status === 'approved';
     }
 
     function getTrialStatus() {
-        if (isUserAdmin() || isSubscriber()) {
-            return { isTrial: false, isExpired: false, daysRemaining: 7, isSubscriber: true };
+        if (isUserAdmin()) {
+            return { isTrial: false, isExpired: false, daysRemaining: 999, isSubscriber: true, isAdmin: true };
+        }
+        if (isSubscriber()) {
+            return { isTrial: false, isExpired: false, daysRemaining: 30, isSubscriber: true, isAdmin: false };
+        }
+
+        const status = localStorage.getItem('userStatus');
+        if (status === 'expired') {
+            return { isTrial: false, isExpired: true, daysRemaining: 0, isSubscriber: false, isAdmin: false };
         }
 
         const createdAtStr = localStorage.getItem('userCreatedAt') || localStorage.getItem('loginDate');
@@ -50,7 +63,8 @@
             isTrial: !isExpired,
             isExpired: isExpired,
             daysRemaining: daysRemaining,
-            isSubscriber: false
+            isSubscriber: false,
+            isAdmin: false
         };
     }
 
@@ -60,7 +74,7 @@
      * @param {string|number} itemIdentifier ID do item
      * @param {number} itemIndex Índice do item na lista (0-based)
      */
-    function checkItemAccess(moduleType, itemIdentifier, itemIndex = 0) {
+    function checkItemAccess(moduleType, itemIdentifier, itemIndex = -1) {
         if (isUserAdmin() || isSubscriber()) return true;
 
         const trial = getTrialStatus();
@@ -68,46 +82,62 @@
         if (trial.isExpired) {
             showAccessModal(
                 'Período de Degustação Encerrado',
-                'Seu período de teste grátis de 7 dias encerrou. Adquira o acesso completo para continuar aproveitando todos os conteúdos exclusivos do Pr. Gilberto Penido Bertho!'
+                'Seu período de teste grátis de 7 dias encerrou. Assine o plano mensal de R$ 19,90 via PIX para reativar seu acesso completo a todo o acervo!'
             );
             return false;
         }
 
-        // Durante o período de degustação (7 dias grátis):
-        // 1. Vídeos: TODOS LIBERADOS
+        // ==========================================
+        // REGRAS DA DEGUSTAÇÃO (7 DIAS GRÁTIS):
+        // ==========================================
+        // 1. Vídeos: 100% LIBERADOS para todos os vídeos
         if (moduleType === 'videos') {
             return true;
         }
 
-        // 2. Audiobook, Play Books, Artigos: Libera SOMENTE 1 item (item de degustação liberado)
-        let isFirstItem = false;
+        const strId = String(itemIdentifier || '').toLowerCase().trim();
+
+        // 2. Audio Book: Libera SOMENTE 1 item de demonstração (Liderança / ID lideranca / index 0)
         if (moduleType === 'audiobook') {
-            isFirstItem = (itemIdentifier === 'lideranca' || itemIndex === 0);
-        } else if (moduleType === 'playbooks') {
-            isFirstItem = (itemIdentifier === 'lideranca' || itemIdentifier === 'habitos' || itemIndex === 0);
-        } else if (moduleType === 'artigos') {
-            isFirstItem = (itemIndex === 0 || itemIdentifier === 'artigo-01');
-        } else {
-            isFirstItem = (itemIndex === 0);
+            const isFirstAudio = (strId === 'lideranca' || (itemIndex === 0 && !strId.includes('discipulado') && !strId.includes('habito') && !strId.includes('jonas') && !strId.includes('eu sou')));
+            if (isFirstAudio) return true;
+
+            showAccessModal(
+                'Audiobook Exclusivo para Assinantes',
+                'Durante a degustação de 7 dias grátis, você tem acesso liberado a <strong>1 Audiobook de demonstração (Liderança)</strong> e a <strong>todos os Vídeos</strong>.<br><br>Para ouvir todos os Audiobooks completos, assine o plano por apenas <strong>R$ 19,90/mês</strong>!'
+            );
+            return false;
         }
 
-        if (isFirstItem) {
+        // 3. Play Books: Libera SOMENTE 1 Playbook/PDF de demonstração (Liderança / ID lideranca / index 0)
+        if (moduleType === 'playbooks') {
+            const isFirstBook = (strId === 'lideranca' || (itemIndex === 0 && !strId.includes('habito') && !strId.includes('inconformado') && !strId.includes('discipulado') && !strId.includes('eu-sou')));
+            if (isFirstBook) return true;
+
+            showAccessModal(
+                'Playbook Exclusivo para Assinantes',
+                'Durante a degustação de 7 dias grátis, você tem acesso liberado a <strong>1 Playbook de demonstração (Os 5 Níveis da Liderança Cristã)</strong> e a <strong>todos os Vídeos</strong>.<br><br>Para desbloquear todos os Playbooks e PDFs, assine o plano por apenas <strong>R$ 19,90/mês</strong>!'
+            );
+            return false;
+        }
+
+        // 4. Artigos: Libera SOMENTE 1 Artigo de demonstração (artigo-01 / index 0)
+        if (moduleType === 'artigos') {
+            const isFirstArticle = (strId === 'artigo-01' || (itemIndex === 0 && !strId.includes('artigo-02') && !strId.includes('artigo-03') && !strId.includes('artigo-04')));
+            if (isFirstArticle) return true;
+
+            showAccessModal(
+                'Artigo Exclusivo para Assinantes',
+                'Durante a degustação de 7 dias grátis, você tem acesso liberado a <strong>1 Artigo de demonstração</strong> e a <strong>todos os Vídeos</strong>.<br><br>Para ler todos os artigos na íntegra, assine o plano completo por <strong>R$ 19,90/mês</strong>!'
+            );
+            return false;
+        }
+
+        // Páginas públicas ou livres
+        if (moduleType === 'configuracoes' || moduleType === 'apoio') {
             return true;
         }
 
-        const moduleNames = {
-            'audiobook': 'Audiobooks',
-            'playbooks': 'Play Books',
-            'artigos': 'Artigos',
-            'projetos': 'Projetos'
-        };
-
-        const moduleName = moduleNames[moduleType] || 'Conteúdo';
-
-        showAccessModal(
-            'Item Bloqueado na Degustação Grátis (7 Dias)',
-            `Durante a degustação de 7 dias grátis, você tem <strong>acesso liberado a 1 ${moduleName.slice(0, -1)} de demonstração</strong> e a <strong>todos os Vídeos</strong>.<br><br>Para desbloquear todos os ${moduleName}, assine o plano completo da plataforma!`
-        );
         return false;
     }
 

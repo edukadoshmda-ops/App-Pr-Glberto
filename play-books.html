@@ -289,7 +289,7 @@
 
 
           if (playbooks && playbooks.length > 0 && grid) {
-            playbooks.forEach(pb => {
+            playbooks.forEach((pb, pbIndex) => {
               if (typeof books !== 'undefined' && !books[pb.id]) {
                 books[pb.id] = { title: pb.title, files: [pb.contentUrl] };
               }
@@ -309,7 +309,7 @@
                     <span class="tag tag-gold">PDF</span>
                   </div>
                   <p>${pb.description || 'Novo playbook adicionado.'}</p>
-                  <button class="secondary-btn" onclick="openPlaybookEmbed('${encodeURIComponent(embedUrl || '')}','${encodeURIComponent(pb.contentUrl || '')}','${encodeURIComponent(pb.title || '')}')">Ler PDF</button>
+                  <button class="secondary-btn" onclick="openPlaybookEmbed('${encodeURIComponent(embedUrl || '')}','${encodeURIComponent(pb.contentUrl || '')}','${encodeURIComponent(pb.title || '')}', '${pb.id}', ${pbIndex})">Ler PDF</button>
                 </div>
               `;
               grid.prepend(card);
@@ -321,7 +321,17 @@
       }
 
       // Abre PDF — tenta PDF.js (controles de página) primeiro, fallback p/ Drive iframe
-      async function openPlaybookEmbed(embedUrlEncoded, rawUrlEncoded, titleEncoded) {
+      async function openPlaybookEmbed(embedUrlEncoded, rawUrlEncoded, titleEncoded, pbId, pbIndex = -1) {
+        if (window.AppPermissions && typeof window.AppPermissions.checkItemAccess === 'function') {
+          if (!window.AppPermissions.checkItemAccess('playbooks', pbId, pbIndex)) {
+            return;
+          }
+        } else if (typeof checkAccess === 'function') {
+          if (!checkAccess(pbId, 'playbooks', pbIndex)) {
+            return;
+          }
+        }
+
         const embedUrl = decodeURIComponent(embedUrlEncoded);
         const rawUrl   = decodeURIComponent(rawUrlEncoded);
         const title    = decodeURIComponent(titleEncoded);
@@ -336,7 +346,7 @@
           books[bookId] = { title: title, files: [rawUrl] };
 
           try {
-            await openBookViewer(bookId);
+            await openBookViewer(bookId, 'playbooks', 0);
           } catch (err) {
             console.warn('PDF.js falhou, tentando iframe Drive:', err.message || err);
             // Fallback: abre no iframe do Drive se for Google Drive
