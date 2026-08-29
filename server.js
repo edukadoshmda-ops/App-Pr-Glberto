@@ -1446,8 +1446,17 @@ app.delete('/api/users/:id', requireApiKey, async (req, res) => {
                 return res.status(403).json({ error: 'Não é possível excluir o super admin' });
             }
 
-            users.splice(index, 1);
-            await saveUsers(users);
+            // Deletar diretamente do Supabase
+            const { error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', req.params.id);
+                
+            if (error) {
+                console.error('Erro no Supabase ao deletar:', error);
+                throw error;
+            }
+
             res.json({ success: true });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado' });
