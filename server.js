@@ -1411,7 +1411,7 @@ app.put('/api/users/:id', requireApiKey, async (req, res) => {
 });
 
 // Rota para pausar/ativar usuário (alterar status)
-app.put('/api/users/:id/status', requireApiKey, async (req, res) => {
+app.patch('/api/users/:id/status', requireApiKey, async (req, res) => {
     try {
         const users = await getUsers();
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
