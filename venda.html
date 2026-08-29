@@ -604,9 +604,8 @@
             padding: 12px 0;
             color: #e2e8f0;
             font-size: 15px;
-            display: grid;
-            grid-template-columns: 20px 140px 1fr;
-            align-items: center;
+            display: flex;
+            align-items: flex-start;
             gap: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             line-height: 1.4;
@@ -617,9 +616,14 @@
         }
 
         .benefits-list li i {
+            margin-top: 3px;
             color: #10b981;
             font-size: 16px;
             flex-shrink: 0;
+        }
+
+        .benefits-list li > span {
+            text-align: left;
         }
 
         .pricing-submit-btn {
@@ -784,6 +788,16 @@
                 width: 100%;
                 box-sizing: border-box;
                 padding: 16px 24px;
+            }
+            .header-buy-btn {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+            .pricing-badge {
+                font-size: 10px;
+                padding: 5px 15px;
+                white-space: nowrap;
+                top: -12px;
             }
         }
     </style>
@@ -1066,14 +1080,14 @@
                 <div class="price-sub">Assinatura mensal acessível via PIX • Cancele quando quiser</div>
 
                 <ul class="benefits-list">
-                    <li><i class="fas fa-gift" style="color: #10b981;"></i> <strong>7 Dias Grátis</strong> para explorar 100% da plataforma</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Acesso Completo</strong> a todos os Play Books em PDF</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Todos os Audiobooks</strong> narrados em alta qualidade</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Vídeos e Masterclasses</strong> exclusivos do Pr. Gilberto</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Artigos e Estudos</strong> bíblicos aprofundados</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Gerador de Relatórios</strong> e Gestor de Projetos</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Atualizações semanais</strong> de novos conteúdos gratuitas</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Suporte VIP</strong> direto via WhatsApp</li>
+                    <li><i class="fas fa-gift" style="color: #10b981;"></i> <span><strong>7 Dias Grátis</strong> para explorar 100% da plataforma</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Acesso Completo</strong> a todos os Play Books em PDF</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Todos os Audiobooks</strong> narrados em alta qualidade</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Vídeos e Masterclasses</strong> exclusivos do Pr. Gilberto</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Artigos e Estudos</strong> bíblicos aprofundados</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Gerador de Relatórios</strong> e Gestor de Projetos</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Atualizações semanais</strong> de novos conteúdos gratuitas</span></li>
+                    <li><i class="fas fa-check-circle"></i> <span><strong>Suporte VIP</strong> direto via WhatsApp</span></li>
                 </ul>
 
                 <a href="compra.html" class="pricing-submit-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; box-shadow: 0 12px 35px rgba(16, 185, 129, 0.45);">
