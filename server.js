@@ -1203,7 +1203,7 @@ app.post('/api/users', async (req, res) => {
             // Degustação Gratuita de 7 dias liberada automaticamente
             const trialExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
             const newUser = {
-                id: req.body.id || Date.now().toString(),
+                id: req.body.id || require('crypto').randomUUID(),
                 fullName: req.body.fullName,
                 email: req.body.email,
                 phone: req.body.phone,
