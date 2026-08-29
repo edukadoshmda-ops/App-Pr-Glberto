@@ -546,7 +546,7 @@ async function saveUsers(usersArray) {
     try {
         const dataToUpsert = usersArray.map(u => ({
             id: u.id,
-            name: u.fullName,
+            name: u.fullName || u.name || (u.email ? u.email.split('@')[0] : 'Usuário'),
             email: u.email,
             password: u.password || '123456',
             phone: u.phone,
