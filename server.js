@@ -1114,7 +1114,7 @@ app.post('/api/register', async (req, res) => {
         }
 
         const newUser = {
-            id: Date.now().toString(),
+            id: require('crypto').randomUUID(),
             fullName: req.body.fullName,
             phone: req.body.phone,
             email: req.body.email,
