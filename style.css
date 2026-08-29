@@ -1865,7 +1865,6 @@ select:focus,
 
 /* For any leftover blue highlights, prefer gold (fallback selector) */
 .header .accent-blue,
-.accent-blue,
 .progress.blue {
   background: linear-gradient(90deg, var(--gold-light), var(--gold)) !important;
   border-color: rgba(245, 181, 46, 0.12) !important;

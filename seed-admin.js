@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
+const { v4: uuidv4 } = require('uuid');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -7,46 +8,29 @@ const supabase = createClient(
 );
 
 async function run() {
-  console.log('🔄 Iniciando criação/atualização do administrador...');
-
+  const email = 'gilbertbertho@gmail.com';
+  
+  // Verifica se já existe
+  const { data: existingUser } = await supabase.from('users').select('id').eq('email', email).single();
+  
   const adminUser = {
-    id: 'admin-gilbert-001',
-    fullName: 'Pr. Gilberto Penido Bertho',
-    email: 'gilbertbertho@gmail.com',
+    id: existingUser ? existingUser.id : uuidv4(),
+    name: 'Pr. Gilberto Penido Bertho',
+    email: email,
     phone: '(32) 99103-5632',
-    password: '123456', // Idealmente usar hash se utilizar Supabase Auth
+    password: '123456',
     status: 'approved',
     subscriptionType: 'monthly',
-    paidAmount: 19.90,
-    expiresAt: '2030-12-31T23:59:59Z',
-    trialStartedAt: new Date().toISOString(),
-    trialDays: 7,
-    lastPaymentDate: new Date().toISOString(),
-    isAdmin: true,
-    createdAt: new Date().toISOString()
+    role: 'admin',
+    created_at: new Date().toISOString()
   };
 
-  try {
-    // Para tabela "users" que o server.js atual usa (caso a migração não esteja completa)
-    const { data: usersData, error: usersError } = await supabase
-      .from('users')
-      .upsert(adminUser, { onConflict: 'email' })
-      .select();
-
-    if (usersError) {
-        if (usersError.code === '42P01') {
-            console.log('⚠️ Tabela "users" não existe, pulando...');
-        } else {
-            console.error('❌ Erro na tabela users:', usersError.message);
-        }
-    } else {
-        console.log('✅ Admin inserido/atualizado na tabela "users"');
-    }
-
-    console.log('🎉 Finalizado.');
-  } catch (err) {
-    console.error('❌ Erro inesperado:', err.message);
+  const { error } = await supabase.from('users').upsert(adminUser);
+  
+  if (error) {
+    console.error('❌ Erro na tabela users:', error.message);
+  } else {
+    console.log('✅ Admin inserido/atualizado na tabela "users"');
   }
 }
-
 run();
