@@ -1208,7 +1208,7 @@ app.post('/api/users', async (req, res) => {
                 email: req.body.email,
                 phone: req.body.phone,
                 password: req.body.password || '123456',
-                status: req.body.status || 'pending', // Acesso pendente de liberação
+                status: 'approved', // Degustação liberada automaticamente
                 subscriptionType: 'trial',
                 paidAmount: req.body.paidAmount ? Number(req.body.paidAmount) : 19.90,
                 expiresAt: trialExpires,

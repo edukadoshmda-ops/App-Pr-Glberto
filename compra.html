@@ -466,67 +466,41 @@
 
             const submitBtn = this.querySelector('.submit-btn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando Assinatura...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando sua conta...';
 
             try {
-                // Notificar servidor local com cadastro e solicitação de assinatura mensal
-                const port = window.location.port ? window.location.port : '3000';
-                let apiHost = '';
-                if (port === '3000' || port === '5000') {
-                    apiHost = `http://${window.location.hostname}:5000`;
+                const regResp = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, phone, email, password, subscriptionType: 'trial', paidAmount: 0 })
+                });
+
+                const regData = await regResp.json();
+
+                if (regResp.ok && regData.success) {
+                    const u = regData.user;
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', u.email);
+                    localStorage.setItem('userId', u.id);
+                    localStorage.setItem('userName', u.fullName || email);
+                    localStorage.setItem('isAdmin', 'false');
+                    localStorage.setItem('userStatus', 'approved');
+                    localStorage.setItem('userExpiresAt', u.expiresAt || '');
+                    localStorage.setItem('subscriptionType', 'trial');
+                    localStorage.setItem('userCreatedAt', u.createdAt || new Date().toISOString());
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(regData.error || 'Erro ao criar conta. Tente novamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Criar Conta & Iniciar 7 Dias Grátis';
                 }
-
-                try {
-                    await fetch(`${apiHost}/api/users`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            fullName,
-                            phone,
-                            email,
-                            password,
-                            subscriptionType: 'monthly',
-                            paidAmount: 19.90
-                        })
-                    });
-                } catch(errFetch) {
-                    console.warn('Registro no backend Node:', errFetch);
-                }
-
-                // Tentar cadastro no Supabase se configurado
-                const supabase = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-                if (supabase) {
-                    try {
-                        await supabase.auth.signUp({
-                            email: email,
-                            password: password,
-                            options: {
-                                data: { full_name: fullName, phone: phone, subscription_type: 'monthly' },
-                                emailRedirectTo: window.location.origin + '/login.html'
-                            }
-                        });
-                    } catch(e) {
-                        console.warn('Supabase signup silencioso:', e);
-                    }
-                }
-
-                // Atualizar tela de sucesso
-                document.getElementById('purchaseForm').style.display = 'none';
-                document.getElementById('userEmailSpan').textContent = email;
-                
-                const whatsappMsg = encodeURIComponent(`Olá Pr. Gilberto! Fiz meu cadastro para a assinatura mensal de R$ 19,90 do App.\nNome: ${fullName}\nE-mail: ${email}\nTelefone: ${phone}\nSegue o comprovante do PIX:`);
-                const whatsappUrl = `https://wa.me/5532991035632?text=${whatsappMsg}`;
-                document.getElementById('successWhatsappLink').href = whatsappUrl;
-                document.getElementById('successMessage').style.display = 'block';
-
             } catch (error) {
                 console.error('Erro no cadastro:', error);
-                alert('Erro ao processar cadastro. Verifique sua conexão.');
+                alert('Erro de conexão. Verifique sua internet e tente novamente.');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Concluir Assinatura Mensal';
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Criar Conta & Iniciar 7 Dias Grátis';
             }
         });
-
         // Máscara de telefone
         document.getElementById('phone').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
