@@ -4297,3 +4297,218 @@ body.theme-light .mobile-menu-toggle {
     border: 1px solid rgba(0,0,0,0.1) !important;
     color: #334155 !important;
 }
+
+/* =========================================================
+   BANNER DE ALERTA DE MISSÕES E OBRAS SOCIAIS
+========================================================= */
+.mission-alert-banner {
+  width: 100%;
+  background: linear-gradient(90deg, rgba(245, 181, 46, 0.08) 0%, rgba(245, 181, 46, 0.18) 50%, rgba(245, 181, 46, 0.08) 100%);
+  border-top: 1px solid rgba(245, 181, 46, 0.25);
+  border-bottom: 1px solid rgba(245, 181, 46, 0.35);
+  box-shadow: 0 4px 25px rgba(245, 181, 46, 0.15);
+  padding: 12px 24px;
+  position: relative;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  animation: banner-glow 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes banner-glow {
+  0% {
+    background-color: rgba(245, 181, 46, 0.07);
+    border-bottom-color: rgba(245, 181, 46, 0.3);
+    box-shadow: 0 4px 20px rgba(245, 181, 46, 0.1);
+  }
+  100% {
+    background-color: rgba(245, 181, 46, 0.16);
+    border-bottom-color: rgba(245, 181, 46, 0.55);
+    box-shadow: 0 4px 30px rgba(245, 181, 46, 0.25);
+  }
+}
+
+.mission-alert-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  text-align: center;
+}
+
+.mission-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 181, 46, 0.18);
+  border: 1px solid rgba(245, 181, 46, 0.45);
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-light, #ffd875);
+  white-space: nowrap;
+}
+
+.mission-pulse-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+}
+
+.mission-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff2a44;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ff2a44;
+  animation: beacon-blink 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.mission-pulse-ring {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgba(255, 42, 68, 0.45);
+  animation: beacon-pulse 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes beacon-blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    background-color: #ff2233;
+    box-shadow: 0 0 10px #ff2233, 0 0 18px rgba(255, 34, 51, 0.7);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+    background-color: #ff6b7d;
+    box-shadow: 0 0 4px #ff6b7d;
+  }
+}
+
+@keyframes beacon-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.mission-icon {
+  color: #ff4757;
+  font-size: 13px;
+  animation: heart-beat 1.4s ease-in-out infinite;
+}
+
+@keyframes heart-beat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.28); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.22); }
+  70% { transform: scale(1); }
+}
+
+.mission-badge-text {
+  color: #ffd875;
+  font-weight: 800;
+}
+
+.mission-alert-message {
+  font-size: 15px;
+  line-height: 1.4;
+  color: #f1f5f9;
+  font-weight: 500;
+  font-family: var(--font-ui, "Inter", sans-serif);
+}
+
+.mission-highlight {
+  color: #ffd875;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(245, 181, 46, 0.3);
+}
+
+.mission-impact {
+  color: #ffffff;
+  font-weight: 700;
+  border-bottom: 2px solid var(--gold, #f5b52e);
+  padding-bottom: 1px;
+}
+
+.mission-alert-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f5b52e 0%, #e09b18 100%);
+  color: #0b111e !important;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(245, 181, 46, 0.35);
+  white-space: nowrap;
+}
+
+.mission-alert-btn:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 4px 16px rgba(245, 181, 46, 0.55);
+  background: #ffc44d;
+}
+
+/* Light Theme Support */
+body.theme-light .mission-alert-banner {
+  background: linear-gradient(90deg, rgba(245, 181, 46, 0.15) 0%, rgba(245, 181, 46, 0.28) 50%, rgba(245, 181, 46, 0.15) 100%) !important;
+  border-top-color: rgba(180, 120, 20, 0.25) !important;
+  border-bottom-color: rgba(180, 120, 20, 0.35) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-light .mission-alert-message {
+  color: #0f172a !important;
+}
+
+body.theme-light .mission-highlight {
+  color: #92400e !important;
+}
+
+body.theme-light .mission-impact {
+  color: #0f172a !important;
+  border-bottom-color: #b45309 !important;
+}
+
+body.theme-light .mission-alert-badge {
+  background: rgba(245, 181, 46, 0.25) !important;
+  border-color: rgba(180, 120, 20, 0.35) !important;
+}
+
+body.theme-light .mission-badge-text {
+  color: #78350f !important;
+}
+
+@media (max-width: 768px) {
+  .mission-alert-banner {
+    padding: 10px 14px;
+  }
+  .mission-alert-message {
+    font-size: 13.5px;
+  }
+  .mission-alert-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
