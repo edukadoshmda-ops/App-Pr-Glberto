@@ -626,8 +626,7 @@
             <button type="submit" class="btn-login" style="background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));color:#101522;display:flex;align-items:center;justify-content:center;">ENTRAR</button>
 
             <div class="footer-links">
-                <a href="venda.html">Comprar Acesso</a>
-                <a href="compra.html">Criar conta / Assinar</a>
+                <a href="compra.html">Criar conta grátis</a>
             </div>
         </form>
     </div>
@@ -666,26 +665,17 @@
                     const data = await response.json();
 
                     if (!response.ok) {
-                        if (data.expired) {
-                            if (confirm(data.error + '\n\nDeseja abrir a página de pagamento via PIX para renovar agora?')) {
-                                window.location.href = 'compra.html';
-                            }
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = 'ENTRAR';
-                            return;
-                        } else if (data.error) {
-                            alert(data.error);
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = 'ENTRAR';
-                            return;
-                        }
+                        alert(data.error || 'Erro ao fazer login. Verifique seu e-mail e senha.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'ENTRAR';
+                        return;
                     }
 
                     if (response.ok && data.success) {
                         const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
                         const isAdmin = data.user.isAdmin || adminEmails.includes(email.toLowerCase());
-                        const status = isAdmin ? 'approved' : (data.user.status || 'approved');
-                        const subType = isAdmin ? 'monthly' : (data.user.subscriptionType || 'trial');
+                        const status = 'approved';
+                        const subType = 'full';
 
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email);

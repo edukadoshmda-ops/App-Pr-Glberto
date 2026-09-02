@@ -1102,13 +1102,12 @@ app.post('/api/testimony', async (req, res) => {
 
 // Rotas para Usuários
 
-// Rota para registrar novo usuário
+// Rota para registrar novo usuário - ACESSO TOTAL LIBERADO ao se cadastrar
 app.post('/api/register', async (req, res) => {
     try {
         const users = await getUsers();
         
-        // Verificar se email já existe
-        const existingUser = users.find(u => u.email === req.body.email);
+        const existingUser = users.find(u => String(u.email).toLowerCase() === String(req.body.email || '').toLowerCase());
         if (existingUser) {
             return res.status(400).json({ error: 'E-mail já cadastrado' });
         }
@@ -1118,55 +1117,39 @@ app.post('/api/register', async (req, res) => {
             fullName: req.body.fullName,
             phone: req.body.phone,
             email: req.body.email,
-            password: req.body.password, // Em produção, usar hash de senha
-            status: 'pending', // pending, approved
+            password: req.body.password,
+            status: 'approved',
+            subscriptionType: 'full',
+            expiresAt: null,
             createdAt: new Date().toISOString()
         };
 
         users.push(newUser);
         await saveUsers(users);
 
-        res.json({ success: true, message: 'Usuário cadastrado com sucesso. Aguarde aprovação.' });
+        res.json({ success: true, message: 'Cadastro realizado com sucesso! Acesso total liberado.', user: newUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao cadastrar usuário' });
     }
 });
 
-// Rota para login
+// Rota para login - ACESSO TOTAL LIBERADO para todo cadastrado
 app.post('/api/login', async (req, res) => {
     try {
         const users = await getUsers();
         const { email, password } = req.body;
 
-        const user = users.find(u => u.email.toLowerCase() === (email || '').toLowerCase() && u.password === password);
+        const user = users.find(u => String(u.email).toLowerCase() === String(email || '').toLowerCase() && u.password === password);
         
         if (!user) {
             return res.status(401).json({ error: 'E-mail ou senha incorretos' });
         }
 
         const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com', 'edukadoshmda@gmail.com'];
-        const isAdmin = user.isAdmin || adminEmails.includes(user.email.toLowerCase());
+        const isAdmin = user.isAdmin || adminEmails.includes(String(user.email).toLowerCase());
 
-        // Verificar validade de assinatura / degustação para não-administradores
-        if (!isAdmin) {
-            if (user.expiresAt) {
-                const expiresDate = new Date(user.expiresAt);
-                const now = new Date();
-                if (expiresDate < now) {
-                    const isTrial = user.subscriptionType === 'trial';
-                    return res.status(403).json({ 
-                        error: isTrial 
-                            ? 'Seu período de degustação gratuita de 7 dias encerrou. Assine o plano mensal de R$ 19,90 via PIX para reativar seu acesso imediato!' 
-                            : 'Sua assinatura mensal expirou. Realize a renovação via PIX para continuar com acesso.',
-                        expired: true,
-                        isTrialExpired: isTrial,
-                        expiresAt: user.expiresAt
-                    });
-                }
-            }
-        }
-
+        // Acesso total: sem bloqueio por expiração/trial
         res.json({ 
             success: true, 
             user: {
@@ -1175,9 +1158,9 @@ app.post('/api/login', async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 isAdmin: isAdmin,
-                status: user.status || 'approved',
-                subscriptionType: user.subscriptionType || (isAdmin ? 'monthly' : 'trial'),
-                expiresAt: user.expiresAt || null,
+                status: 'approved',
+                subscriptionType: 'full',
+                expiresAt: null,
                 createdAt: user.createdAt
             }
         });
@@ -1187,44 +1170,39 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Rota para cadastrar novo usuário (checkout / degustação)
+// Rota para cadastrar novo usuário - ACESSO TOTAL LIBERADO
 app.post('/api/users', async (req, res) => {
     try {
         const users = await getUsers();
-        const existingIndex = users.findIndex(u => u.email.toLowerCase() === (req.body.email || '').toLowerCase());
+        const existingIndex = users.findIndex(u => String(u.email).toLowerCase() === String(req.body.email || '').toLowerCase());
         
         if (existingIndex === -1) {
-            // Degustação Gratuita de 7 dias liberada automaticamente
-            const trialExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
             const newUser = {
                 id: req.body.id || require('crypto').randomUUID(),
                 fullName: req.body.fullName,
                 email: req.body.email,
                 phone: req.body.phone,
                 password: req.body.password || '123456',
-                status: 'approved', // Degustação liberada automaticamente
-                subscriptionType: 'trial',
-                paidAmount: req.body.paidAmount ? Number(req.body.paidAmount) : 19.90,
-                expiresAt: trialExpires,
-                trialStartedAt: new Date().toISOString(),
-                trialDays: 7,
-                lastPaymentDate: null,
+                status: 'approved',
+                subscriptionType: 'full',
+                expiresAt: null,
                 isAdmin: false,
                 createdAt: new Date().toISOString()
             };
             users.push(newUser);
             await saveUsers(users);
-
-            // Disparar e-mail de boas-vindas da Degustação Gratuita
-            sendTrialWelcomeEmail(newUser, trialExpires).catch(err => console.error('Falha assíncrona ao enviar boas-vindas da degustação:', err));
-            
             res.json({ 
                 success: true, 
-                message: 'Cadastro realizado com sucesso! Sua degustação gratuita de 7 dias está ativa.',
+                message: 'Cadastro realizado com sucesso! Acesso total liberado a todos os conteúdos.',
                 user: newUser 
             });
         } else {
-            res.json({ success: true, message: 'Usuário já cadastrado', user: users[existingIndex] });
+            // Garante acesso total mesmo para quem já existia como trial
+            users[existingIndex].status = 'approved';
+            users[existingIndex].subscriptionType = 'full';
+            users[existingIndex].expiresAt = null;
+            await saveUsers(users);
+            res.json({ success: true, message: 'Usuário já cadastrado - acesso total liberado', user: users[existingIndex] });
         }
     } catch (error) {
         console.error('Erro ao salvar usuário:', error);
@@ -1239,31 +1217,17 @@ app.get('/api/users', requireApiKey, async (req, res) => {
     res.setHeader('Expires', '0');
     try {
         const users = await getUsers();
-        const now = new Date();
-
+        // Acesso total: todos aprovados, sem expiração
         const usersList = users.map(u => {
-            let daysRemaining = null;
-            let isExpired = false;
-
-            if (u.expiresAt) {
-                const exp = new Date(u.expiresAt);
-                const diffTime = exp.getTime() - now.getTime();
-                daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (daysRemaining < 0 && !u.isAdmin) {
-                    isExpired = true;
-                }
-            }
-
             return {
                 id: u.id,
                 fullName: u.fullName,
                 phone: u.phone,
                 email: u.email,
-                status: isExpired ? 'expired' : (u.status || 'approved'),
-                subscriptionType: u.subscriptionType || (u.isAdmin ? 'monthly' : 'trial'),
-                paidAmount: u.paidAmount !== undefined ? Number(u.paidAmount) : 19.90,
-                expiresAt: u.expiresAt || null,
-                daysRemaining: daysRemaining,
+                status: 'approved',
+                subscriptionType: 'full',
+                expiresAt: null,
+                daysRemaining: null,
                 lastPaymentDate: u.lastPaymentDate || null,
                 isAdmin: u.isAdmin || false,
                 createdAt: u.createdAt
@@ -1467,49 +1431,9 @@ app.delete('/api/users/:id', requireApiKey, async (req, res) => {
 // [MIGRADO PARA VERCEL CRON]
 // cron.schedule('0 8 * * *', async () => {
     async function runDailyCron() {
-    console.log('[CRON] Executando verificação diária de degustação e assinaturas via Supabase...');
-    try {
-        const users = await getUsers();
-        const now = new Date();
-        let changed = false;
-
-        for (const user of users) {
-            if (user.isAdmin || !user.expiresAt) continue;
-
-            const expDate = new Date(user.expiresAt);
-            const diffTime = expDate.getTime() - now.getTime();
-            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            // Se faltam exatamente 3 dias para expirar: enviar lembrete via Gmail
-            if (daysRemaining === 3 && user.status === 'approved') {
-                if (user.subscriptionType === 'trial') {
-                    console.log(`[CRON] Enviando lembrete de fim de degustação (3 dias) para: ${user.email}`);
-                    await sendTrialEndingReminderEmail(user, 3);
-                } else {
-                    console.log(`[CRON] Enviando lembrete de renovação mensal (3 dias) para: ${user.email}`);
-                    await sendRenewalReminderEmail(user, 3);
-                }
-            }
-
-            // Se o período encerrou: pausar a conta (status = 'expired')
-            if (daysRemaining < 0 && user.status === 'approved') {
-                console.log(`[CRON] Período expirado/pausado para: ${user.email} (Tipo: ${user.subscriptionType})`);
-                user.status = 'expired';
-                changed = true;
-
-                if (user.subscriptionType === 'trial') {
-                    await sendTrialExpiredEmail(user);
-                }
-            }
-        }
-
-        if (changed) {
-            await saveUsers(users);
-            console.log('[CRON] Base de usuários atualizada com contas pausadas/expiradas.');
-        }
-    } catch (err) {
-        console.error('[CRON ERRO] Falha ao verificar assinaturas e degustação:', err);
-    }
+    // Acesso total liberado: cron de expiração/trial desativado - todos têm acesso permanente
+    console.log('[CRON] Verificação diária desativada - acesso total liberado para todos os cadastrados.');
+    return;
 }
 
 // Rota para upload de conteúdo (vídeo ou artigo)

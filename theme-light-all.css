@@ -328,3 +328,56 @@ body.theme-light .purchase-card code {
     border-radius: 4px !important;
 }
 
+
+
+/* Mission offer banners: preserve intentional dark/red card colors in light theme */
+body.theme-light a[href*="batistasmineiros.org.br"] {
+    background: linear-gradient(135deg, #f64228 0%, #e53935 45%, #d90553 100%) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+}
+body.theme-light a[href*="batistasmineiros.org.br"] span,
+body.theme-light a[href*="batistasmineiros.org.br"] span span,
+body.theme-light a[href*="batistasmineiros.org.br"] i {
+    color: #ffffff !important;
+}
+body.theme-light a[href*="missoesnacionais.org.br"] {
+    background: #0a0a0a !important;
+    border-color: rgba(255,255,255,0.12) !important;
+}
+body.theme-light a[href*="missoesnacionais.org.br"] span,
+body.theme-light a[href*="missoesnacionais.org.br"] i {
+    color: #ffffff !important;
+}
+body.theme-light a[href*="missoesnacionais.org.br"] span[style*="rgba(255"] {
+    color: rgba(255,255,255,0.88) !important;
+}
+body.theme-light a[href*="batistasmineiros.org.br"] span[style*="rgba(255"] {
+    color: rgba(255,255,255,0.92) !important;
+}
+
+
+/* FIX: force white text on dark mission cards in light theme - must be last to override generic a/span rules */
+body.theme-light .mission-offer-banner a[href*="missoesnacionais.org.br"] span,
+body.theme-light .mission-offer-banner a[href*="missoesnacionais.org.br"] span span,
+body.theme-light .mission-offer-banner--hero a[href*="missoesnacionais.org.br"] span,
+body.theme-light .mission-offer-banner--hero a[href*="missoesnacionais.org.br"] span span,
+body.theme-light .mission-offer-banner a[href*="missoesnacionais.org.br"] i,
+body.theme-light .mission-offer-banner--hero a[href*="missoesnacionais.org.br"] i {
+    color: #ffffff !important;
+}
+body.theme-light .mission-offer-banner a[href*="missoesnacionais.org.br"] span[style*="rgba"],
+body.theme-light .mission-offer-banner--hero a[href*="missoesnacionais.org.br"] span[style*="rgba"] {
+    color: rgba(255,255,255,0.88) !important;
+}
+body.theme-light .mission-offer-banner a[href*="batistasmineiros.org.br"] span,
+body.theme-light .mission-offer-banner a[href*="batistasmineiros.org.br"] span span,
+body.theme-light .mission-offer-banner--hero a[href*="batistasmineiros.org.br"] span,
+body.theme-light .mission-offer-banner--hero a[href*="batistasmineiros.org.br"] span span,
+body.theme-light .mission-offer-banner a[href*="batistasmineiros.org.br"] i,
+body.theme-light .mission-offer-banner--hero a[href*="batistasmineiros.org.br"] i {
+    color: #ffffff !important;
+}
+body.theme-light .mission-offer-banner a[href*="batistasmineiros.org.br"] span[style*="rgba"],
+body.theme-light .mission-offer-banner--hero a[href*="batistasmineiros.org.br"] span[style*="rgba"] {
+    color: rgba(255,255,255,0.92) !important;
+}
