@@ -1140,7 +1140,8 @@
                 return;
             }
 
-            tbody.innerHTML = users.map(user => {
+            tbody.innerHTML = users.map((user, index) => {
+                const userNumber = index + 1;
                 const initial = (user.fullName || 'U').charAt(0).toUpperCase();
                 const isApproved = user.status === 'approved';
                 const isExpired = user.status === 'expired';
@@ -1188,6 +1189,7 @@
                         </td>
                         <td>
                             <div class="user-name-cell">
+                                <span style="font-weight: 800; font-size: 13px; color: var(--gold, #f5b52e); min-width: 22px; text-align: right; margin-right: 4px;">${userNumber}.</span>
                                 <div class="user-avatar">${initial}</div>
                                 <div>
                                     <strong style="color: var(--text-color, #ffffff);">${user.fullName || 'Sem Nome'}</strong>
@@ -1774,6 +1776,8 @@
     <script src="global-theme.js"></script>
 </body>
 </html>
+
+
 
 
 
