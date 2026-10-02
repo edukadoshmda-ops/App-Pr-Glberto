@@ -1364,7 +1364,15 @@ function setupAudioPlayer() {
   function loadCurrentTrack() {
    if (!audioState.bookId || !audioLibrary[audioState.bookId]) return;
 
-   audioState.tracks = audioLibrary[audioState.bookId].tracks;
+   const baseTracks = audioLibrary[audioState.bookId].tracks;
+   audioState.tracks = baseTracks.map(t => {
+     if (isFemaleVoice) {
+       return t.replace(`/${audioState.bookId}/`, `/${audioState.bookId}-fem/`);
+     } else {
+       return t.replace(`/${audioState.bookId}-fem/`, `/${audioState.bookId}/`);
+     }
+   });
+
    const trackUrl = audioState.tracks[audioState.trackIndex];
    if (!trackUrl) return;
 
@@ -1546,7 +1554,13 @@ function playAudiobook(bookId) {
   const activeBook = audioLibrary[bookId];
   audioState.bookId = bookId;
   audioState.trackIndex = 0;
-  audioState.tracks = activeBook.tracks;
+  audioState.tracks = (activeBook.tracks || []).map(t => {
+    if (isFemaleVoice) {
+      return t.replace(`/${bookId}/`, `/${bookId}-fem/`);
+    } else {
+      return t.replace(`/${bookId}-fem/`, `/${bookId}/`);
+    }
+  });
   player.src = audioState.tracks[0];
   try { player.volume = 0.8; } catch(e) {}
 
