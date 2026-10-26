@@ -204,7 +204,7 @@ async function openBookViewer(bookId, moduleType = 'playbooks', itemIndex = -1) 
 
   currentPage = 1;
 
-  zoomLevel = 1.5; // Aumentando zoom inicial para ser mais visível
+  zoomLevel = 1.0; // Zoom inicial 100% para caber perfeitamente na largura
   console.log('Zoom inicial definido para:', zoomLevel);
 
   // Reset pan
@@ -365,22 +365,19 @@ function closeBookViewer() {
 }
 
 
+
+function isSinglePageMode() {
+  // Mobile, tablets, celulares na horizontal ou telas touch usam 1 página por vez
+  return window.innerWidth < 1100 || window.innerHeight <= 700 || ('ontouchstart' in window);
+}
+
 /* =========================================================
    RENDERIZAR PÁGINAS
 ========================================================= */
 
 async function renderCurrentPages() {
-
-  if (
-    !pdfDocument ||
-    isRendering
-  ) {
-    return;
-  }
-
-
+  if (!pdfDocument || isRendering) return;
   isRendering = true;
-
 
   try {
     const leftPageEl = document.getElementById("leftPage");
@@ -388,63 +385,39 @@ async function renderCurrentPages() {
 
     showLoading();
 
-
-    const leftPageNumber =
-      currentPage;
-
-
-    const rightPageNumber =
-      currentPage + 1;
-
+    const isSingle = isSinglePageMode();
+    const rightPageEl = document.getElementById("rightPage");
 
     await renderPage(
-      leftPageNumber,
-      leftCanvas
+      currentPage,
+      leftCanvas || document.getElementById("leftCanvas")
     );
 
-
-    if (
-      rightPageNumber <= totalPages
-    ) {
-
-      await renderPage(
-        rightPageNumber,
-        rightCanvas
-      );
-
-      if (rightCanvas) {
-        rightCanvas.style.display =
-          "block";
-      }
-
+    if (isSingle) {
+      if (rightPageEl) rightPageEl.style.display = "none";
+      if (rightCanvas) rightCanvas.style.display = "none";
     } else {
-
-      clearCanvas(rightCanvas);
-
-      if (rightCanvas) {
-        rightCanvas.style.display =
-          "none";
+      const rightPageNumber = currentPage + 1;
+      if (rightPageNumber <= totalPages) {
+        if (rightPageEl) rightPageEl.style.display = "block";
+        await renderPage(
+          rightPageNumber,
+          rightCanvas || document.getElementById("rightCanvas")
+        );
+        if (rightCanvas) rightCanvas.style.display = "block";
+      } else {
+        clearCanvas(rightCanvas);
+        if (rightPageEl) rightPageEl.style.display = "none";
+        if (rightCanvas) rightCanvas.style.display = "none";
       }
-
     }
 
-
     updatePageControls();
-
-
   } catch (error) {
-
-    console.error(
-      "Erro ao renderizar páginas:",
-      error
-    );
-
+    console.error("Erro ao renderizar páginas:", error);
   } finally {
-
     isRendering = false;
-
   }
-
 }
 
 
@@ -550,40 +523,23 @@ async function renderPage(
 ========================================================= */
 
 window.nextPage = async function () {
+  if (!pdfDocument || isRendering) return;
+  const isSingle = isSinglePageMode();
+  const step = isSingle ? 1 : 2;
 
-  if (
-    !pdfDocument ||
-    isRendering
-  ) {
-    return;
-  }
+  if (currentPage >= totalPages) return;
+  if (!isSingle && currentPage + 1 >= totalPages) return;
 
-
-  if (
-    currentPage + 2 >
-    totalPages
-  ) {
-    return;
-  }
-
-  // Adiciona animação de virar página apenas na esquerda
   const leftPage = document.getElementById('leftPage');
-  const rightPage = document.getElementById('rightPage');
-
   if (leftPage) leftPage.classList.add('flipping-right');
-  if (rightPage) rightPage.classList.add('fade-slide');
 
-  // Remove classes após animação
   setTimeout(() => {
     if (leftPage) leftPage.classList.remove('flipping-right');
-    if (rightPage) rightPage.classList.remove('fade-slide');
-  }, 1200);
+  }, 400);
 
-  currentPage += 2;
-
+  currentPage = Math.min(totalPages, currentPage + step);
   await renderCurrentPages();
-
-}
+};
 
 
 /* =========================================================
@@ -591,42 +547,21 @@ window.nextPage = async function () {
 ========================================================= */
 
 window.prevPage = async function () {
+  if (!pdfDocument || isRendering) return;
+  if (currentPage <= 1) return;
+  const isSingle = isSinglePageMode();
+  const step = isSingle ? 1 : 2;
 
-  if (
-    !pdfDocument ||
-    isRendering
-  ) {
-    return;
-  }
-
-
-  if (currentPage <= 1) {
-    return;
-  }
-
-  // Adiciona animação de virar página apenas na esquerda
   const leftPage = document.getElementById('leftPage');
-  const rightPage = document.getElementById('rightPage');
-
   if (leftPage) leftPage.classList.add('flipping-left');
-  if (rightPage) rightPage.classList.add('fade-slide');
 
-  // Remove classes após animação
   setTimeout(() => {
     if (leftPage) leftPage.classList.remove('flipping-left');
-    if (rightPage) rightPage.classList.remove('fade-slide');
-  }, 1200);
+  }, 400);
 
-  currentPage =
-    Math.max(
-      1,
-      currentPage - 2
-    );
-
-
+  currentPage = Math.max(1, currentPage - step);
   await renderCurrentPages();
-
-}
+};
 
 
 /* =========================================================
@@ -738,39 +673,32 @@ function updateZoomDisplay() {
 ========================================================= */
 
 function updatePageControls() {
+  const isSingle = isSinglePageMode();
+  const curEl = currentPageElement || document.getElementById('currentPage');
+  const totEl = totalPagesElement || document.getElementById('totalPages');
+  const pBtn = prevButton || document.getElementById('prevBtn');
+  const nBtn = nextButton || document.getElementById('nextBtn');
 
-  if (currentPageElement) {
-
-    currentPageElement.textContent =
-      currentPage;
-
+  if (curEl) {
+    if (isSingle) {
+      curEl.textContent = currentPage;
+    } else {
+      const end = Math.min(currentPage + 1, totalPages);
+      curEl.textContent = currentPage === end ? currentPage : `${currentPage}-${end}`;
+    }
   }
 
-
-  if (totalPagesElement) {
-
-    totalPagesElement.textContent =
-      totalPages;
-
+  if (totEl) {
+    totEl.textContent = totalPages;
   }
 
-
-  if (prevButton) {
-
-    prevButton.disabled =
-      currentPage <= 1;
-
+  if (pBtn) {
+    pBtn.disabled = currentPage <= 1;
   }
 
-
-  if (nextButton) {
-
-    nextButton.disabled =
-      currentPage + 2 >
-      totalPages;
-
+  if (nBtn) {
+    nBtn.disabled = isSingle ? (currentPage >= totalPages) : (currentPage + 1 >= totalPages);
   }
-
 }
 
 

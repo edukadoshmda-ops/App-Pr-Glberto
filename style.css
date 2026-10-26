@@ -4983,3 +4983,142 @@ body.theme-light .mission-badge-text {
     width: auto !important;
   }
 }
+
+
+/* =========================================================
+   AJUSTES CRÍTICOS: PRIORIDADE TOTAL À LEITURA DO PDF
+   1 Página por vez no celular, zoom embutido na barra, zero corte
+   ========================================================= */
+
+/* Zoom controls embutido dentro da barra inferior, NUNCA sobre o texto */
+.book-navigation .book-zoom-controls {
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  bottom: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 20px !important;
+  padding: 2px 8px !important;
+  box-shadow: none !important;
+}
+
+.book-navigation .book-zoom-controls button {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 14px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.book-navigation .book-zoom-controls span {
+  font-size: 11px !important;
+  min-width: 36px !important;
+  text-align: center !important;
+  color: #f5b52e !important;
+  font-weight: 600 !important;
+}
+
+/* Força modo de página única (1 por vez) em qualquer tela móvel/tablet */
+@media (max-width: 1100px), (max-height: 700px) {
+  #rightPage,
+  .book-page-right {
+    display: none !important;
+  }
+
+  .book-container {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  #leftPage,
+  .book-page-left {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    display: flex !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 4px 8px !important;
+    background: #0a0e1a !important;
+  }
+
+  .book-page canvas {
+    width: 100% !important;
+    max-width: 850px !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 auto !important;
+    display: block !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* Barra de ferramentas superior compacta e sem quebras de texto */
+  .book-viewer-header {
+    top: 6px !important;
+    left: 8px !important;
+    right: 8px !important;
+    height: 36px !important;
+  }
+
+  .book-viewer-title-box {
+    max-width: 50% !important;
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+
+  .reader-tool-btn {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+  }
+
+  .reader-tool-btn span {
+    display: none !important; /* Mostra apenas ícones limpos no topo do celular */
+  }
+
+  .close-book-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    position: static !important;
+  }
+
+  .book-navigation {
+    padding: 4px 10px !important;
+    gap: 8px !important;
+    height: 42px !important;
+  }
+
+  .book-nav-btn {
+    height: 32px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-nav-btn span {
+    display: none !important;
+  }
+  .book-nav-btn {
+    width: 34px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}

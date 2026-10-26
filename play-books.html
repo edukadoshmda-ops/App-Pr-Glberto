@@ -172,22 +172,22 @@
               <div class="book-navigation">
                 <button class="book-nav-btn" id="prevBtn" type="button" onclick="prevPage()">
                   <i class="fas fa-chevron-left"></i>
-                  Anterior
+                  <span>Anterior</span>
                 </button>
+                <div class="book-zoom-controls" id="zoomControls">
+                  <button type="button" id="zoomOutBtn" aria-label="Diminuir zoom">−</button>
+                  <span id="zoomValue">100%</span>
+                  <button type="button" id="zoomInBtn" aria-label="Aumentar zoom">+</button>
+                </div>
                 <div class="book-page-indicator">
                   <span id="currentPage">1</span>
                   <span>/</span>
                   <span id="totalPages">1</span>
                 </div>
                 <button class="book-nav-btn" id="nextBtn" type="button" onclick="nextPage()">
-                  Próxima
+                  <span>Próxima</span>
                   <i class="fas fa-chevron-right"></i>
                 </button>
-              </div>
-              <div class="book-zoom-controls" id="zoomControls">
-                <button type="button" id="zoomOutBtn" aria-label="Diminuir zoom">−</button>
-                <span id="zoomValue">100%</span>
-                <button type="button" id="zoomInBtn" aria-label="Aumentar zoom">+</button>
               </div>
             </div>
           </div>
