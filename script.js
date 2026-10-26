@@ -1943,6 +1943,82 @@ window.toggleFullscreenReader = toggleFullscreenReader;
 window.toggleAudioFromReader = toggleAudioFromReader;
 window.setupSwipeGestures = setupSwipeGestures;
 
+/* =========================================================
+   ABRIR LEITOR A PARTIR DO AUDIOBOOK
+========================================================= */
+
+function openCurrentAudiobookReader() {
+  const currentId = (typeof audioState !== 'undefined' && audioState.bookId) ? audioState.bookId : 'lideranca';
+  openAudiobookBook(currentId);
+}
+
+function openAudiobookBook(bookId) {
+  if (!bookId) {
+    bookId = (typeof audioState !== 'undefined' && audioState.bookId) ? audioState.bookId : 'lideranca';
+  }
+
+  const rawId = String(bookId).trim();
+  const lowerId = rawId.toLowerCase();
+
+  let mappedId = rawId;
+  if (lowerId.includes('lideran')) mappedId = 'lideranca';
+  else if (lowerId.includes('habito') || lowerId.includes('hábito')) mappedId = 'habitos';
+  else if (lowerId.includes('jonas') || lowerId.includes('inconformado')) mappedId = 'jonas';
+  else if (lowerId.includes('eu sou') || lowerId === 'eusou') mappedId = 'eusou';
+  else if (lowerId.includes('discipul')) mappedId = 'discipulado';
+
+  // Se o livro já existe no catálogo books do script.js
+  if (typeof books !== 'undefined' && books[mappedId]) {
+    if (typeof openBookViewer === 'function') {
+      openBookViewer(mappedId, 'playbooks', 0).catch(err => {
+        console.warn('Erro ao abrir leitor PDF no audiobook:', err);
+        window.location.href = 'play-books.html?book=' + encodeURIComponent(mappedId);
+      });
+      return;
+    }
+  }
+
+  // Tenta encontrar em playbooks cadastrados localmente
+  try {
+    const localPlaybooks = JSON.parse(localStorage.getItem('prgilbertopenido_playbooks') || '[]');
+    const foundPb = localPlaybooks.find(p => String(p.id) === rawId || (p.title && p.title.toLowerCase() === lowerId));
+    if (foundPb && (foundPb.contentUrl || foundPb.url)) {
+      const fileUrl = foundPb.contentUrl || foundPb.url;
+      if (typeof books !== 'undefined') {
+        books[rawId] = { title: foundPb.title || 'Playbook', files: [fileUrl] };
+      }
+      if (typeof openBookViewer === 'function') {
+        openBookViewer(rawId, 'playbooks', 0);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Tenta encontrar em audiobooks cadastrados localmente com PDF associado
+  try {
+    const localAudiobooks = JSON.parse(localStorage.getItem('prgilbertopenido_audiobooks') || '[]');
+    const foundAb = localAudiobooks.find(a => String(a.id) === rawId || (a.title && a.title.toLowerCase() === lowerId));
+    if (foundAb && (foundAb.pdfUrl || foundAb.playbookUrl)) {
+      const fileUrl = foundAb.pdfUrl || foundAb.playbookUrl;
+      if (typeof books !== 'undefined') {
+        books[rawId] = { title: foundAb.title || 'Livro', files: [fileUrl] };
+      }
+      if (typeof openBookViewer === 'function') {
+        openBookViewer(rawId, 'playbooks', 0);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: redireciona para a página de playbooks
+  window.location.href = 'play-books.html?book=' + encodeURIComponent(mappedId);
+}
+
+window.openAudiobookBook = openAudiobookBook;
+window.openCurrentAudiobookReader = openCurrentAudiobookReader;
+window.openBookViewer = openBookViewer;
+window.closeBookViewer = closeBookViewer;
+
 window.addEventListener("orientationchange", () => {
   setTimeout(() => {
     if (pdfDocument && typeof renderCurrentPages === "function") {
