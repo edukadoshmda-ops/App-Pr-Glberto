@@ -1477,6 +1477,7 @@ projectForm.addEventListener(
             // 2. Fallback para API Local Node
             const response = await fetch('/api/projects', {
                 method: 'POST',
+                credentials: 'same-origin',
                 body: formData
             });
 
@@ -1507,6 +1508,4 @@ projectForm.addEventListener(
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-
 

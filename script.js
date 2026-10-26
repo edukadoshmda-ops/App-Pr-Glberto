@@ -216,21 +216,39 @@ async function openBookViewer(bookId, moduleType = 'playbooks', itemIndex = -1) 
   updateZoomDisplay();
 
 
-  if (!modal) {
-    console.error(
-      "Modal do leitor não encontrado."
-    );
-
+  const targetModal = (typeof modal !== "undefined" && modal) ? modal : document.getElementById("bookViewerModal");
+  if (!targetModal) {
+    console.error("Modal do leitor não encontrado.");
     return;
   }
 
+  targetModal.classList.add("active");
+  targetModal.setAttribute("aria-hidden", "false");
 
-  modal.classList.add("active");
+  const titleEl = document.getElementById("bookViewerTitle");
+  if (titleEl && currentBook) {
+    titleEl.textContent = currentBook.title || "Leitor Digital";
+  }
 
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
+  const mainAudio = document.getElementById("mainPlayer");
+  const miniBar = document.getElementById("readerMiniAudioBar");
+  if (miniBar && mainAudio) {
+    if (!mainAudio.paused && !mainAudio.ended && mainAudio.currentTime > 0) {
+      miniBar.style.display = "flex";
+      const trackEl = document.getElementById("readerAudioTrack");
+      if (trackEl && typeof audioLibrary !== "undefined" && typeof audioState !== "undefined" && audioState.bookId) {
+        const ab = audioLibrary[audioState.bookId];
+        const ch = (ab && ab.chapterTitles && ab.chapterTitles[audioState.trackIndex]) || "Áudio Ativo";
+        trackEl.textContent = "Tocando: " + ch;
+      }
+    } else {
+      miniBar.style.display = "none";
+    }
+  }
+
+  if (typeof setupSwipeGestures === "function") {
+    setupSwipeGestures();
+  }
 
 
   document.body.classList.add(
@@ -324,18 +342,13 @@ async function openBookViewer(bookId, moduleType = 'playbooks', itemIndex = -1) 
 ========================================================= */
 
 function closeBookViewer() {
-
-  if (!modal) {
+  const targetModal = (typeof modal !== "undefined" && modal) ? modal : document.getElementById("bookViewerModal");
+  if (!targetModal) {
     return;
   }
 
-
-  modal.classList.remove("active");
-
-  modal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
+  targetModal.classList.remove("active");
+  targetModal.setAttribute("aria-hidden", "true");
 
 
   document.body.classList.remove(
@@ -370,6 +383,8 @@ async function renderCurrentPages() {
 
 
   try {
+    const leftPageEl = document.getElementById("leftPage");
+    if (leftPageEl) leftPageEl.scrollTop = 0;
 
     showLoading();
 
@@ -489,12 +504,13 @@ async function renderPage(
     );
 
 
-  canvas.style.width =
-    `${baseViewport.width}px`;
-
-
-  canvas.style.height =
-    `${baseViewport.height}px`;
+  if (window.innerWidth <= 950 || window.innerHeight <= 620) {
+    canvas.style.width = "100%";
+    canvas.style.height = "auto";
+  } else {
+    canvas.style.width = `${baseViewport.width}px`;
+    canvas.style.height = `${baseViewport.height}px`;
+  }
 
 
   // Aplica zoom e pan usando CSS transform (sem transições para movimento rápido)
@@ -1662,11 +1678,24 @@ document.addEventListener(
 );
 
 // Global logout helper for legacy onclick handlers used in templates
-function logout() {
+async function logout() {
   try {
+    try {
+      await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+    } catch (error) {
+      console.warn('Não foi possível encerrar a sessão no servidor.', error);
+    }
+
     // clear simple session markers and redirect to login page
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isAdmin');
+    localStorage.removeItem('userStatus');
+    localStorage.removeItem('userExpiresAt');
+    localStorage.removeItem('subscriptionType');
+    localStorage.removeItem('userCreatedAt');
     // if authManager exists (from script-novo.js), prefer its method
     if (typeof authManager !== 'undefined' && typeof authManager.logout === 'function') {
       try { authManager.logout(); return; } catch (e) { /* fallback below */ }
@@ -1884,3 +1913,118 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+/* =========================================================
+   CONTROLES DO MODO LEITURA / ROTAÇÃO DE CELULAR (LANDSCAPE)
+========================================================= */
+
+let isFitWidth = true;
+
+function toggleFitWidth() {
+  isFitWidth = !isFitWidth;
+  const page = document.getElementById("leftPage");
+  const btn = document.getElementById("fitWidthBtn");
+  if (page) {
+    if (isFitWidth) {
+      page.classList.remove("fit-height-mode");
+      page.classList.add("fit-width-mode");
+      if (btn) btn.innerHTML = '<i class="fas fa-arrows-alt-v"></i> <span>Ajustar Altura</span>';
+    } else {
+      page.classList.remove("fit-width-mode");
+      page.classList.add("fit-height-mode");
+      if (btn) btn.innerHTML = '<i class="fas fa-arrows-alt-h"></i> <span>Ajustar Largura</span>';
+    }
+  }
+}
+
+function toggleFullscreenReader() {
+  const modalEl = document.getElementById("bookViewerModal");
+  if (!modalEl) return;
+
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (modalEl.requestFullscreen) {
+      modalEl.requestFullscreen().catch(() => {});
+    } else if (modalEl.webkitRequestFullscreen) {
+      modalEl.webkitRequestFullscreen();
+    }
+    if (screen.orientation && typeof screen.orientation.lock === "function") {
+      screen.orientation.lock("landscape").catch(() => {});
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+    if (screen.orientation && typeof screen.orientation.unlock === "function") {
+      screen.orientation.unlock();
+    }
+  }
+}
+
+function toggleAudioFromReader() {
+  const player = document.getElementById("mainPlayer");
+  const icon = document.querySelector("#readerAudioPlayPause i");
+  if (!player) return;
+  if (player.paused) {
+    player.play().catch(() => {});
+    if (icon) icon.className = "fas fa-pause";
+  } else {
+    player.pause();
+    if (icon) icon.className = "fas fa-play";
+  }
+}
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+function setupSwipeGestures() {
+  const container = document.getElementById("bookContainer") || document.getElementById("leftPage");
+  if (!container || container.__swipeAttached) return;
+  container.__swipeAttached = true;
+
+  container.addEventListener("touchstart", (e) => {
+    if (e.touches && e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  container.addEventListener("touchend", (e) => {
+    if (typeof isDragging !== "undefined" && isDragging) return;
+    if (e.changedTouches && e.changedTouches.length === 1) {
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      const deltaY = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(deltaX) > 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+        if (deltaX < 0) {
+          if (typeof nextPage === "function") nextPage();
+        } else {
+          if (typeof prevPage === "function") prevPage();
+        }
+      }
+    }
+  }, { passive: true });
+}
+
+window.toggleFitWidth = toggleFitWidth;
+window.toggleFullscreenReader = toggleFullscreenReader;
+window.toggleAudioFromReader = toggleAudioFromReader;
+window.setupSwipeGestures = setupSwipeGestures;
+
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    if (pdfDocument && typeof renderCurrentPages === "function") {
+      renderCurrentPages();
+    }
+  }, 250);
+});
+
+if (screen.orientation) {
+  screen.orientation.addEventListener("change", () => {
+    setTimeout(() => {
+      if (pdfDocument && typeof renderCurrentPages === "function") {
+        renderCurrentPages();
+      }
+    }, 250);
+  });
+}

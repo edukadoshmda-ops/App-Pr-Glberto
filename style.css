@@ -4515,3 +4515,471 @@ body.theme-light .mission-badge-text {
   }
 }
 
+
+
+/* =========================================================
+   MODO PAISAGEM / ROTAO DE CELULAR (LANDSCAPE & E-READER)
+   Otimizao Imersiva para Play Books e Audio Books
+   ========================================================= */
+
+/* Estilos de topo e ferramentas do Leitor Digital */
+.book-viewer-header {
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  right: 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.book-viewer-header > * {
+  pointer-events: auto;
+}
+
+.book-viewer-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-gold, #f5b52e);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: rgba(13, 17, 23, 0.75);
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 181, 46, 0.2);
+  backdrop-filter: blur(8px);
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-viewer-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-tool-btn {
+  background: rgba(22, 27, 34, 0.85);
+  border: 1px solid rgba(245, 181, 46, 0.35);
+  color: #f0f6fc;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.reader-tool-btn:hover {
+  background: rgba(245, 181, 46, 0.25);
+  border-color: #ffd700;
+  color: #ffd700;
+  transform: translateY(-1px);
+}
+
+/* Barra de udio flutuante no topo do leitor quando udio est ativo */
+.reader-mini-audio-bar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: rgba(16, 29, 58, 0.92);
+  border: 1px solid rgba(245, 181, 46, 0.4);
+  padding: 5px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.reader-audio-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.reader-audio-info .pulse-icon {
+  animation: pulseAudio 1.5s infinite;
+}
+
+@keyframes pulseAudio {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.reader-audio-actions button {
+  background: #f5b52e;
+  border: none;
+  color: #0b1120;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+
+.reader-audio-actions button:hover {
+  transform: scale(1.1);
+}
+
+/* Modos de ajuste da pgina */
+.book-page.fit-width-mode canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.book-page.fit-height-mode canvas {
+  width: auto !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+/* Boto Ler Livro no Audiobook */
+.read-along-btn {
+  background: linear-gradient(135deg, #cda451, #b38b34) !important;
+  color: #0d1117 !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.read-along-btn:hover {
+  filter: brightness(1.15) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(205, 164, 81, 0.4) !important;
+}
+
+/* Boto Ler dentro dos cards de Audiobooks */
+.btn-read-card {
+  background: rgba(245, 181, 46, 0.12) !important;
+  color: #f5b52e !important;
+  border: 1px solid rgba(245, 181, 46, 0.35) !important;
+  font-weight: 600 !important;
+}
+
+.btn-read-card:hover {
+  background: rgba(245, 181, 46, 0.25) !important;
+  border-color: #f5b52e !important;
+  color: #fff !important;
+}
+
+/* =========================================================
+   MEDIA QUERY: CELULAR EM MODO PAISAGEM (LANDSCAPE)
+   Acionado ao girar o celular horizontalmente
+   ========================================================= */
+@media (orientation: landscape) and (max-height: 620px), (max-width: 950px) and (orientation: landscape) {
+
+  /* Bloqueio de rolagem no body quando leitor aberto */
+  body.book-open {
+    overflow: hidden !important;
+  }
+
+  /* Modal do Leitor ocupa 100% da tela */
+  .book-viewer-modal {
+    padding: 0 !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    background: #060911 !important;
+    z-index: 99999 !important;
+  }
+
+  .book-viewer-content {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    padding: 38px 0 44px 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    background: #060911 !important;
+    box-shadow: none !important;
+  }
+
+  .book-viewer-header {
+    top: 4px !important;
+    left: 8px !important;
+    right: 8px !important;
+    height: 32px !important;
+    background: rgba(13, 17, 23, 0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 6px !important;
+    padding: 2px 8px !important;
+  }
+
+  .book-viewer-title-box {
+    padding: 2px 8px !important;
+    font-size: 12px !important;
+    max-width: 35% !important;
+  }
+
+  .reader-tool-btn {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  .reader-tool-btn span {
+    display: none !important;
+  }
+
+  .close-book-btn {
+    position: static !important;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+  }
+
+  .book-viewer {
+    height: 100% !important;
+  }
+
+  .book-container {
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .book-page-right {
+    display: none !important;
+  }
+
+  .book-page {
+    height: 100% !important;
+    padding: 6px 12px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: #0a0f1d !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* O canvas em modo paisagem se ajusta  largura total para mxima legibilidade */
+  .book-page canvas {
+    width: 100% !important;
+    max-width: 900px !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 auto !important;
+    display: block !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    border-radius: 4px !important;
+  }
+
+  /* Barra inferior de navegao fixada e compacta */
+  .book-navigation {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 42px !important;
+    background: rgba(10, 15, 29, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border-top: 1px solid rgba(245, 181, 46, 0.25) !important;
+    z-index: 60 !important;
+    padding: 3px 14px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .book-nav-btn {
+    height: 32px !important;
+    padding: 0 14px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    background: linear-gradient(135deg, #f5b52e, #b8860b) !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+    border: none !important;
+  }
+
+  .book-page-indicator {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #e6edf3 !important;
+  }
+
+  .book-zoom-controls {
+    bottom: 48px !important;
+    padding: 2px 8px !important;
+    transform: translateX(-50%) scale(0.85) !important;
+  }
+
+  /* Iframe Google Drive em tela cheia horizontal */
+  #driveIframeModal {
+    padding: 0 !important;
+  }
+
+  #driveIframeModal #driveModalBox {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  #driveIframeModal #driveModalBox > div:first-child {
+    padding: 6px 12px !important;
+    min-height: 36px !important;
+  }
+
+  /* Layout da Pgina Audiobook na Horizontal */
+  .main-panel.page-main {
+    padding: 10px 14px !important;
+  }
+
+  .feature-player {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .feature-player .feature-cover {
+    width: 90px !important;
+    height: 90px !important;
+    min-width: 90px !important;
+    border-radius: 10px !important;
+  }
+
+  .feature-player .feature-info h2 {
+    font-size: 16px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .feature-player .feature-info p {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    margin-bottom: 6px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .feature-player .meta-row {
+    margin-bottom: 6px !important;
+    gap: 8px !important;
+  }
+
+  .feature-player .meta-row span {
+    font-size: 11px !important;
+  }
+
+  .feature-player .primary-btn {
+    margin-top: 0 !important;
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+  }
+
+  /* Audio player principal compacto e horizontal */
+  .elite-audio-player {
+    padding: 12px 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .player-top {
+    margin-bottom: 8px !important;
+  }
+
+  .player-cover-thumb {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .player-controls {
+    gap: 10px !important;
+  }
+
+  /* Grid de cards de audiobook em 2 colunas */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .media-card {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 110px !important;
+  }
+
+  .media-card .media-thumb {
+    width: 90px !important;
+    min-width: 90px !important;
+    height: 100% !important;
+  }
+
+  .media-card .media-body {
+    padding: 8px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+  }
+
+  .media-card .media-body h3 {
+    font-size: 13.5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .media-card .media-body p {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 4px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .media-card .card-actions {
+    display: flex !important;
+    gap: 6px !important;
+  }
+
+  .media-card .secondary-btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    width: auto !important;
+  }
+}

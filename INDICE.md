@@ -53,7 +53,7 @@
 ### Passo 1: Abrir Aplicação
 ```
 1. Abra login.html no navegador
-2. Digite qualquer email e senha
+2. Informe as credenciais de uma conta cadastrada
 3. Clique ENTRAR
 ```
 

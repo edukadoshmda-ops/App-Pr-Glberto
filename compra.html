@@ -75,7 +75,7 @@
             if(password!==confirmPassword){ alert("As senhas não coincidem!"); return; }
             const btn=this.querySelector(".submit-btn"); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Criando sua conta...';
             try{
-                const r=await fetch("/api/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fullName,phone,email,password})});
+                const r=await fetch("/api/register",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({fullName,phone,email,password})});
                 const d=await r.json();
                 if(r.ok&&d.success){
                     const u=d.user; localStorage.setItem("isLoggedIn","true"); localStorage.setItem("userEmail",u.email); localStorage.setItem("userId",u.id); localStorage.setItem("userName",u.fullName||email); localStorage.setItem("isAdmin","false"); localStorage.setItem("userStatus","approved"); localStorage.setItem("subscriptionType","full"); localStorage.setItem("userExpiresAt",""); localStorage.setItem("userCreatedAt",u.createdAt||new Date().toISOString()); window.location.href="dashboard.html";

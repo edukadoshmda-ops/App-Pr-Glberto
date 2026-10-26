@@ -654,67 +654,37 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
             try {
-                // 1. Tentar Login via API do Servidor Node
-                try {
-                    const response = await fetch('/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
 
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        alert(data.error || 'Erro ao fazer login. Verifique seu e-mail e senha.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'ENTRAR';
-                        return;
-                    }
-
-                    if (response.ok && data.success) {
-                        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com'];
-                        const isAdmin = data.user.isAdmin || adminEmails.includes(email.toLowerCase());
-                        const status = 'approved';
-                        const subType = 'full';
-
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('userEmail', email);
-                        localStorage.setItem('userId', data.user.id);
-                        localStorage.setItem('userName', data.user.fullName || (email.includes('gilberto') ? 'Pr. Gilberto Penido Bertho' : email));
-                        localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
-                        localStorage.setItem('userStatus', status);
-                        localStorage.setItem('userExpiresAt', data.user.expiresAt || '');
-                        localStorage.setItem('subscriptionType', subType);
-                        localStorage.setItem('userCreatedAt', data.user.createdAt || new Date().toISOString());
-                        window.location.href = 'dashboard.html';
-                        return;
-                    }
-                } catch (fetchErr) {
-                    console.warn("Servidor local não respondeu ao login, tentando fallback:", fetchErr);
-                }
-
-                // 2. Fallback Direto Local para Administradores
-                const hardcodedAdmins = [
-                    { email: 'gilbertobertho@gmail.com', pass: '123456', name: 'Pr. Gilberto Penido Bertho' },
-                    { email: 'gilbertbertho@gmail.com', pass: '123456', name: 'Pr. Gilberto (Alternativo)' },
-                    { email: 'edukadoshmda@gmail.com', pass: '123456', name: 'Admin Dev' }
-                ];
-                const matchedAdmin = hardcodedAdmins.find(a => a.email.toLowerCase() === email.toLowerCase() && a.pass === password);
-                if (matchedAdmin) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', matchedAdmin.email);
-                    localStorage.setItem('userId', 'admin-' + Date.now());
-                    localStorage.setItem('userName', matchedAdmin.name);
-                    localStorage.setItem('isAdmin', 'true');
-                    localStorage.setItem('userStatus', 'approved');
-                    localStorage.setItem('userCreatedAt', new Date().toISOString());
-                    window.location.href = 'dashboard.html';
+                if (!response.ok || !data.success) {
+                    alert(data.error || 'Erro ao fazer login. Verifique seu e-mail e senha.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'ENTRAR';
                     return;
                 }
 
-                alert('Erro ao fazer login. Verifique seu e-mail e senha.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'ENTRAR';
+                const isAdmin = data.user.isAdmin === true;
+                if (isAdmin && data.adminSessionIssued !== true) {
+                    throw new Error('O servidor não criou uma sessão administrativa. Verifique a configuração do Supabase.');
+                }
+
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', data.user.email || email);
+                localStorage.setItem('userId', data.user.id);
+                localStorage.setItem('userName', data.user.fullName || email);
+                localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+                localStorage.setItem('userStatus', data.user.status || 'approved');
+                localStorage.setItem('userExpiresAt', data.user.expiresAt || '');
+                localStorage.setItem('subscriptionType', data.user.subscriptionType || 'full');
+                localStorage.setItem('userCreatedAt', data.user.createdAt || new Date().toISOString());
+                window.location.href = 'dashboard.html';
+                return;
             } catch (error) {
                 console.error('Erro no login:', error);
                 alert('Erro de conexão ao fazer login. Tente novamente.');

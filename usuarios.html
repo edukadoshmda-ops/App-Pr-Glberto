@@ -666,7 +666,7 @@
         <aside class="sidebar">
             <div class="brand-block">
                 <img class="brand-logo" src="assets/logo.png" alt="PrGilbertoPenido logo" />
-            </div>
+            </div>`}
 
             <button class="mobile-back-btn" onclick="window.location.href='index.html'">
                 <i class="fas fa-arrow-left"></i>
@@ -721,7 +721,7 @@
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Sair</span>
               </button>
-            </div>
+            </div>`}
         </aside>
 
         <main class="main-panel">
@@ -789,10 +789,13 @@
                         <p style="font-size: 13px; color: var(--muted, #94a3b8); margin: 4px 0 0 0;">
                             Gerencie os acessos, mensalidades e status dos assinantes da plataforma.
                         </p>
+                        <p id="usersSourceNotice" hidden style="font-size: 12px; color: #f5b52e; margin: 8px 0 0;">
+                            A tabela public.users não está disponível ou acessível. Os perfis do Supabase Auth são exibidos em modo somente leitura, sem dados de assinatura.
+                        </p>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="openNewUserModal()" class="btn-action btn-activate" style="padding: 10px 18px; font-size: 14px; font-weight: 700;">
+                        <button id="newUserButton" onclick="openNewUserModal()" class="btn-action btn-activate" style="padding: 10px 18px; font-size: 14px; font-weight: 700;">
                             <i class="fas fa-user-plus"></i> Novo Usuário
                         </button>
                         <button onclick="loadUsers()" class="btn-action" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-color, #ffffff); padding: 10px 16px;">
@@ -948,6 +951,10 @@
                     <input type="email" id="newUserEmail" required class="form-input" placeholder="carlos@exemplo.com" />
                 </div>
                 <div class="form-group">
+                    <label for="newUserPassword">Senha inicial (mínimo 6 caracteres)</label>
+                    <input type="password" id="newUserPassword" required minlength="6" class="form-input" autocomplete="new-password" />
+                </div>
+                <div class="form-group">
                     <label for="newUserPhone">Telefone / WhatsApp</label>
                     <input type="text" id="newUserPhone" class="form-input" placeholder="(32) 99999-9999" />
                 </div>
@@ -1046,13 +1053,13 @@
 
     <script>
         let currentUsers = [];
+        let usersReadOnly = false;
         let deleteUserId = null;
         let statusUserId = null;
         let newStatus = null;
         let selectedUserIds = new Set();
         let targetMsgUser = null;
         let isBatchMsgMode = false;
-        const API_KEY = 'prgilbertopenido-secret-key-2024';
 
         // Templates Oficiais Pastorais / Elegantes
         const MSG_TEMPLATES = {
@@ -1073,32 +1080,77 @@
             return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
         // Carregar Usuários e Calcular Métricas Financeiras
         async function loadUsers() {
             const refreshIcon = document.getElementById('refreshIcon');
             if (refreshIcon) refreshIcon.classList.add('fa-spin');
 
             try {
-                const response = await fetch(`/api/users?apiKey=${API_KEY}`, {
-                    headers: { 'x-api-key': API_KEY }
-                });
+                const response = await fetch('/api/users', { credentials: 'same-origin' });
                 
-                if (!response.ok) throw new Error('Falha ao obter lista do servidor');
+                if (!response.ok) {
+                    const error = new Error(`Falha ao obter lista do servidor (${response.status})`);
+                    error.status = response.status;
+                    throw error;
+                }
                 const users = await response.json();
+                if (!Array.isArray(users)) throw new Error('Resposta inválida ao carregar usuários.');
                 currentUsers = users;
+                usersReadOnly = response.headers.get('X-Users-Read-Only') === 'true';
+                if (usersReadOnly) selectedUserIds.clear();
+                const sourceNotice = document.getElementById('usersSourceNotice');
+                const newUserButton = document.getElementById('newUserButton');
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                if (sourceNotice) sourceNotice.hidden = !usersReadOnly;
+                if (newUserButton) {
+                    newUserButton.disabled = usersReadOnly;
+                    newUserButton.title = usersReadOnly ? 'Cadastros somente leitura até configurar public.users no Supabase.' : '';
+                }
+                if (selectAllCheckbox) selectAllCheckbox.disabled = usersReadOnly;
                 renderUsersTable(users);
                 calculateFinancialMetrics(users);
             } catch (error) {
-                console.warn('Usando dados em cache/local:', error);
-                const fallbackUsers = [
-                    { id: "admin-001", fullName: "Pr. Gilberto Penido Bertho", phone: "(32) 99103-5632", email: "gilbertobertho@gmail.com", status: "approved", paidAmount: 19.90, isAdmin: true },
-                    { id: "user-003", fullName: "Carlos Eduardo Silva", phone: "(11) 98765-4321", email: "carlos.silva@exemplo.com", status: "approved", paidAmount: 19.90, isAdmin: false, subscriptionType: 'monthly', expiresAt: new Date(Date.now() + 3 * 86400000).toISOString(), daysRemaining: 3 },
-                    { id: "user-004", fullName: "Maria Aparecida Santos", phone: "(21) 99887-1122", email: "maria.santos@exemplo.com", status: "approved", paidAmount: 19.90, isAdmin: false, subscriptionType: 'trial', expiresAt: new Date(Date.now() + 5 * 86400000).toISOString(), daysRemaining: 5 },
-                    { id: "user-005", fullName: "João Batista de Souza", phone: "(31) 98877-6655", email: "joao.souza@exemplo.com", status: "expired", paidAmount: 19.90, isAdmin: false, subscriptionType: 'trial', expiresAt: new Date(Date.now() - 86400000).toISOString(), daysRemaining: -1 }
-                ];
-                currentUsers = fallbackUsers;
-                renderUsersTable(fallbackUsers);
-                calculateFinancialMetrics(fallbackUsers);
+                console.error('Falha ao carregar usuários:', error);
+                const sessionExpired = error.status === 401;
+                if (sessionExpired) {
+                    ['isLoggedIn', 'isAdmin'].forEach(key => localStorage.removeItem(key));
+                }
+                currentUsers = [];
+                usersReadOnly = false;
+                selectedUserIds.clear();
+                const tbody = document.getElementById('usersTableBody');
+                const sourceNotice = document.getElementById('usersSourceNotice');
+                const newUserButton = document.getElementById('newUserButton');
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                if (sourceNotice) sourceNotice.hidden = true;
+                if (newUserButton) {
+                    newUserButton.disabled = false;
+                    newUserButton.title = '';
+                }
+                if (selectAllCheckbox) selectAllCheckbox.disabled = false;
+                if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                updateBatchSelectionUI();
+                if (tbody) {
+                    const action = sessionExpired
+                        ? '<a class="btn-action" style="display: inline-block; margin-top: 12px;" href="login.html">Entrar novamente</a>'
+                        : '<button class="btn-action" style="margin-top: 12px;" onclick="loadUsers()">Tentar novamente</button>';
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);"><span id="usersLoadError"></span><br>${action}</td></tr>`;
+                    document.getElementById('usersLoadError').textContent = `Não foi possível carregar os usuários: ${error.message}`;
+                }
+                ['totalMonthlyRevenue', 'activeUsersCount', 'pausedUsersCount', 'avgTicketRevenue'].forEach(id => {
+                    const metric = document.getElementById(id);
+                    if (metric) metric.textContent = '—';
+                });
             } finally {
                 if (refreshIcon) {
                     setTimeout(() => refreshIcon.classList.remove('fa-spin'), 400);
@@ -1111,6 +1163,7 @@
             let totalRevenue = 0;
             let activeCount = 0;
             let pausedCount = 0;
+            const membershipDataAvailable = !usersReadOnly && !users.some(user => user.profileOnly);
 
             users.forEach(u => {
                 const amount = Number(u.paidAmount) || 0;
@@ -1124,10 +1177,10 @@
 
             const avgTicket = activeCount > 0 ? (totalRevenue / activeCount) : 0;
 
-            document.getElementById('totalMonthlyRevenue').textContent = formatMoney(totalRevenue) + ' /mês';
-            document.getElementById('activeUsersCount').textContent = activeCount;
-            document.getElementById('pausedUsersCount').textContent = pausedCount;
-            document.getElementById('avgTicketRevenue').textContent = formatMoney(avgTicket);
+            document.getElementById('totalMonthlyRevenue').textContent = membershipDataAvailable ? formatMoney(totalRevenue) + ' /mês' : '—';
+            document.getElementById('activeUsersCount').textContent = membershipDataAvailable ? activeCount : '—';
+            document.getElementById('pausedUsersCount').textContent = membershipDataAvailable ? pausedCount : '—';
+            document.getElementById('avgTicketRevenue').textContent = membershipDataAvailable ? formatMoney(avgTicket) : '—';
         }
 
         // Renderizar Tabela com Checkboxes e Botão de Mensagem
@@ -1136,19 +1189,27 @@
             if (!tbody) return;
 
             if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum usuário cadastrado.</td></tr>';
+                const message = usersReadOnly
+                    ? 'Nenhum perfil encontrado no Supabase Auth. Configure a tabela public.users para gerenciar os membros.'
+                    : 'Nenhum usuário cadastrado.';
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 24px; color: var(--muted);">${message}</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = users.map((user, index) => {
                 const userNumber = index + 1;
-                const initial = (user.fullName || 'U').charAt(0).toUpperCase();
+                const safeName = escapeHtml(user.fullName || 'Sem Nome');
+                const safeEmail = escapeHtml(user.email || '—');
+                const safePhone = escapeHtml(user.phone || '—');
+                const initial = escapeHtml((user.fullName || 'U').charAt(0).toUpperCase());
                 const isApproved = user.status === 'approved';
                 const isExpired = user.status === 'expired';
                 const cleanPhone = (user.phone || '').replace(/\D/g, '');
                 const waLink = cleanPhone ? `https://wa.me/55${cleanPhone}` : null;
                 const paidVal = Number(user.paidAmount !== undefined ? user.paidAmount : 19.90);
                 const isChecked = selectedUserIds.has(user.id);
+                const safeId = escapeHtml(user.id);
+                const userIdLiteral = escapeHtml(JSON.stringify(String(user.id)));
 
                 let validityHtml = '<span style="color: var(--muted); font-size: 12px;">Não definida</span>';
                 const isTrial = user.subscriptionType === 'trial';
@@ -1185,33 +1246,35 @@
                 return `
                     <tr style="${isChecked ? 'background: rgba(245, 181, 46, 0.08);' : ''}">
                         <td style="text-align: center;">
-                            <input type="checkbox" class="user-row-checkbox" value="${user.id}" onchange="toggleUserSelection('${user.id}', this.checked)" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 17px; height: 17px; accent-color: var(--gold, #f5b52e);">
+                            <input type="checkbox" class="user-row-checkbox" value="${safeId}" onchange="toggleUserSelection(${userIdLiteral}, this.checked)" ${isChecked ? 'checked' : ''} ${usersReadOnly ? 'disabled' : ''} style="cursor: pointer; width: 17px; height: 17px; accent-color: var(--gold, #f5b52e);">
                         </td>
                         <td>
                             <div class="user-name-cell">
                                 <span style="font-weight: 800; font-size: 13px; color: var(--gold, #f5b52e); min-width: 22px; text-align: right; margin-right: 4px;">${userNumber}.</span>
                                 <div class="user-avatar">${initial}</div>
                                 <div>
-                                    <strong style="color: var(--text-color, #ffffff);">${user.fullName || 'Sem Nome'}</strong>
+                                    <strong style="color: var(--text-color, #ffffff);">${safeName}</strong>
                                     ${user.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}
                                 </div>
                             </div>
                         </td>
-                        <td>${user.email || '—'}</td>
+                        <td>${safeEmail}</td>
                         <td>
                             ${waLink ? `
                                 <a href="${waLink}" target="_blank" class="whatsapp-link" title="Conversar no WhatsApp">
-                                    <i class="fab fa-whatsapp"></i> ${user.phone}
+                                    <i class="fab fa-whatsapp"></i> ${safePhone}
                                 </a>
                             ` : (user.phone || '—')}
                         </td>
                         <td>
-                            <div class="price-badge">
-                                <span>${formatMoney(paidVal)}</span>
-                                <button class="btn-action btn-edit" style="padding: 3px 8px; font-size: 11px;" onclick="openEditUserModal('${user.id}')" title="Alterar valor pago">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                            </div>
+                            ${user.profileOnly
+                                ? '<span style="color: var(--muted); font-size: 12px;">Sem dados de assinatura</span>'
+                                : `<div class="price-badge">
+                                    <span>${formatMoney(paidVal)}</span>
+                                    <button class="btn-action btn-edit" style="padding: 3px 8px; font-size: 11px;" onclick="openEditUserModal(${userIdLiteral})" title="Alterar valor pago">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                </div>`}
                         </td>
                         <td>
                             ${validityHtml}
@@ -1223,31 +1286,31 @@
                             </span>
                         </td>
                         <td>
-                            <div class="action-buttons">
-                                <button class="btn-action" style="background: rgba(37, 211, 102, 0.18); border: 1px solid rgba(37, 211, 102, 0.4); color: #25D366;" onclick="openCustomMessageModal('${user.id}', false)" title="Mensagem personalizada de aviso / cobrança no WhatsApp">
+                            ${user.profileOnly ? '<span style="color: var(--muted); font-size: 12px;">Gerenciamento indisponível</span>' : `<div class="action-buttons">
+                                <button class="btn-action" style="background: rgba(37, 211, 102, 0.18); border: 1px solid rgba(37, 211, 102, 0.4); color: #25D366;" onclick="openCustomMessageModal(${userIdLiteral}, false)" title="Mensagem personalizada de aviso / cobrança no WhatsApp">
                                     <i class="fab fa-whatsapp"></i> Mensagem
                                 </button>
 
-                                <button class="btn-action btn-activate" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.35); color: #25D366;" onclick="renewUserSubscription('${user.id}')" title="Adicionar +30 dias de acesso via PIX">
+                                <button class="btn-action btn-activate" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.35); color: #25D366;" onclick="renewUserSubscription(${userIdLiteral})" title="Adicionar +30 dias de acesso via PIX">
                                     <i class="fas fa-plus-circle"></i> +30d PIX
                                 </button>
 
-                                <button class="btn-action" style="background: ${isApproved ? 'rgba(239,68,68,0.15)' : 'rgba(37,211,102,0.15)'}; border: 1px solid ${isApproved ? 'rgba(239,68,68,0.35)' : 'rgba(37,211,102,0.35)'}; color: ${isApproved ? '#ef4444' : '#25D366'};" onclick="openStatusModal('${user.id}', '${isApproved ? 'pending' : 'approved'}')" title="${isApproved ? 'Pausar acesso' : 'Ativar acesso'}">
+                                <button class="btn-action" style="background: ${isApproved ? 'rgba(239,68,68,0.15)' : 'rgba(37,211,102,0.15)'}; border: 1px solid ${isApproved ? 'rgba(239,68,68,0.35)' : 'rgba(37,211,102,0.35)'}; color: ${isApproved ? '#ef4444' : '#25D366'};" onclick="openStatusModal(${userIdLiteral}, '${isApproved ? 'pending' : 'approved'}')" title="${isApproved ? 'Pausar acesso' : 'Ativar acesso'}">
                                     <i class="fas ${isApproved ? 'fa-pause-circle' : 'fa-play-circle'}"></i> ${isApproved ? 'Pausar' : 'Ativar'}
                                 </button>
                                 
-                                <button class="btn-action" style="background: rgba(205, 164, 81, 0.15); border: 1px solid rgba(205, 164, 81, 0.3); color: #cda451;" onclick="sendUserReminderEmail('${user.id}')" title="Enviar e-mail oficial de renovação via Gmail">
+                                <button class="btn-action" style="background: rgba(205, 164, 81, 0.15); border: 1px solid rgba(205, 164, 81, 0.3); color: #cda451;" onclick="sendUserReminderEmail(${userIdLiteral})" title="Enviar e-mail oficial de renovação via Gmail">
                                     <i class="fas fa-envelope"></i>
                                 </button>
 
-                                <button class="btn-action btn-edit" onclick="openEditUserModal('${user.id}')" title="Editar dados e valor pago">
+                                <button class="btn-action btn-edit" onclick="openEditUserModal(${userIdLiteral})" title="Editar dados e valor pago">
                                     <i class="fas fa-edit"></i>
                                 </button>
 
-                                <button class="btn-action btn-delete" onclick="openDeleteModal('${user.id}')" title="Excluir usuário">
+                                <button class="btn-action btn-delete" onclick="openDeleteModal(${userIdLiteral})" title="Excluir usuário">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
-                            </div>
+                            </div>`}
                         </td>
                     </tr>
                 `;
@@ -1260,6 +1323,7 @@
         // SELEÇÃO EM MASSA (BATCH ACTIONS)
         // ==========================================
         function toggleSelectAll(masterCheckbox) {
+            if (usersReadOnly) return;
             const isChecked = masterCheckbox.checked;
             if (isChecked) {
                 currentUsers.forEach(u => selectedUserIds.add(u.id));
@@ -1270,6 +1334,7 @@
         }
 
         function toggleUserSelection(userId, isChecked) {
+            if (usersReadOnly) return;
             if (isChecked) {
                 selectedUserIds.add(userId);
             } else {
@@ -1312,9 +1377,9 @@
             let success = 0;
             for (const id of selectedUserIds) {
                 try {
-                    const res = await fetch(`/api/users/${id}/renew?apiKey=${API_KEY}`, {
+                    const res = await fetch(`/api/users/${id}/renew`, {
                         method: 'POST',
-                        headers: { 'x-api-key': API_KEY }
+                        credentials: 'same-origin'
                     });
                     if (res.ok) success++;
                 } catch(e) {
@@ -1335,9 +1400,9 @@
             let success = 0;
             for (const id of selectedUserIds) {
                 try {
-                    const res = await fetch(`/api/users/${id}/send-reminder?apiKey=${API_KEY}`, {
+                    const res = await fetch(`/api/users/${id}/send-reminder`, {
                         method: 'POST',
-                        headers: { 'x-api-key': API_KEY }
+                        credentials: 'same-origin'
                     });
                     if (res.ok) success++;
                 } catch(e) {
@@ -1530,12 +1595,12 @@
             if (!statusUserId || !newStatus) return;
 
             try {
-                const response = await fetch(`/api/users/${statusUserId}/status?apiKey=${API_KEY}`, {
+                const response = await fetch(`/api/users/${statusUserId}/status`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': API_KEY
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ status: newStatus })
                 });
 
@@ -1561,9 +1626,9 @@
             if (!confirm('Deseja confirmar o pagamento do PIX e renovar a assinatura deste membro por +30 dias?')) return;
 
             try {
-                const response = await fetch(`/api/users/${userId}/renew?apiKey=${API_KEY}`, {
+                const response = await fetch(`/api/users/${userId}/renew`, {
                     method: 'POST',
-                    headers: { 'x-api-key': API_KEY }
+                    credentials: 'same-origin'
                 });
 
                 if (response.ok) {
@@ -1582,9 +1647,9 @@
             if (!confirm('Deseja enviar o e-mail de lembrete de renovação do PIX para este membro via Gmail?')) return;
 
             try {
-                const response = await fetch(`/api/users/${userId}/send-reminder?apiKey=${API_KEY}`, {
+                const response = await fetch(`/api/users/${userId}/send-reminder`, {
                     method: 'POST',
-                    headers: { 'x-api-key': API_KEY }
+                    credentials: 'same-origin'
                 });
 
                 if (response.ok) {
@@ -1613,16 +1678,20 @@
             e.preventDefault();
             const fullName = document.getElementById('newUserName').value.trim();
             const email = document.getElementById('newUserEmail').value.trim();
+            const password = document.getElementById('newUserPassword').value;
             const phone = document.getElementById('newUserPhone').value.trim();
-            const paidAmount = parseFloat(document.getElementById('newUserPrice').value) || 19.90;
+            const paidAmount = Number(document.getElementById('newUserPrice').value);
             const status = document.getElementById('newUserStatus').value;
 
             try {
                 const response = await fetch('/api/users', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
-                        fullName, email, phone, paidAmount, status
+                        fullName, email, password, phone, paidAmount, status
                     })
                 });
 
@@ -1631,7 +1700,8 @@
                     loadUsers();
                     alert('Membro cadastrado com sucesso!');
                 } else {
-                    alert('Erro ao cadastrar membro.');
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao cadastrar membro.');
                 }
             } catch (err) {
                 console.error(err);
@@ -1668,12 +1738,12 @@
             const status = document.getElementById('editUserStatus').value;
 
             try {
-                const response = await fetch(`/api/users/${id}?apiKey=${API_KEY}`, {
+                const response = await fetch(`/api/users/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': API_KEY
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ fullName, email, phone, paidAmount, status })
                 });
 
@@ -1705,9 +1775,9 @@
             if (!deleteUserId) return;
 
             try {
-                const response = await fetch(`/api/users/${deleteUserId}?apiKey=${API_KEY}`, {
+                const response = await fetch(`/api/users/${deleteUserId}`, {
                     method: 'DELETE',
-                    headers: { 'x-api-key': API_KEY }
+                    credentials: 'same-origin'
                 });
 
                 if (response.ok) {
@@ -1776,8 +1846,3 @@
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-
-
-
-

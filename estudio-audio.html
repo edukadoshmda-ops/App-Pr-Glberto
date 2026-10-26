@@ -152,9 +152,9 @@
                 const res = await fetch('/api/generate-audio', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-KEY': 'prgilbertopenido-secret-key-2024'
+                        'Content-Type': 'application/json'
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ text, voice, bookId, trackName })
                 });
                 
@@ -187,4 +187,3 @@
       <script src="global-theme.js"></script>
 </body>
 </html>
-

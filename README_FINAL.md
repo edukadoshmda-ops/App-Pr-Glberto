@@ -91,7 +91,7 @@ App Gilberto Atualizado/
 ### 🔄 Fluxo de Navegação
 
 1. **Usuário acessa login.html**
-2. **Faz login** → localStorage salva sessão
+2. **Faz login com uma conta cadastrada** → a sessão administrativa assinada é salva no navegador
 3. **Redireciona para index.html** (Dashboard)
 4. **Pode navegar entre módulos** via sidebar
 5. **Logout desativa sessão**
@@ -132,7 +132,7 @@ App Gilberto Atualizado/
 ### 🚀 Como Usar
 
 1. Abra `login.html` no navegador
-2. Digite qualquer email e senha
+2. Entre com as credenciais de uma conta cadastrada
 3. Clique em "ENTRAR"
 4. Navegue pelos módulos no dashboard
 5. Clique na sidebar para navegar entre páginas
@@ -181,19 +181,9 @@ Este projeto inclui um pequeno backend em Node.js (Express) que gerencia uploads
 
 Observação: o servidor serve arquivos estáticos da pasta /assets e armazena metadados em /database/*.json.
 
-2) Proteção por chave (opcional)
+2) Sessão administrativa
 
-O backend suporta um mecanismo simples de proteção por chave HTTP: se a variável de ambiente API_KEY estiver definida, as rotas de escrita/exclusão exigirão que a requisição inclua o header X-API-KEY com o mesmo valor.
-
-- Definir API_KEY (temporariamente) em PowerShell:
-  $env:API_KEY = "sua-chave-aqui"
-  npm start
-
-- Definir API_KEY em macOS/Linux (bash):
-  export API_KEY="sua-chave-aqui"
-  npm start
-
-Se não definir API_KEY, as rotas permanecem públicas (útil para desenvolvimento local).
+As rotas administrativas usam um cookie de sessão `HttpOnly`, `Secure` em produção e `SameSite=Strict`. `/api/login` só o emite após validar as credenciais e a função de administrador; ele expira em 8 horas e é assinado com `ADMIN_SESSION_SECRET` (ou com a chave service role). O JavaScript não recebe nem lê o token. `/api/logout` encerra a sessão no servidor. A antiga chave estática no navegador não é mais aceita.
 
 3) Limites e tipos aceitos (server-side)
 
@@ -204,11 +194,17 @@ Se não definir API_KEY, as rotas permanecem públicas (útil para desenvolvimen
 
 4) Exemplos curl (multipart/form-data)
 
-Substitua os caminhos e IDs conforme necessário. Se o servidor estiver protegido por API_KEY, adicione o header -H "X-API-KEY: sua-chave".
+Para testar rotas administrativas com `curl`, autentique primeiro e guarde o cookie:
+
+  curl -c cookies.txt -H "Content-Type: application/json" \
+    -d '{"email":"ADMIN_EMAIL","password":"ADMIN_PASSWORD"}' \
+    http://localhost:3000/api/login
+
+Nas chamadas protegidas, use `-b cookies.txt`.
 
 - POST adicionar vídeo (com video + cover):
 
-  curl -v \
+  curl -v -b cookies.txt \
     -F "title=Meu Vídeo" \
     -F "category=lideranca" \
     -F "author=Gilberto" \
@@ -218,16 +214,9 @@ Substitua os caminhos e IDs conforme necessário. Se o servidor estiver protegid
     -F "cover=@/caminho/para/capa.jpg" \
     http://localhost:3000/api/videos
 
-  (Com API_KEY):
-  curl -v -H "X-API-KEY: sua-chave" \
-    -F "title=Meu Vídeo" \
-    -F "video=@/caminho/para/video.mp4" \
-    -F "cover=@/caminho/para/capa.jpg" \
-    http://localhost:3000/api/videos
-
 - POST adicionar artigo (imagem + pdf opcional):
 
-  curl -v \
+  curl -v -b cookies.txt \
     -F "title=Meu Artigo" \
     -F "category=Teologia" \
     -F "author=Gilberto" \
@@ -237,11 +226,9 @@ Substitua os caminhos e IDs conforme necessário. Se o servidor estiver protegid
     -F "pdf=@/caminho/para/artigo.pdf" \
     http://localhost:3000/api/articles
 
-  (Com API_KEY: acrescente -H "X-API-KEY: sua-chave")
-
 - POST adicionar projeto (imagem e múltiplos arquivos):
 
-  curl -v \
+  curl -v -b cookies.txt \
     -F "title=Nome do Projeto" \
     -F "description=Descrição do projeto" \
     -F "link=https://exemplo.com" \
@@ -250,14 +237,9 @@ Substitua os caminhos e IDs conforme necessário. Se o servidor estiver protegid
     -F "files=@/caminho/para/arquivo2.zip" \
     http://localhost:3000/api/projects
 
-  (Com API_KEY: acrescente -H "X-API-KEY: sua-chave")
-
 - DELETE remover recursos (ex.: vídeo):
 
-  curl -v -X DELETE http://localhost:3000/api/videos/<ID_DO_VIDEO>
-
-  (Com API_KEY):
-  curl -v -X DELETE -H "X-API-KEY: sua-chave" http://localhost:3000/api/videos/<ID_DO_VIDEO>
+  curl -v -b cookies.txt -X DELETE http://localhost:3000/api/videos/<ID_DO_VIDEO>
 
 5) Testes rápidos locais
 
@@ -275,7 +257,7 @@ Substitua os caminhos e IDs conforme necessário. Se o servidor estiver protegid
 - Os arquivos enviados são armazenados em /assets (ex.: /assets/videos, /assets/artigos/capas, /assets/artigos/pdfs, /assets/projetos).
 - Metadados são gravados em JSON em /database/*.json (videos.json, articles.json, projects.json).
 - O middleware Multer já limita tipos e tamanhos; erros de upload retornam 400 com a mensagem do Multer.
-- Para ativar a proteção por API_KEY em produção, defina API_KEY na configuração do ambiente e use uma chave forte; para autenticação mais avançada, recomenda-se implementar JWT ou integração com um provedor de identidade.
+- As rotas de escrita e gestão exigem uma sessão administrativa válida; encerre-a pelo botão de sair.
 
 ---
 
@@ -284,3 +266,18 @@ Se desejar, também posso:
 - Implementar um pequeno script de teste (bash/PowerShell) que automatize o upload e verifique as respostas.
 
 Fim das instruções.
+
+## Recuperar membros na Vercel
+
+1. No Supabase que contém as contas, abra o **SQL Editor** e execute [`database/supabase_users_migration.sql`](./database/supabase_users_migration.sql). A migração preserva os registros existentes e não importa nem apaga usuários.
+2. Na Vercel, abra o projeto que publica este repositório e configure, em **Settings → Environment Variables**, para Production (e Preview/Development se usados):
+   - `SUPABASE_URL`: Project URL do Supabase correto.
+   - `SUPABASE_SERVICE_ROLE_KEY`: chave secreta de backend desse mesmo projeto, necessária para carregar membros e gerenciar `public.users` ou ler perfis do Supabase Auth. Nunca use prefixo `VITE_` nem a coloque no HTML/JavaScript do navegador.
+   - `SUPABASE_ANON_KEY`: chave publicável necessária para login via Supabase Auth. Ela não é usada para listar membros.
+   - `ADMIN_SESSION_SECRET`: segredo estável (mínimo 32 bytes) para assinar sessões administrativas. Se não definido, o backend usa `SUPABASE_SERVICE_ROLE_KEY`; sem nenhum dos dois o login administrativo é recusado.
+3. Salve as variáveis e faça **Redeploy** na Vercel.
+4. Entre novamente como administrador (sessões antigas deixam de valer) e atualize **Membros e Assinaturas**. O cookie administrativo dura 8 horas. Se só existirem perfis do Supabase Auth, serão mostrados como somente leitura; os dados de assinatura aparecem quando `public.users` contém esses dados. A política da migração impede leitura pública dos perfis: cada pessoa pode consultar o próprio perfil, e a chave de serviço é necessária para o painel administrativo.
+
+Não execute scripts de seed ou migração de JSON automaticamente contra produção: confira primeiro qual projeto Supabase é o banco original dos cadastros.
+
+Para desenvolvimento local, defina `ADMIN_SESSION_SECRET` no `.env` e mantenha o mesmo valor entre reinicializações do servidor; o backend não cria um segredo aleatório em memória. Gere um valor com `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.

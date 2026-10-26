@@ -327,7 +327,7 @@ index.html (Dashboard)
 
 ### Como Começar
 1. Abra login.html no navegador
-2. Digita qualquer email/senha
+2. Informe as credenciais de uma conta cadastrada
 3. Clique ENTRAR
 4. Explore o dashboard
 
@@ -404,4 +404,3 @@ Liberado para conclusão, apresentação e futuras iterações.
 **FIM DA DOCUMENTAÇÃO**
 
 Aproveite o projeto! 🚀
-

@@ -29,8 +29,8 @@ cd "App Gilberto Atualizado"
 ### Passo 1: Tela de Login
 ```
 URL: login.html
-Ação: Digite qualquer email e senha (ex: "gilberto@empresa.com" / "senha123")
-Resultado: Clique em ENTRAR e será redirecionado para o dashboard
+Ação: Informe o e-mail e a senha cadastrados no sistema
+Resultado: Após validar as credenciais, será redirecionado para o dashboard
 ```
 
 ### Passo 2: Dashboard Principal
@@ -110,20 +110,9 @@ Clique em qualquer um desses no sidebar:
 
 ---
 
-## 🔑 Credenciais de Teste
+## 🔑 Acesso
 
-Use qualquer email e senha:
-```
-Email: gilberto@empresa.com
-Senha: qualquer_coisa
-
-OU
-
-Email: teste@teste.com
-Senha: 123456
-
-OU simplesmente deixe em branco se não quiser preencher
-```
+Use o e-mail e a senha de uma conta cadastrada no sistema. Administradores precisam entrar novamente após a publicação para receber uma nova sessão administrativa.
 
 ---
 

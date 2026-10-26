@@ -871,6 +871,7 @@ form.addEventListener(
             // 2. Fallback para API Local Node
             const response = await fetch('/api/videos', {
                 method: 'POST',
+                credentials: 'same-origin',
                 body: formData
             });
 
@@ -901,6 +902,4 @@ form.addEventListener(
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-
 

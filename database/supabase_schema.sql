@@ -12,6 +12,26 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 2. TABELAS DO SISTEMA
 -- ==============================================================================
 
+-- 2.0 USERS (Contas e assinaturas gerenciadas pelo backend)
+CREATE TABLE IF NOT EXISTS public.users (
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    full_name TEXT,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL,
+    phone TEXT,
+    status TEXT NOT NULL DEFAULT 'pending',
+    "subscriptionType" TEXT DEFAULT 'trial',
+    subscription_type TEXT DEFAULT 'trial',
+    "subscriptionExpires" TIMESTAMPTZ,
+    expires_at TIMESTAMPTZ,
+    paid_amount NUMERIC(10, 2) NOT NULL DEFAULT 19.90,
+    last_payment_date TIMESTAMPTZ,
+    role TEXT NOT NULL DEFAULT 'user',
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- 2.1 PROFILES (Perfis de Usuários conectados com auth.users do Supabase)
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -209,15 +229,14 @@ CREATE TRIGGER on_auth_user_created
 -- 4.0 Função segura para checagem de administrador (evita recursão infinita no RLS)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
-BEGIN
-    RETURN EXISTS (
-        SELECT 1 FROM public.profiles 
+    SELECT EXISTS (
+        SELECT 1 FROM public.profiles
         WHERE id = auth.uid() AND is_admin = TRUE
     );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '';
 
 -- Habilitar RLS em todas as tabelas
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.videos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.articles ENABLE ROW LEVEL SECURITY;
@@ -229,11 +248,12 @@ ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
 
 -- 4.1 POLÍTICAS PARA PROFILES
 DROP POLICY IF EXISTS "Perfis leitura pública ou autenticada" ON public.profiles;
+DROP POLICY IF EXISTS "Usuários leem perfis autorizados" ON public.profiles;
 DROP POLICY IF EXISTS "Usuários atualizam o próprio perfil" ON public.profiles;
 DROP POLICY IF EXISTS "Admins gerenciam perfis" ON public.profiles;
 
-CREATE POLICY "Perfis leitura pública ou autenticada" ON public.profiles 
-FOR SELECT USING (true);
+CREATE POLICY "Usuários leem perfis autorizados" ON public.profiles
+FOR SELECT USING (auth.uid() = id OR public.is_admin());
 
 CREATE POLICY "Usuários atualizam o próprio perfil" ON public.profiles 
 FOR UPDATE USING (auth.uid() = id OR public.is_admin());

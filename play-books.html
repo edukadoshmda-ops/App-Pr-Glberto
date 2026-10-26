@@ -132,12 +132,37 @@
         <!-- Book Viewer Modal -->
         <div class="book-viewer-modal" id="bookViewerModal" aria-hidden="true">
           <div class="book-viewer-content">
-            <button class="close-book-btn" type="button" onclick="closeBookViewer()" aria-label="Fechar leitor">
-              <i class="fas fa-times"></i>
-            </button>
+            <div class="book-viewer-header">
+              <div class="book-viewer-title-box">
+                <i class="fas fa-book-open"></i>
+                <span id="bookViewerTitle">Leitor Digital</span>
+              </div>
+              <div id="readerMiniAudioBar" class="reader-mini-audio-bar">
+                <div class="reader-audio-info">
+                  <i class="fas fa-volume-high pulse-icon"></i>
+                  <span id="readerAudioTrack">Áudio Ativo</span>
+                </div>
+                <div class="reader-audio-actions">
+                  <button type="button" id="readerAudioPlayPause" onclick="toggleAudioFromReader()" title="Pausar / Reproduzir Áudio">
+                    <i class="fas fa-pause"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="book-viewer-tools">
+                <button class="reader-tool-btn" id="fitWidthBtn" type="button" onclick="toggleFitWidth()" title="Ajustar à Largura (Ideal para celular)">
+                  <i class="fas fa-arrows-alt-h"></i> <span>Ajustar Largura</span>
+                </button>
+                <button class="reader-tool-btn" id="rotateScreenBtn" type="button" onclick="toggleFullscreenReader()" title="Girar / Tela Cheia">
+                  <i class="fas fa-expand"></i> <span>Tela Cheia</span>
+                </button>
+                <button class="close-book-btn" type="button" onclick="closeBookViewer()" aria-label="Fechar leitor">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
             <div class="book-viewer">
-              <div class="book-container" id="bookContainer">
-                <div class="book-page book-page-left" id="leftPage">
+              <div class="book-container fit-width-mode" id="bookContainer">
+                <div class="book-page book-page-left fit-width-mode" id="leftPage">
                   <canvas id="leftCanvas"></canvas>
                 </div>
                 <div class="book-page book-page-right" id="rightPage">
@@ -404,6 +429,12 @@
                 <span style="color:#e6edf3; font-weight:600; font-size:15px; max-width:500px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${title}</span>
               </div>
               <div style="display:flex; gap:8px; align-items:center;">
+                <button type="button" onclick="toggleDriveFullscreen()"
+                   style="background:rgba(245,181,46,0.18); border:1px solid rgba(245,181,46,0.4); color:#ffd700;
+                          padding:6px 12px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;
+                          display:flex; align-items:center; gap:6px;" title="Tela Cheia / Girar">
+                  <i class="fas fa-expand"></i> <span>Girar / Tela Cheia</span>
+                </button>
                 <a id="driveOpenBtn" href="${viewUrl}" target="_blank"
                    style="color:#8b949e; font-size:13px; text-decoration:none; padding:6px 12px;
                           border:1px solid rgba(255,255,255,0.1); border-radius:6px;

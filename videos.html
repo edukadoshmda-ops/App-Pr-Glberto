@@ -253,7 +253,7 @@
             try {
                 const res = await fetch(`/api/videos/${id}`, {
                     method: 'DELETE',
-                    headers: { 'x-api-key': 'prgilbertopenido-secret-key-2024' }
+                    credentials: 'same-origin'
                 });
             } catch (err) {
                 console.warn('Erro ao excluir do servidor:', err);
@@ -457,5 +457,3 @@
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-

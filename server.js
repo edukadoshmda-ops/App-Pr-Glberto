@@ -1,7 +1,42 @@
 require('dotenv').config();
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
-let supabase = null; try { supabase = createClient(process.env.SUPABASE_URL || 'a', process.env.SUPABASE_ANON_KEY || 'a'); } catch(e) { console.error('SUPABASE INIT ERROR:', e.message); }
+const crypto = require('crypto');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+const supabaseConfigured = Boolean(
+    supabaseUrl &&
+    /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(supabaseUrl) &&
+    supabaseKey
+);
+const supabase = supabaseConfigured ? createClient(supabaseUrl, supabaseKey) : null;
+const supabaseAuth = supabaseConfigured && process.env.SUPABASE_ANON_KEY
+    ? createClient(supabaseUrl, process.env.SUPABASE_ANON_KEY, {
+        auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false }
+    })
+    : null;
+const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com', 'edukadoshmda@gmail.com'];
+const adminSessionSecret = process.env.ADMIN_SESSION_SECRET ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    (process.env.JWT_SECRET && Buffer.byteLength(process.env.JWT_SECRET) >= 32 ? process.env.JWT_SECRET : null) ||
+    "c2VjdXJlLWFkbWluLXNlc3Npb24tc2VjcmV0LWtleS1wcmdpbGJlcnRvLTMyYnl0ZXM=";
+const adminSessionCookieOptions = {
+    httpOnly: true,
+    secure: Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/api',
+    maxAge: 8 * 60 * 60 * 1000
+};
+const adminSessionCookieClearOptions = {
+    httpOnly: true,
+    secure: adminSessionCookieOptions.secure,
+    sameSite: 'strict',
+    path: '/api'
+};
+const userStoreKinds = new WeakMap();
+if (!supabaseConfigured) {
+    console.warn('[AVISO] Supabase não configurado.');
+}
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -287,13 +322,68 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Autenticação simples via X-API-KEY
-function requireApiKey(req, res, next) {
-    const key = 'prgilbertopenido-secret-key-2024';
-    const header = req.get('X-API-KEY') || req.get('x-api-key') || req.query.apiKey || (req.headers && req.headers['x-api-key']);
-    if (header === key || req.query.apiKey === key || !header) return next();
-    return next();
+function createAdminSessionToken(user) {
+    if (!adminSessionSecret || Buffer.byteLength(adminSessionSecret) < 32) {
+        throw new Error('Configure ADMIN_SESSION_SECRET com pelo menos 32 bytes para emitir sessões administrativas.');
+    }
+    const payload = Buffer.from(JSON.stringify({
+        sub: String(user.id),
+        admin: true,
+        exp: Math.floor(Date.now() / 1000) + 8 * 60 * 60
+    })).toString('base64url');
+    const signature = crypto.createHmac('sha256', adminSessionSecret).update(payload).digest('base64url');
+    return `${payload}.${signature}`;
 }
+
+function verifyAdminSessionToken(token) {
+    if (!adminSessionSecret || Buffer.byteLength(adminSessionSecret) < 32) return false;
+    const [payload, signature, extra] = String(token || '').split('.');
+    if (!payload || !signature || extra !== undefined) return false;
+
+    const expected = crypto.createHmac('sha256', adminSessionSecret).update(payload).digest();
+    let provided;
+    try {
+        provided = Buffer.from(signature, 'base64url');
+    } catch {
+        return false;
+    }
+    if (provided.length !== expected.length || !crypto.timingSafeEqual(provided, expected)) return false;
+
+    try {
+        const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+        return session.admin === true && typeof session.sub === 'string' &&
+            Number.isFinite(session.exp) && session.exp > Math.floor(Date.now() / 1000);
+    } catch {
+        return false;
+    }
+}
+
+function getAdminSessionCookie(req) {
+    const cookieHeader = req.get('Cookie') || '';
+    const sessionCookie = cookieHeader.split(';').map(cookie => cookie.trim())
+        .find(cookie => cookie.startsWith('admin_session='));
+    return sessionCookie ? sessionCookie.slice('admin_session='.length) : '';
+}
+
+function setAdminSessionCookie(res, user) {
+    const token = createAdminSessionToken(user);
+    res.cookie('admin_session', token, adminSessionCookieOptions);
+}
+
+function clearAdminSessionCookie(res) {
+    res.clearCookie('admin_session', adminSessionCookieClearOptions);
+}
+
+function requireAdminSession(req, res, next) {
+    const token = getAdminSessionCookie(req);
+    if (verifyAdminSessionToken(token)) return next();
+    return res.status(401).json({ error: 'Sessão administrativa inválida ou expirada. Entre novamente.' });
+}
+
+app.post('/api/logout', (req, res) => {
+    clearAdminSessionCookie(res);
+    res.json({ success: true });
+});
 
 // Criar pastas de assets se não existirem
 const assetsDir = path.join(__dirname, 'assets');
@@ -518,42 +608,125 @@ const playbooksDbPath = path.join(__dirname, 'database', 'playbooks.json');
 if (!fs.existsSync(audiobooksDbPath)) try { fs.writeFileSync(audiobooksDbPath, JSON.stringify([])); } catch(e) { }
 if (!fs.existsSync(playbooksDbPath)) try { fs.writeFileSync(playbooksDbPath, JSON.stringify([])); } catch(e) { }
 
+function readLocalUsers() {
+    const users = JSON.parse(fs.readFileSync(usersDbPath, 'utf8'));
+    if (!Array.isArray(users)) {
+        throw new Error('O arquivo local de usuários não contém uma lista válida.');
+    }
+    return users;
+}
+
+function normalizeUser(u, profileOnly = false) {
+    return {
+        id: u.id,
+        fullName: u.name || u.full_name || u.fullName || 'Usuário',
+        email: u.email,
+        phone: u.phone,
+        password: u.password,
+        status: u.status || 'pending',
+        subscriptionType: profileOnly ? 'profile' : (u.subscriptionType || u.subscription_type || 'trial'),
+        expiresAt: u.subscriptionExpires || u.subscription_expires || u.expiresAt || u.expires_at || null,
+        isAdmin: u.role === 'admin' || u.isAdmin || u.is_admin || false,
+        paidAmount: profileOnly ? null : (u.paidAmount ?? u.paid_amount ?? 19.90),
+        createdAt: u.created_at || u.createdAt || new Date().toISOString(),
+        lastPaymentDate: u.lastPaymentDate || u.last_payment_date || null,
+        trialStartedAt: u.trialStartedAt || u.trial_started_at || null,
+        trialDays: u.trialDays ?? u.trial_days ?? 7,
+        profileOnly
+    };
+}
+
+function isMissingUsersTableError(error) {
+    return error?.code === '42P01' || error?.code === 'PGRST205';
+}
+
+function rememberUserStore(users, store) {
+    userStoreKinds.set(users, store);
+    return users;
+}
+
 async function getUsers() {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        if (process.env.VERCEL) {
+            throw new Error('Configure SUPABASE_SERVICE_ROLE_KEY na Vercel para carregar e gerenciar membros com segurança.');
+        }
+        return rememberUserStore(readLocalUsers().map(user => normalizeUser(user)), 'local');
+    }
+
+    if (!supabase) {
+        throw new Error('Supabase não está configurado. Configure SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.');
+    }
+
+    let usersTableError = null;
     try {
         const { data, error } = await supabase.from('users').select('*');
-        if (error) throw error;
-        
-        return (data || []).map(u => ({
-            id: u.id,
-            fullName: u.name || u.fullName || 'Usuário',
-            email: u.email,
-            phone: u.phone,
-            password: u.password,
-            status: u.status || 'pending',
-            subscriptionType: u.subscriptionType || 'trial',
-            expiresAt: u.subscriptionExpires || u.expiresAt || null,
-            isAdmin: u.role === 'admin' || u.isAdmin || false,
-            paidAmount: u.paidAmount || 19.90,
-            createdAt: u.created_at || new Date().toISOString()
-        }));
-    } catch(err) {
-        console.error('Erro ao buscar usuários do Supabase:', err);
-        return [];
+        if (error) {
+            usersTableError = error;
+            console.warn('Não foi possível consultar a tabela users; tentando profiles:', error.message);
+        } else {
+            const users = (data || []).map(user => normalizeUser(user));
+            if (users.length > 0) return rememberUserStore(users, 'users');
+
+            console.warn('A tabela users está vazia; verificando perfis de contas Supabase Auth.');
+        }
+    } catch (error) {
+        usersTableError = error;
     }
+
+    const { data: profiles, error: profilesError } = await supabase.from('profiles').select('*');
+    if (profilesError) {
+        console.error('Erro ao buscar usuários e perfis no Supabase:', {
+            usersError: usersTableError?.message || null,
+            profilesError: profilesError.message
+        });
+        throw new Error('Não foi possível carregar os membros do Supabase. Verifique a conexão e as permissões da tabela profiles.');
+    }
+
+    const profileUsers = (profiles || []).map(profile => normalizeUser(profile, true));
+    if (profileUsers.length > 0) {
+        return rememberUserStore(profileUsers, 'profiles');
+    }
+
+    if (usersTableError && !isMissingUsersTableError(usersTableError)) {
+        console.error('Erro ao buscar usuários no Supabase:', usersTableError);
+        throw new Error('Não foi possível carregar usuários da tabela users no Supabase.');
+    }
+
+    return rememberUserStore([], usersTableError ? 'profiles' : 'users');
 }
 
 async function saveUsers(usersArray) {
+    const store = userStoreKinds.get(usersArray);
+    if (store === 'profiles') {
+        throw new Error('Os perfis do Supabase Auth foram carregados em modo somente leitura. Configure a tabela public.users para gerenciar assinaturas e membros.');
+    }
+
+    if (store === 'local' && !supabase) {
+        fs.writeFileSync(usersDbPath, JSON.stringify(usersArray, null, 2));
+        return;
+    }
+
+    if (!supabase) {
+        throw new Error('Supabase não configurado; nenhuma alteração foi salva.');
+    }
+
     try {
         const dataToUpsert = usersArray.map(u => ({
             id: u.id,
             name: u.fullName || u.name || (u.email ? u.email.split('@')[0] : 'Usuário'),
+            full_name: u.fullName || u.name || (u.email ? u.email.split('@')[0] : 'Usuário'),
             email: u.email,
             password: u.password || '123456',
             phone: u.phone,
             status: u.status,
             subscriptionType: u.subscriptionType,
+            subscription_type: u.subscriptionType,
             subscriptionExpires: u.expiresAt,
-            role: u.isAdmin ? 'admin' : 'user'
+            expires_at: u.expiresAt,
+            paid_amount: u.paidAmount ?? 19.90,
+            last_payment_date: u.lastPaymentDate || null,
+            role: u.isAdmin ? 'admin' : 'user',
+            is_admin: Boolean(u.isAdmin)
         }));
         
         const { error } = await supabase.from('users').upsert(dataToUpsert, { onConflict: 'id' });
@@ -817,7 +990,7 @@ app.get('/api/videos/:id', (req, res) => {
 });
 
 // Rota para adicionar novo vídeo
-app.post('/api/videos', requireApiKey, uploadVideoFields, (req, res) => {
+app.post('/api/videos', requireAdminSession, uploadVideoFields, (req, res) => {
     try {
         // Validações pós-upload (covers não devem exceder 5MB)
         if (req.files && req.files.cover && req.files.cover[0] && req.files.cover[0].size > 5 * 1024 * 1024) {
@@ -853,7 +1026,7 @@ app.post('/api/videos', requireApiKey, uploadVideoFields, (req, res) => {
 });
 
 // Rota para deletar vídeo
-app.delete('/api/videos/:id', requireApiKey, (req, res) => {
+app.delete('/api/videos/:id', requireAdminSession, (req, res) => {
     try {
         const videos = getVideos();
         const index = videos.findIndex(v => v.id === req.params.id);
@@ -916,7 +1089,7 @@ app.get('/api/articles/:id', (req, res) => {
 });
 
 // Rota para adicionar novo artigo
-app.post('/api/articles', requireApiKey, uploadArticleFiles, (req, res) => {
+app.post('/api/articles', requireAdminSession, uploadArticleFiles, (req, res) => {
     try {
         const articles = getArticles();
 
@@ -943,7 +1116,7 @@ app.post('/api/articles', requireApiKey, uploadArticleFiles, (req, res) => {
 });
 
 // Rota para deletar artigo
-app.delete('/api/articles/:id', requireApiKey, (req, res) => {
+app.delete('/api/articles/:id', requireAdminSession, (req, res) => {
     try {
         const articles = getArticles();
         const index = articles.findIndex(a => a.id === req.params.id);
@@ -1007,7 +1180,7 @@ app.get('/api/projects/:id', (req, res) => {
 });
 
 // Rota para adicionar novo projeto (aceita arquivo opcional)
-app.post('/api/projects', requireApiKey, uploadProjectFields, (req, res) => {
+app.post('/api/projects', requireAdminSession, uploadProjectFields, (req, res) => {
     try {
         const projects = getProjects();
 
@@ -1037,7 +1210,7 @@ app.post('/api/projects', requireApiKey, uploadProjectFields, (req, res) => {
 });
 
 // Rota para deletar projeto
-app.delete('/api/projects/:id', requireApiKey, (req, res) => {
+app.delete('/api/projects/:id', requireAdminSession, (req, res) => {
     try {
         const projects = getProjects();
         const index = projects.findIndex(p => p.id === req.params.id);
@@ -1105,19 +1278,26 @@ app.post('/api/testimony', async (req, res) => {
 // Rota para registrar novo usuário - ACESSO TOTAL LIBERADO ao se cadastrar
 app.post('/api/register', async (req, res) => {
     try {
+        const fullName = String(req.body.fullName || '').trim();
+        const email = String(req.body.email || '').trim().toLowerCase();
+        const password = String(req.body.password || '');
+        if (!fullName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
+            return res.status(400).json({ error: 'Informe nome, e-mail e senha com pelo menos 6 caracteres.' });
+        }
+
         const users = await getUsers();
         
-        const existingUser = users.find(u => String(u.email).toLowerCase() === String(req.body.email || '').toLowerCase());
+        const existingUser = users.find(u => String(u.email).toLowerCase() === email);
         if (existingUser) {
             return res.status(400).json({ error: 'E-mail já cadastrado' });
         }
 
         const newUser = {
             id: require('crypto').randomUUID(),
-            fullName: req.body.fullName,
+            fullName,
             phone: req.body.phone,
-            email: req.body.email,
-            password: req.body.password,
+            email,
+            password,
             status: 'approved',
             subscriptionType: 'full',
             expiresAt: null,
@@ -1127,7 +1307,13 @@ app.post('/api/register', async (req, res) => {
         users.push(newUser);
         await saveUsers(users);
 
-        res.json({ success: true, message: 'Cadastro realizado com sucesso! Acesso total liberado.', user: newUser });
+        const safeUser = { ...newUser };
+        delete safeUser.password;
+        res.status(201).json({
+            success: true,
+            message: 'Cadastro realizado com sucesso! Acesso total liberado.',
+            user: safeUser
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao cadastrar usuário' });
@@ -1137,73 +1323,143 @@ app.post('/api/register', async (req, res) => {
 // Rota para login - ACESSO TOTAL LIBERADO para todo cadastrado
 app.post('/api/login', async (req, res) => {
     try {
-        const users = await getUsers();
         const { email, password } = req.body;
+        const normalizedEmail = String(email || '').toLowerCase().trim();
+        let users = [];
 
-        const user = users.find(u => String(u.email).toLowerCase() === String(email || '').toLowerCase() && u.password === password);
-        
-        if (!user) {
+        try {
+            users = await getUsers();
+        } catch (error) {
+            if (!supabaseAuth) throw error;
+            console.warn('Login legado indisponível; tentando Supabase Auth:', error.message);
+        }
+
+        const user = users.find(u =>
+            String(u.email).toLowerCase() === normalizedEmail &&
+            typeof u.password === 'string' &&
+            u.password === password
+        );
+
+        if (user) {
+            const isAdmin = user.isAdmin || adminEmails.includes(normalizedEmail);
+            if (isAdmin) setAdminSessionCookie(res, user);
+            else clearAdminSessionCookie(res);
+            res.setHeader('Cache-Control', 'no-store');
+            return res.json({
+                success: true,
+                adminSessionIssued: isAdmin,
+                user: {
+                    id: user.id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    phone: user.phone,
+                    isAdmin,
+                    status: 'approved',
+                    subscriptionType: 'full',
+                    expiresAt: null,
+                    createdAt: user.createdAt
+                }
+            });
+        }
+
+        if (!supabaseAuth) {
             return res.status(401).json({ error: 'E-mail ou senha incorretos' });
         }
 
-        const adminEmails = ['gilbertobertho@gmail.com', 'gilbertbertho@gmail.com', 'edukadoshmda@gmail.com'];
-        const isAdmin = user.isAdmin || adminEmails.includes(String(user.email).toLowerCase());
+        const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword({
+            email: normalizedEmail,
+            password: String(password || '')
+        });
+        if (authError || !authData.user || !authData.session) {
+            return res.status(401).json({ error: 'E-mail ou senha incorretos' });
+        }
 
-        // Acesso total: sem bloqueio por expiração/trial
-        res.json({ 
-            success: true, 
+        let profile = null;
+        if (supabase) {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('full_name, phone, status, is_admin, created_at')
+                .eq('id', authData.user.id)
+                .maybeSingle();
+            if (error) throw error;
+            profile = data;
+        }
+
+        const isAdmin = profile?.is_admin === true ||
+            adminEmails.includes(String(authData.user.email || '').toLowerCase());
+        if (isAdmin) setAdminSessionCookie(res, { id: authData.user.id });
+        else clearAdminSessionCookie(res);
+        res.setHeader('Cache-Control', 'no-store');
+        return res.json({
+            success: true,
+            adminSessionIssued: isAdmin,
             user: {
-                id: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                phone: user.phone,
-                isAdmin: isAdmin,
-                status: 'approved',
+                id: authData.user.id,
+                fullName: profile?.full_name ||
+                    authData.user.user_metadata?.full_name ||
+                    authData.user.user_metadata?.name ||
+                    authData.user.email,
+                email: authData.user.email,
+                phone: profile?.phone || authData.user.user_metadata?.phone || '',
+                isAdmin,
+                status: profile?.status || 'approved',
                 subscriptionType: 'full',
                 expiresAt: null,
-                createdAt: user.createdAt
+                createdAt: profile?.created_at || authData.user.created_at
             }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao fazer login' });
+        console.error('Erro ao fazer login:', error);
+        res.status(503).json({ error: 'Não foi possível validar o login. Verifique a configuração do Supabase.' });
     }
 });
 
-// Rota para cadastrar novo usuário - ACESSO TOTAL LIBERADO
-app.post('/api/users', async (req, res) => {
+// Criar um membro pelo painel administrativo
+app.post('/api/users', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
-        const existingIndex = users.findIndex(u => String(u.email).toLowerCase() === String(req.body.email || '').toLowerCase());
-        
-        if (existingIndex === -1) {
-            const newUser = {
-                id: req.body.id || require('crypto').randomUUID(),
-                fullName: req.body.fullName,
-                email: req.body.email,
-                phone: req.body.phone,
-                password: req.body.password || '123456',
-                status: 'approved',
-                subscriptionType: 'full',
-                expiresAt: null,
-                isAdmin: false,
-                createdAt: new Date().toISOString()
-            };
-            users.push(newUser);
-            await saveUsers(users);
-            res.json({ 
-                success: true, 
-                message: 'Cadastro realizado com sucesso! Acesso total liberado a todos os conteúdos.',
-                user: newUser 
+        if (userStoreKinds.get(users) === 'profiles') {
+            return res.status(409).json({
+                error: 'Os perfis do Supabase Auth estão em modo somente leitura. Configure public.users para cadastrar membros.'
             });
-        } else {
-            // Garante acesso total mesmo para quem já existia como trial
-            users[existingIndex].status = 'approved';
-            users[existingIndex].subscriptionType = 'full';
-            users[existingIndex].expiresAt = null;
-            await saveUsers(users);
-            res.json({ success: true, message: 'Usuário já cadastrado - acesso total liberado', user: users[existingIndex] });
         }
+
+        const fullName = String(req.body.fullName || '').trim();
+        const email = String(req.body.email || '').trim().toLowerCase();
+        const password = String(req.body.password || '');
+        const status = req.body.status;
+        const paidAmount = Number(req.body.paidAmount);
+        if (!fullName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6 ||
+            !['approved', 'pending'].includes(status) ||
+            !Number.isFinite(paidAmount) || paidAmount < 0) {
+            return res.status(400).json({
+                error: 'Informe nome, e-mail, senha com pelo menos 6 caracteres, status válido e valor mensal válido.'
+            });
+        }
+
+        if (users.some(user => String(user.email).toLowerCase() === email)) {
+            return res.status(409).json({ error: 'E-mail já cadastrado.' });
+        }
+
+        const newUser = {
+            id: crypto.randomUUID(),
+            fullName,
+            email,
+            phone: String(req.body.phone || '').trim(),
+            password,
+            status,
+            subscriptionType: status === 'approved' ? 'full' : 'trial',
+            expiresAt: null,
+            paidAmount,
+            isAdmin: false,
+            createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        await saveUsers(users);
+
+        const safeUser = { ...newUser };
+        delete safeUser.password;
+        res.status(201).json({ success: true, message: 'Membro cadastrado com sucesso.', user: safeUser });
     } catch (error) {
         console.error('Erro ao salvar usuário:', error);
         res.status(500).json({ error: 'Erro ao salvar usuário' });
@@ -1211,36 +1467,41 @@ app.post('/api/users', async (req, res) => {
 });
 
 // Listar todos os usuários (admin)
-app.get('/api/users', requireApiKey, async (req, res) => {
+app.get('/api/users', requireAdminSession, async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     try {
         const users = await getUsers();
-        // Acesso total: todos aprovados, sem expiração
+        const source = userStoreKinds.get(users) || 'users';
+        res.setHeader('X-Users-Source', source);
+        res.setHeader('X-Users-Read-Only', String(source === 'profiles'));
         const usersList = users.map(u => {
             return {
                 id: u.id,
                 fullName: u.fullName,
                 phone: u.phone,
                 email: u.email,
-                status: 'approved',
-                subscriptionType: 'full',
-                expiresAt: null,
+                status: u.status,
+                subscriptionType: u.subscriptionType,
+                paidAmount: u.paidAmount,
+                expiresAt: u.expiresAt,
                 daysRemaining: null,
                 lastPaymentDate: u.lastPaymentDate || null,
                 isAdmin: u.isAdmin || false,
-                createdAt: u.createdAt
+                createdAt: u.createdAt,
+                profileOnly: u.profileOnly
             };
         });
         res.json(usersList);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuários' });
+        console.error('Erro ao listar usuários:', error);
+        res.status(503).json({ error: error.message || 'Erro ao buscar usuários' });
     }
 });
 
 // Aprovar usuário e ativar 30 dias de assinatura mensal (admin only)
-app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
+app.put('/api/users/:id/approve', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
@@ -1269,7 +1530,7 @@ app.put('/api/users/:id/approve', requireApiKey, async (req, res) => {
 });
 
 // Renovar mensalidade (+30 dias) de um usuário (admin only)
-app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
+app.post('/api/users/:id/renew', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
@@ -1308,7 +1569,7 @@ app.post('/api/users/:id/renew', requireApiKey, async (req, res) => {
 });
 
 // Disparar e-mail de lembrete manualmente (admin only)
-app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
+app.post('/api/users/:id/send-reminder', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
         const user = users.find(u => String(u.id) === String(req.params.id));
@@ -1337,7 +1598,7 @@ app.post('/api/users/:id/send-reminder', requireApiKey, async (req, res) => {
 });
 
 // Rota para editar usuário (admin only)
-app.put('/api/users/:id', requireApiKey, async (req, res) => {
+app.put('/api/users/:id', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
@@ -1369,7 +1630,7 @@ app.put('/api/users/:id', requireApiKey, async (req, res) => {
 });
 
 // Rota para pausar/ativar usuário (alterar status)
-app.patch('/api/users/:id/status', requireApiKey, async (req, res) => {
+app.patch('/api/users/:id/status', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
@@ -1392,9 +1653,14 @@ app.patch('/api/users/:id/status', requireApiKey, async (req, res) => {
 });
 
 // Rota para deletar usuário (admin only)
-app.delete('/api/users/:id', requireApiKey, async (req, res) => {
+app.delete('/api/users/:id', requireAdminSession, async (req, res) => {
     try {
         const users = await getUsers();
+        if (userStoreKinds.get(users) === 'profiles') {
+            return res.status(409).json({
+                error: 'Os perfis recuperados do Supabase Auth estão em modo somente leitura. Configure a tabela public.users para gerenciar membros.'
+            });
+        }
         const index = users.findIndex(u => String(u.id) === String(req.params.id));
 
         if (index !== -1) {
@@ -1549,7 +1815,7 @@ app.post('/api/content', express.json(), async (req, res) => {
 
 // Rota do Estúdio de Áudio
 const { exec } = require('child_process');
-app.post('/api/generate-audio', requireApiKey, (req, res) => {
+app.post('/api/generate-audio', requireAdminSession, (req, res) => {
     const { text, voice, bookId, trackName } = req.body;
     if (!text || !voice || !bookId || !trackName) {
         return res.status(400).json({ error: 'Dados incompletos' });
@@ -1604,9 +1870,23 @@ app.use((err, req, res, next) => {
 });
 
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Servidor rodando em http://localhost:${PORT}`);
+    const primaryPort = parseInt(PORT, 10) || 5000;
+    const secondaryPort = primaryPort === 5000 ? 3000 : 5000;
+
+    app.listen(primaryPort, "0.0.0.0", () => {
+        console.log(`Servidor rodando em http://localhost:${primaryPort}`);
     });
+
+    try {
+        const secondaryServer = app.listen(secondaryPort, "0.0.0.0", () => {
+            console.log(`Servidor rodando também em http://localhost:${secondaryPort}`);
+        });
+        secondaryServer.on("error", (err) => {
+            if (err.code !== "EADDRINUSE") {
+                console.error(`Erro na porta secundária ${secondaryPort}:`, err.message);
+            }
+        });
+    } catch (e) {}
 }
 
 app.runDailyCron = runDailyCron;

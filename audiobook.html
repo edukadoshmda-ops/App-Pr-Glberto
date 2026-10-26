@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
       .delete-audiobook-btn {
         position: absolute;
@@ -118,7 +119,10 @@
               <span>Liderança & Gestão</span>
               <span>4.9/5</span>
             </div>
-            <button class="primary-btn" type="button" onclick="playAudiobook('lideranca')" style="margin-top:16px;">Reproduzir</button>
+            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+              <button class="primary-btn" type="button" onclick="playAudiobook('lideranca')"><i class="fas fa-play"></i> Reproduzir</button>
+              <button class="secondary-btn btn-read-card" type="button" onclick="openAudiobookBook('lideranca')"><i class="fas fa-book-open"></i> Ler Livro</button>
+            </div>
           </div>
         </section>
 
@@ -153,14 +157,21 @@
 
                     </div>
 
-                    <button
-                        class="playlist-toggle"
-                        id="playlistToggle"
-                        type="button"
-                    >
-                        <i class="fas fa-list"></i>
-                        <span>Capítulos</span>
-                    </button>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="playlist-toggle read-along-btn" id="readAlongBtn" type="button" onclick="openCurrentAudiobookReader()" title="Ler o livro correspondente enquanto ouve">
+                            <i class="fas fa-book-open"></i>
+                            <span>Ler Livro</span>
+                        </button>
+
+                        <button
+                            class="playlist-toggle"
+                            id="playlistToggle"
+                            type="button"
+                        >
+                            <i class="fas fa-list"></i>
+                            <span>Capítulos</span>
+                        </button>
+                    </div>
 
                 </div>
 
@@ -301,7 +312,10 @@
                 <span class="tag tag-gold">Áudio</span>
               </div>
               <p>Série completa sobre identidade, propósito e transformação pessoal. Conteúdo inspirador para desenvolvimento integral.</p>
-              <button class="secondary-btn" onclick="playAudiobook('eusou')">Reproduzir</button>
+              <div class="card-actions" style="display:flex; gap:8px;">
+                <button class="secondary-btn" onclick="playAudiobook('eusou')">Reproduzir</button>
+                <button class="secondary-btn btn-read-card" onclick="openAudiobookBook('eusou')" title="Ler Livro"><i class="fas fa-book-open"></i> Ler</button>
+              </div>
             </div>
           </article>
 
@@ -313,7 +327,10 @@
                 <span class="tag tag-green">Áudio</span>
               </div>
               <p>Conteúdo especializado em construção e manutenção de hábitos poderosos. Transforme sua rotina com estratégias comprovadas.</p>
-              <button class="secondary-btn" onclick="playAudiobook('habitos')">Reproduzir</button>
+              <div class="card-actions" style="display:flex; gap:8px;">
+                <button class="secondary-btn" onclick="playAudiobook('habitos')">Reproduzir</button>
+                <button class="secondary-btn btn-read-card" onclick="openAudiobookBook('habitos')" title="Ler Livro"><i class="fas fa-book-open"></i> Ler</button>
+              </div>
             </div>
           </article>
 
@@ -325,7 +342,10 @@
                 <span class="tag tag-blue">Áudio</span>
               </div>
               <p>Série de áudio com conteúdo de liderança e desenvolvimento executivo. Aprenda com experiências reais de sucesso.</p>
-              <button class="secondary-btn" onclick="playAudiobook('jonas')">Reproduzir</button>
+              <div class="card-actions" style="display:flex; gap:8px;">
+                <button class="secondary-btn" onclick="playAudiobook('jonas')">Reproduzir</button>
+                <button class="secondary-btn btn-read-card" onclick="openAudiobookBook('jonas')" title="Ler Livro"><i class="fas fa-book-open"></i> Ler</button>
+              </div>
             </div>
           </article>
 
@@ -337,7 +357,10 @@
                 <span class="tag tag-gold">Áudio</span>
               </div>
               <p>Os 5 Níveis da Liderança Cristã — Experiência sonora profunda sobre liderança, gestão e desenvolvimento pessoal.</p>
-              <button class="secondary-btn" onclick="playAudiobook('lideranca')">Reproduzir</button>
+              <div class="card-actions" style="display:flex; gap:8px;">
+                <button class="secondary-btn" onclick="playAudiobook('lideranca')">Reproduzir</button>
+                <button class="secondary-btn btn-read-card" onclick="openAudiobookBook('lideranca')" title="Ler Livro"><i class="fas fa-book-open"></i> Ler</button>
+              </div>
             </div>
           </article>
 
@@ -349,7 +372,10 @@
                 <span class="tag tag-gold">Áudio</span>
               </div>
               <p>Manual prático e inspirador para formação e acompanhamento de discípulos.</p>
-              <button class="secondary-btn" onclick="playAudiobook('discipulado')">Reproduzir</button>
+              <div class="card-actions" style="display:flex; gap:8px;">
+                <button class="secondary-btn" onclick="playAudiobook('discipulado')">Reproduzir</button>
+                <button class="secondary-btn btn-read-card" onclick="openAudiobookBook('discipulado')" title="Ler Livro"><i class="fas fa-book-open"></i> Ler</button>
+              </div>
             </div>
           </article>
         </section>
@@ -366,6 +392,71 @@
             <div id="playlistTracks" class="playlist-tracks"></div>
           </div>
         </section>
+      
+        <!-- Book Viewer Modal para Leitura no Audiobook -->
+        <div class="book-viewer-modal" id="bookViewerModal" aria-hidden="true">
+          <div class="book-viewer-content">
+            <div class="book-viewer-header">
+              <div class="book-viewer-title-box">
+                <i class="fas fa-book-open"></i>
+                <span id="bookViewerTitle">Leitor Digital</span>
+              </div>
+              <div id="readerMiniAudioBar" class="reader-mini-audio-bar">
+                <div class="reader-audio-info">
+                  <i class="fas fa-volume-high pulse-icon"></i>
+                  <span id="readerAudioTrack">Áudio Ativo</span>
+                </div>
+                <div class="reader-audio-actions">
+                  <button type="button" id="readerAudioPlayPause" onclick="toggleAudioFromReader()" title="Pausar / Reproduzir Áudio">
+                    <i class="fas fa-pause"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="book-viewer-tools">
+                <button class="reader-tool-btn" id="fitWidthBtn" type="button" onclick="toggleFitWidth()" title="Ajustar à Largura (Ideal para celular)">
+                  <i class="fas fa-arrows-alt-h"></i> <span>Ajustar Largura</span>
+                </button>
+                <button class="reader-tool-btn" id="rotateScreenBtn" type="button" onclick="toggleFullscreenReader()" title="Girar / Tela Cheia">
+                  <i class="fas fa-expand"></i> <span>Tela Cheia</span>
+                </button>
+                <button class="close-book-btn" type="button" onclick="closeBookViewer()" aria-label="Fechar leitor">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="book-viewer">
+              <div class="book-container fit-width-mode" id="bookContainer">
+                <div class="book-page book-page-left fit-width-mode" id="leftPage">
+                  <canvas id="leftCanvas"></canvas>
+                </div>
+                <div class="book-page book-page-right" id="rightPage">
+                  <canvas id="rightCanvas"></canvas>
+                </div>
+              </div>
+              <div class="book-navigation">
+                <button class="book-nav-btn" id="prevBtn" type="button" onclick="prevPage()">
+                  <i class="fas fa-chevron-left"></i>
+                  Anterior
+                </button>
+                <div class="book-page-indicator">
+                  <span id="currentPage">1</span>
+                  <span>/</span>
+                  <span id="totalPages">1</span>
+                </div>
+                <button class="book-nav-btn" id="nextBtn" type="button" onclick="nextPage()">
+                  Próxima
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="book-zoom-controls" id="zoomControls">
+                <button type="button" id="zoomOutBtn" aria-label="Diminuir zoom">−</button>
+                <span id="zoomValue">100%</span>
+                <button type="button" id="zoomInBtn" aria-label="Aumentar zoom">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
 
@@ -627,10 +718,13 @@
                         <span class="tag tag-gold">Áudio</span>
                       </div>
                       <p>${ab.description || 'Novo audiobook adicionado.'}</p>
-                      <button class="secondary-btn">Reproduzir</button>
+                      <div class="card-actions" style="display:flex; gap:8px;">
+                        <button class="secondary-btn btn-play-audio">Reproduzir</button>
+                        <button class="secondary-btn btn-read-card" type="button" onclick="openAudiobookBook('${ab.id}')"><i class="fas fa-book-open"></i> Ler</button>
+                      </div>
                     </div>
                   `;
-                  card.querySelector('button.secondary-btn').addEventListener('click', playAudio);
+                  card.querySelector('.btn-play-audio').addEventListener('click', playAudio);
                   grid.prepend(card);
                 }
               });

@@ -1988,6 +1988,7 @@ articleForm.addEventListener(
             // 2. Fallback para API Local Node
             const response = await fetch('/api/articles', {
                 method: 'POST',
+                credentials: 'same-origin',
                 body: formData
             });
 
@@ -2046,6 +2047,4 @@ if (!document.getElementById('toastKeyframes')) {
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-
 

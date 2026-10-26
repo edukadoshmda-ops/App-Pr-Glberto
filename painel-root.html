@@ -433,6 +433,7 @@
 
     <script>
         let deleteUserId = null;
+        let usersReadOnly = false;
 
         // Verificar permissão de admin
         function checkAdminAccess() {
@@ -451,13 +452,18 @@
         async function loadUsers() {
             try {
                 let users = [];
-                const response = await fetch('/api/users?apiKey=prgilbertopenido-secret-key-2024');
+                const response = await fetch('/api/users', { credentials: 'same-origin' });
+                if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+                usersReadOnly = response.headers.get('X-Users-Read-Only') === 'true';
                 users = await response.json();
                 
                 const tbody = document.getElementById('usersTableBody');
                 
                 if (!users || users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum usuário cadastrado</td></tr>';
+                    const message = usersReadOnly
+                        ? 'Nenhum perfil encontrado no Supabase Auth. Configure public.users para gerenciar membros.'
+                        : 'Nenhum usuário cadastrado.';
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">${message}</td></tr>`;
                     return;
                 }
 
@@ -498,7 +504,7 @@
                                 ${user.isAdmin ? '<span class="admin-badge">Admin</span>' : '-'}
                             </td>
                             <td>
-                                <div class="action-buttons" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                ${user.profileOnly ? '<span>Somente leitura</span>' : `<div class="action-buttons" style="display: flex; gap: 6px; flex-wrap: wrap;">
                                     <button class="btn-edit" style="background: rgba(37, 211, 102, 0.2); border-color: #25D366; color: #25D366;" onclick="renewUserSubscription('${user.id}')" title="Renovar +30 dias PIX">
                                         <i class="fas fa-plus-circle"></i> +30d PIX
                                     </button>
@@ -519,7 +525,7 @@
                                     <button class="btn-delete" onclick="openDeleteModal('${user.id}')" title="Excluir">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                </div>
+                                </div>`}
                             </td>
                         </tr>
                     `;
@@ -533,8 +539,9 @@
         async function renewUserSubscription(userId) {
             if (!confirm('Confirmar recebimento do PIX e renovar o acesso deste usuário por +30 dias?')) return;
             try {
-                const response = await fetch(`/api/users/${userId}/renew?apiKey=prgilbertopenido-secret-key-2024`, {
-                    method: 'POST'
+                const response = await fetch(`/api/users/${userId}/renew`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
                 });
                 if (response.ok) {
                     alert('Assinatura renovada por +30 dias! E-mail de confirmação enviado.');
@@ -551,8 +558,9 @@
         async function sendUserReminderEmail(userId) {
             if (!confirm('Enviar e-mail de lembrete de renovação via Gmail?')) return;
             try {
-                const response = await fetch(`/api/users/${userId}/send-reminder?apiKey=prgilbertopenido-secret-key-2024`, {
-                    method: 'POST'
+                const response = await fetch(`/api/users/${userId}/send-reminder`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
                 });
                 if (response.ok) {
                     alert('E-mail de lembrete disparado com sucesso!');
@@ -629,9 +637,12 @@
                     return;
                 }
 
-                const response = await fetch(`/api/users/${userId}?apiKey=prgilbertopenido-secret-key-2024`, {
+                const response = await fetch(`/api/users/${userId}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin',
                     body: JSON.stringify(userData)
                 });
 
@@ -676,8 +687,9 @@
                     return;
                 }
 
-                const response = await fetch(`/api/users/${deleteUserId}?apiKey=prgilbertopenido-secret-key-2024`, {
-                    method: 'DELETE'
+                const response = await fetch(`/api/users/${deleteUserId}`, {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
                 });
 
                 if (response.ok) {
@@ -747,5 +759,3 @@
     <script src="global-theme.js"></script>
 </body>
 </html>
-
-
