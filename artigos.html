@@ -593,6 +593,17 @@
             modal.classList.remove('open');
             const floatTheme = document.getElementById('floating-theme-toggle'); if (floatTheme) floatTheme.style.removeProperty('display');
             document.body.style.overflow = '';
+
+            // Destrava imediatamente a orientação da tela e sai de tela cheia
+            if (screen.orientation && typeof screen.orientation.unlock === "function") {
+                try { screen.orientation.unlock(); } catch(e) {}
+            }
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                try {
+                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                } catch(e) {}
+            }
         }
 
         // Fechar com Esc
@@ -724,6 +735,16 @@
         }
     </style>
     <script src="global-theme.js"></script>
+
+    <script>
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+            try { screen.orientation.unlock(); } catch(e) {}
+          }
+        }
+      });
+    </script>
 </body>
 </html>
 

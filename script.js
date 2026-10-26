@@ -349,17 +349,23 @@ function closeBookViewer() {
   targetModal.classList.remove("active");
   targetModal.setAttribute("aria-hidden", "true");
 
-
   document.body.classList.remove("book-open");
   const floatBtn = document.getElementById("floating-theme-toggle"); if (floatBtn) floatBtn.style.removeProperty("display");
 
+  // Destrava imediatamente a orientação da tela e sai do modo tela cheia
+  if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+    try { screen.orientation.unlock(); } catch(e) {}
+  }
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    try {
+      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch(e) {}
+  }
 
   pdfDocument = null;
-
   currentBook = null;
-
   clearCanvases();
-
 }
 
 
@@ -1954,3 +1960,11 @@ if (screen.orientation) {
     }, 250);
   });
 }
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+      try { screen.orientation.unlock(); } catch(e) {}
+    }
+  }
+});
