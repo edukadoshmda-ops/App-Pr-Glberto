@@ -18,24 +18,46 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.id = 'floating-theme-toggle';
         btn.innerHTML = savedTheme === 'light' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         
+        const isMobileScreen = window.innerWidth <= 768;
         Object.assign(btn.style, {
             position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            width: '50px',
-            height: '50px',
+            bottom: isMobileScreen ? '85px' : '24px',
+            right: isMobileScreen ? '16px' : '24px',
+            width: isMobileScreen ? '42px' : '48px',
+            height: isMobileScreen ? '42px' : '48px',
             borderRadius: '50%',
             backgroundColor: '#f5b52e',
             color: '#050914',
             border: 'none',
             boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
             cursor: 'pointer',
-            zIndex: '9999',
+            zIndex: '99',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '20px',
-            transition: 'transform 0.2s'
+            fontSize: isMobileScreen ? '17px' : '20px',
+            transition: 'transform 0.2s, opacity 0.2s'
+        });
+
+        // Oculta automaticamente quando leitor de PDF ou modais de leitura estiverem ativos
+        const checkModalVisibility = () => {
+            const isReaderOpen = document.body.classList.contains('book-open') || 
+                                 document.body.classList.contains('modal-open') ||
+                                 document.querySelector('.book-viewer-modal.active') ||
+                                 document.querySelector('#articleModal.open') ||
+                                 document.querySelector('#driveIframeModal');
+            btn.style.setProperty('display', isReaderOpen ? 'none' : 'flex', 'important');
+        };
+
+        const observer = new MutationObserver(checkModalVisibility);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+        window.addEventListener('resize', () => {
+            const mobile = window.innerWidth <= 768;
+            btn.style.bottom = mobile ? '85px' : '24px';
+            btn.style.right = mobile ? '16px' : '24px';
+            btn.style.width = mobile ? '42px' : '48px';
+            btn.style.height = mobile ? '42px' : '48px';
+            btn.style.fontSize = mobile ? '17px' : '20px';
         });
         
         btn.addEventListener('mouseover', () => btn.style.transform = 'scale(1.1)');

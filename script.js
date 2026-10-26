@@ -251,9 +251,8 @@ async function openBookViewer(bookId, moduleType = 'playbooks', itemIndex = -1) 
   }
 
 
-  document.body.classList.add(
-    "book-open"
-  );
+  document.body.classList.add("book-open");
+  const floatBtn = document.getElementById("floating-theme-toggle"); if (floatBtn) floatBtn.style.setProperty("display", "none", "important");
 
 
   showLoading();
@@ -351,9 +350,8 @@ function closeBookViewer() {
   targetModal.setAttribute("aria-hidden", "true");
 
 
-  document.body.classList.remove(
-    "book-open"
-  );
+  document.body.classList.remove("book-open");
+  const floatBtn = document.getElementById("floating-theme-toggle"); if (floatBtn) floatBtn.style.removeProperty("display");
 
 
   pdfDocument = null;

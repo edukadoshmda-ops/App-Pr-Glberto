@@ -565,6 +565,7 @@
             }
 
             modal.classList.add('open');
+            const floatTheme = document.getElementById('floating-theme-toggle'); if (floatTheme) floatTheme.style.setProperty('display', 'none', 'important');
             document.body.style.overflow = 'hidden';
         }
 
@@ -590,6 +591,7 @@
         function closeArticleModal() {
             const modal = document.getElementById('articleModal');
             modal.classList.remove('open');
+            const floatTheme = document.getElementById('floating-theme-toggle'); if (floatTheme) floatTheme.style.removeProperty('display');
             document.body.style.overflow = '';
         }
 

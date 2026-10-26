@@ -503,3 +503,29 @@ body.theme-light .close-book-btn:hover {
 body.theme-light .close-book-btn:hover i {
   color: #dc2626 !important;
 }
+
+/* =========================================================
+   PROTEÇÃO: NUNCA BLOQUEAR BOTÕES DE LEITURA (PRÓXIMA/ANTERIOR)
+   ========================================================= */
+body.book-open #floating-theme-toggle,
+.book-viewer-modal.active ~ #floating-theme-toggle,
+#bookViewerModal.active ~ #floating-theme-toggle,
+#articleModal.open ~ #floating-theme-toggle,
+#driveIframeModal ~ #floating-theme-toggle,
+body.modal-open #floating-theme-toggle {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+@media (max-width: 768px) {
+    #floating-theme-toggle {
+        bottom: 85px !important;
+        right: 16px !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 17px !important;
+        z-index: 90 !important;
+    }
+}
