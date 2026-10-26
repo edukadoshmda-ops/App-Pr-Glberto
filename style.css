@@ -5122,3 +5122,125 @@ body.theme-light .mission-badge-text {
     justify-content: center !important;
   }
 }
+
+/* =========================================================
+   CORES E ALTO CONTRASTE DO TOPO DO LEITOR (DARK & LIGHT)
+   Legibilidade 100% nítida e profissional
+   ========================================================= */
+
+/* --- TEMA ESCURO (PADRÃO) --- */
+.book-viewer-title-box {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(245, 181, 46, 0.5) !important;
+  color: #ffd700 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.book-viewer-title-box i {
+  color: #ffd700 !important;
+}
+
+.book-viewer-title-box span,
+.book-viewer-title-box strong {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.reader-tool-btn {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(245, 181, 46, 0.5) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.reader-tool-btn i {
+  color: #ffd700 !important;
+}
+
+.reader-tool-btn span {
+  color: #ffffff !important;
+}
+
+.reader-tool-btn:hover {
+  background: rgba(245, 181, 46, 0.25) !important;
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+}
+
+.close-book-btn {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.close-book-btn i {
+  color: #ffffff !important;
+}
+
+.close-book-btn:hover {
+  background: rgba(220, 53, 69, 0.3) !important;
+  color: #ff6b6b !important;
+  border-color: rgba(220, 53, 69, 0.6) !important;
+}
+
+/* --- TEMA CLARO (LIGHT THEME) --- */
+body.theme-light .book-viewer-title-box {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.theme-light .book-viewer-title-box i {
+  color: #b45309 !important;
+}
+
+body.theme-light .book-viewer-title-box span,
+body.theme-light .book-viewer-title-box strong {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+body.theme-light .reader-tool-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .reader-tool-btn i {
+  color: #b45309 !important;
+}
+
+body.theme-light .reader-tool-btn span {
+  color: #0f172a !important;
+}
+
+body.theme-light .reader-tool-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #b45309 !important;
+}
+
+body.theme-light .reader-tool-btn:hover i {
+  color: #92400e !important;
+}
+
+body.theme-light .close-book-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.theme-light .close-book-btn i {
+  color: #0f172a !important;
+}
+
+body.theme-light .close-book-btn:hover {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border-color: #fca5a5 !important;
+}
+
+body.theme-light .close-book-btn:hover i {
+  color: #dc2626 !important;
+}
